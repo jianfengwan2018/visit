@@ -207,6 +207,11 @@
         0
         0
       </Field>
+      <Field name="legendTitleEnabled" label="legendTitleEnabled" type="bool">
+        false
+      </Field>
+      <Field name="legendTitle" label="legendTitle" type="string" enabler="legendTitleEnabled:true">
+      </Field>
       <Function name="ChangesRequireRecalculation" user="true" member="true">
       </Function>
       <Function name="Print" user="true" member="true">

@@ -26,7 +26,7 @@ import llnl.visit.ColorAttribute;
 
 public class PseudocolorAttributes extends AttributeSubject implements Plugin
 {
-    private static int PseudocolorAttributes_numAdditionalAtts = 53;
+    private static int PseudocolorAttributes_numAdditionalAtts = 55;
 
     // Enum values
     public final static int SCALING_LINEAR = 0;
@@ -115,6 +115,8 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         lightingFlag = true;
         wireframeColor = new ColorAttribute(0, 0, 0, 0);
         pointColor = new ColorAttribute(0, 0, 0, 0);
+        legendTitleEnabled = false;
+        legendTitle = new String("");
     }
 
     public PseudocolorAttributes(int nMoreFields)
@@ -174,6 +176,8 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         lightingFlag = true;
         wireframeColor = new ColorAttribute(0, 0, 0, 0);
         pointColor = new ColorAttribute(0, 0, 0, 0);
+        legendTitleEnabled = false;
+        legendTitle = new String("");
     }
 
     public PseudocolorAttributes(PseudocolorAttributes obj)
@@ -233,6 +237,8 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         lightingFlag = obj.lightingFlag;
         wireframeColor = new ColorAttribute(obj.wireframeColor);
         pointColor = new ColorAttribute(obj.pointColor);
+        legendTitleEnabled = obj.legendTitleEnabled;
+        legendTitle = new String(obj.legendTitle);
 
         SelectAll();
     }
@@ -302,7 +308,9 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
                 (legendFlag == obj.legendFlag) &&
                 (lightingFlag == obj.lightingFlag) &&
                 (wireframeColor == obj.wireframeColor) &&
-                (pointColor == obj.pointColor));
+                (pointColor == obj.pointColor) &&
+                (legendTitleEnabled == obj.legendTitleEnabled) &&
+                (legendTitle.equals(obj.legendTitle)));
     }
 
     public String GetName() { return "Pseudocolor"; }
@@ -627,6 +635,18 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         Select(52);
     }
 
+    public void SetLegendTitleEnabled(boolean legendTitleEnabled_)
+    {
+        legendTitleEnabled = legendTitleEnabled_;
+        Select(53);
+    }
+
+    public void SetLegendTitle(String legendTitle_)
+    {
+        legendTitle = legendTitle_;
+        Select(54);
+    }
+
     // Property getting methods
     public int            GetScaling() { return scaling; }
     public double         GetSkewFactor() { return skewFactor; }
@@ -681,6 +701,8 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
     public boolean        GetLightingFlag() { return lightingFlag; }
     public ColorAttribute GetWireframeColor() { return wireframeColor; }
     public ColorAttribute GetPointColor() { return pointColor; }
+    public boolean        GetLegendTitleEnabled() { return legendTitleEnabled; }
+    public String         GetLegendTitle() { return legendTitle; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -791,6 +813,10 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
             wireframeColor.Write(buf);
         if(WriteSelect(52, buf))
             pointColor.Write(buf);
+        if(WriteSelect(53, buf))
+            buf.WriteBool(legendTitleEnabled);
+        if(WriteSelect(54, buf))
+            buf.WriteString(legendTitle);
     }
 
     public void ReadAtts(int index, CommunicationBuffer buf)
@@ -960,6 +986,12 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
             pointColor.Read(buf);
             Select(52);
             break;
+        case 53:
+            SetLegendTitleEnabled(buf.ReadBool());
+            break;
+        case 54:
+            SetLegendTitle(buf.ReadString());
+            break;
         }
     }
 
@@ -1080,6 +1112,8 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         str = str + boolToString("lightingFlag", lightingFlag, indent) + "\n";
         str = str + indent + "wireframeColor = {" + wireframeColor.Red() + ", " + wireframeColor.Green() + ", " + wireframeColor.Blue() + ", " + wireframeColor.Alpha() + "}\n";
         str = str + indent + "pointColor = {" + pointColor.Red() + ", " + pointColor.Green() + ", " + pointColor.Blue() + ", " + pointColor.Alpha() + "}\n";
+        str = str + boolToString("legendTitleEnabled", legendTitleEnabled, indent) + "\n";
+        str = str + stringToString("legendTitle", legendTitle, indent) + "\n";
         return str;
     }
 
@@ -1138,5 +1172,7 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
     private boolean        lightingFlag;
     private ColorAttribute wireframeColor;
     private ColorAttribute pointColor;
+    private boolean        legendTitleEnabled;
+    private String         legendTitle;
 }
 

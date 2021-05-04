@@ -106,6 +106,7 @@ public:
     void SelectEndPointRadiusVar();
     void SelectWireframeColor();
     void SelectPointColor();
+    void SelectLegendTitle();
 
     // Property setting methods
     void SetScaling(Scaling scaling_);
@@ -161,6 +162,8 @@ public:
     void SetLightingFlag(bool lightingFlag_);
     void SetWireframeColor(const ColorAttribute &wireframeColor_);
     void SetPointColor(const ColorAttribute &pointColor_);
+    void SetLegendTitleEnabled(bool legendTitleEnabled_);
+    void SetLegendTitle(const std::string &legendTitle_);
 
     // Property getting methods
     Scaling              GetScaling() const;
@@ -225,6 +228,9 @@ public:
           ColorAttribute &GetWireframeColor();
     const ColorAttribute &GetPointColor() const;
           ColorAttribute &GetPointColor();
+    bool                 GetLegendTitleEnabled() const;
+    const std::string    &GetLegendTitle() const;
+          std::string    &GetLegendTitle();
 
     // Persistence methods
     virtual bool CreateNode(DataNode *node, bool completeSave, bool forceAdd);
@@ -333,6 +339,8 @@ public:
         ID_lightingFlag,
         ID_wireframeColor,
         ID_pointColor,
+        ID_legendTitleEnabled,
+        ID_legendTitle,
         ID__LAST
     };
 
@@ -390,11 +398,13 @@ private:
     bool           lightingFlag;
     ColorAttribute wireframeColor;
     ColorAttribute pointColor;
+    bool           legendTitleEnabled;
+    std::string    legendTitle;
 
     // Static class format string for type map.
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define PSEUDOCOLORATTRIBUTES_TMFS "idibdbabdbaisbisdddbbdibsiiiiiddbsdiiiddidbsdiiiibbaa"
+#define PSEUDOCOLORATTRIBUTES_TMFS "idibdbabdbaisbisdddbbdibsiiiiiddbsdiiiddidbsdiiiibbaabs"
 
 #endif

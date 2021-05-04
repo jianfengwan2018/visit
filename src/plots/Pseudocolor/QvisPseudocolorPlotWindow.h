@@ -95,6 +95,9 @@ class PseudocolorAttributes;
 //   visibility and/or enabled state of certain controls based on the rendering
 //   type(s) in effect.
 //
+//   Kathleen Biagas, Tue May 4, 2021
+//   Add controls for legend title.
+//
 // ****************************************************************************
 
 class QvisPseudocolorPlotWindow : public QvisPostableWindowObserver
@@ -185,6 +188,8 @@ private slots:
 
     void legendToggled(bool on);
     void lightingToggled(bool on);
+    void legendTitleToggled(bool on);
+    void legendTitleProcessText();
 
 private:
     int                   plotType;
@@ -273,6 +278,8 @@ private:
 
     QCheckBox             *legendToggle;
     QCheckBox             *lightingToggle;
+    QCheckBox             *legendTitleToggle;
+    QLineEdit             *legendTitle;
 
     void lineSettings(void);
     void endPointSettings(void);
