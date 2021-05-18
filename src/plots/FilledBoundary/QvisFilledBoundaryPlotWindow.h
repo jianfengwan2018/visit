@@ -11,6 +11,7 @@ class QButtonGroup;
 class QCheckBox;
 class QGroupBox;
 class QLabel;
+class QLineEdit;
 class QvisColorButton;
 class QvisColorSwatchListWidget;
 class QvisColorTableWidget;
@@ -21,7 +22,7 @@ class QvisPointControl;
 // ****************************************************************************
 // Class: QvisFilledBoundaryPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   This class is an observer window that watches FilledBoundary plot attributes
 //   and always represents their current state.
 //
@@ -37,6 +38,9 @@ class QvisPointControl;
 //
 //   Kathleen Bonnell, Mon Jan 17 18:07:08 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -65,6 +69,8 @@ protected:
 private slots:
     void lineWidthChanged(int newWidth);
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
     void wireframeToggled(bool val);
     void singleColorChanged(const QColor &color);
     void singleColorOpacityChanged(int opacity);
@@ -94,6 +100,8 @@ private:
     QvisLineWidthWidget    *lineWidth;
     QButtonGroup           *colorModeButtons;
     QCheckBox              *legendToggle;
+    QCheckBox              *customLegendTitleToggle;
+    QLineEdit              *customLegendTitle;
     QGroupBox              *boundaryColorGroup;
     QvisColorButton        *singleColor;
     QvisOpacitySlider      *singleColorOpacity;

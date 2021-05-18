@@ -50,8 +50,8 @@ using std::vector;
 //    Eric Brugger, Wed Jul 16 10:29:53 PDT 2003
 //    Modified to work with the new way legends are managed.
 //
-//    Kathleen Bonnell, Fri Nov 12 10:42:08 PST 2004 
-//    Changed mapper to type avtLevelsPointGlyphMapper. 
+//    Kathleen Bonnell, Fri Nov 12 10:42:08 PST 2004
+//    Changed mapper to type avtLevelsPointGlyphMapper.
 //
 //    Kathleen Biagas, Tue Aug 23 11:19:44 PDT 2016
 //    Added LevelsMapper as points and surfaces no longer handled by
@@ -149,9 +149,9 @@ avtFilledBoundaryPlot::~avtFilledBoundaryPlot()
         delete smooth;
         smooth = NULL;
     }
- 
+
     //
-    // Do not delete the levelsLegend since it is being held by levLegendRefPtr.    
+    // Do not delete the levelsLegend since it is being held by levLegendRefPtr.
     //
 }
 
@@ -194,11 +194,11 @@ avtFilledBoundaryPlot::Create()
 //    Kathleen Bonnell, Mon Sep 29 13:07:50 PDT 2003
 //    Set AntialiasedRenderOrder dependent upon wireframe mode.
 //
-//    Kathleen Bonnell, Thu Sep  2 11:44:09 PDT 2004 
-//    Ensure that specular properties aren't used in wireframe mode. 
+//    Kathleen Bonnell, Thu Sep  2 11:44:09 PDT 2004
+//    Ensure that specular properties aren't used in wireframe mode.
 //
-//    Kathleen Bonnell, Fri Nov 12 10:42:08 PST 2004 
-//    Incorporate point controls (point size, point type, point size var). 
+//    Kathleen Bonnell, Fri Nov 12 10:42:08 PST 2004
+//    Incorporate point controls (point size, point type, point size var).
 //
 //    Brad Whitlock, Wed Jul 20 13:26:13 PST 2005
 //    I made the pointSize in the atts be used for to set the point size for
@@ -206,6 +206,9 @@ avtFilledBoundaryPlot::Create()
 //
 //    Brad Whitlock, Tue Jan  8 11:44:18 PST 2013
 //    I added some new glyph types.
+//
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
 //
 // ****************************************************************************
 
@@ -226,7 +229,7 @@ avtFilledBoundaryPlot::SetAtts(const AttributeGroup *a)
         levelsMapper->SetSpecularIsInappropriate(false);
         glyphMapper->SetSpecularIsInappropriate(false);
     }
-    else 
+    else
     {
         behavior->SetAntialiasedRenderOrder(ABSOLUTELY_LAST);
         levelsMapper->SetSpecularIsInappropriate(true);
@@ -249,12 +252,17 @@ avtFilledBoundaryPlot::SetAtts(const AttributeGroup *a)
     glyphMapper->SetGlyphType(atts.GetPointType());
 
     SetPointGlyphSize();
+
+    if(atts.GetCustomLegendTitleEnabled())
+        levelsLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        levelsLegend->SetTitle("Filled Boundary");
 }
 
 // ****************************************************************************
 // Method: avtFilledBoundaryPlot::SetColorTable
 //
-// Purpose: 
+// Purpose:
 //   Sets the plot's color table if the color table is the same as that of
 //   the plot or we are using the default color table for the plot.
 //
@@ -269,7 +277,7 @@ avtFilledBoundaryPlot::SetAtts(const AttributeGroup *a)
 //  Note:  taken almost verbatim from the Subset plot
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 bool
@@ -403,7 +411,7 @@ avtFilledBoundaryPlot::ApplyOperators(avtDataObject_p input)
 //
 //  Purpose:
 //      Does the rendering transformation for a boundary plot, namely, the
-//      boundary, ghost-zone and facelist filters. 
+//      boundary, ghost-zone and facelist filters.
 //
 //  Arguments:
 //      input   The input data object.
@@ -419,7 +427,7 @@ avtFilledBoundaryPlot::ApplyOperators(avtDataObject_p input)
 //    Jeremy Meredith, Tue Oct 14 16:02:06 EDT 2008
 //    The ghost zone/facelist filter must create polydata.  This wasn't
 //    previously a problem because the MIR would always output ugrids, but
-//    I'm adding optimizations to allow even rgrids to pass through in 
+//    I'm adding optimizations to allow even rgrids to pass through in
 //    some cases.
 //
 //    Kathleen Biagas, Tue Dec 20 14:20:48 PST 2016
@@ -438,7 +446,7 @@ avtFilledBoundaryPlot::ApplyRenderingTransformation(avtDataObject_p input)
 
         // Set the amount of smoothing required
         smooth->SetSmoothingLevel(atts.GetSmoothingLevel());
-    
+
         //
         // Apply the needed filters
         //
@@ -487,7 +495,7 @@ avtFilledBoundaryPlot::ApplyRenderingTransformation(avtDataObject_p input)
 //  Method: avtFilledBoundaryPlot::CustomizeBehavior
 //
 //  Purpose:
-//      Customizes the behavior of the output.  Since we do not yet have a 
+//      Customizes the behavior of the output.  Since we do not yet have a
 //      levels mapper, this is only satisfying the requirement that the hook
 //      must be defined so the type can be concrete.
 //
@@ -529,7 +537,7 @@ avtFilledBoundaryPlot::CustomizeBehavior(void)
 // ****************************************************************************
 // Method: avtFilledBoundaryPlot::SetPointGlyphSize
 //
-// Purpose: 
+// Purpose:
 //   Sets the point glyph size into the mapper.
 //
 // Programmer: Brad Whitlock
@@ -590,11 +598,11 @@ avtFilledBoundaryPlot::SetPointGlyphSize()
 //
 // ****************************************************************************
 
-void 
+void
 avtFilledBoundaryPlot::SetColors()
 {
     vector < string > allLabels = atts.GetBoundaryNames();
-    vector < string > labels; 
+    vector < string > labels;
     LevelColorMap levelColorMap;
 
     behavior->GetInfo().GetAttributes().GetLabels(labels);
@@ -603,12 +611,12 @@ avtFilledBoundaryPlot::SetColors()
     {
         levelsLegend->SetColorBarVisibility(0);
         levelsLegend->SetMessage("No subsets present");
-    }  
-    else 
+    }
+    else
     {
         levelsLegend->SetColorBarVisibility(1);
         levelsLegend->SetMessage(NULL);
-    }  
+    }
 
     if (atts.GetColorType() == FilledBoundaryAttributes::ColorBySingleColor)
     {
@@ -620,9 +628,9 @@ avtFilledBoundaryPlot::SetColors()
         avtLUT->SetLUTColorsWithOpacity(ca.GetColor(), 1);
         levelsMapper->SetColors(cal, needsRecalculation);
         glyphMapper->SetColors(cal, needsRecalculation);
-        // 
+        //
         //  Send an empty color map, rather than one where all
-        //  entries map to same value. 
+        //  entries map to same value.
         //
         levelsLegend->SetLabelColorMap(levelColorMap);
         levelsLegend->SetLevels(labels);
@@ -640,7 +648,7 @@ avtFilledBoundaryPlot::SetColors()
         int numColors = cal.GetNumColors();
 
         //
-        //  Create colors from original color table. 
+        //  Create colors from original color table.
         //
         unsigned char *colors = new unsigned char[numColors * 4];
         unsigned char *cptr = colors;
@@ -654,7 +662,7 @@ avtFilledBoundaryPlot::SetColors()
             *cptr++ = (unsigned char)cal[i].Alpha();
 
             //
-            //  Create a label-to-color-index mapping 
+            //  Create a label-to-color-index mapping
             //
             levelColorMap.insert(LevelColorMap::value_type(allLabels[i], i));
         }
@@ -707,14 +715,14 @@ avtFilledBoundaryPlot::SetColors()
         }
 
         //
-        //  Create a label-to-color-index mapping 
+        //  Create a label-to-color-index mapping
         //
         for(int i = 0; i < numColorsFull; ++i)
             levelColorMap.insert(LevelColorMap::value_type(allLabels[i], i));
 
         bool invert = atts.GetInvertColorTable();
 
-        // 
+        //
         // Add a color for each boundary name.
         //
         if(ct->IsDiscrete(ctName.c_str()))
@@ -788,12 +796,12 @@ avtFilledBoundaryPlot::SetColors()
 //    Release data from smooth filter.
 //
 // ****************************************************************************
- 
+
 void
 avtFilledBoundaryPlot::ReleaseData(void)
 {
     avtVolumeDataPlot::ReleaseData();
- 
+
     if (wf != NULL)
     {
         wf->ReleaseData();
@@ -843,7 +851,7 @@ avtFilledBoundaryPlot::ReleaseData(void)
 //    practice, but a different bug was causing a crash here.
 //
 // ****************************************************************************
- 
+
 void
 avtFilledBoundaryPlot::SortLabels()
 {
@@ -860,7 +868,7 @@ avtFilledBoundaryPlot::SortLabels()
         originalLabelPairs.push_back(pair<string, int>(originalLabels[i], (int)i));
     }
     sort(originalLabelPairs.begin(), originalLabelPairs.end());
-    
+
     vector < string > usedLabels;
     behavior->GetInfo().GetAttributes().GetLabels(usedLabels);
     sort(usedLabels.begin(), usedLabels.end());
@@ -878,7 +886,7 @@ avtFilledBoundaryPlot::SortLabels()
             break;
 
         sortedUsedLabels.push_back(
-         pair<int, string>(originalLabelPairs[origLabelIndex].second, 
+         pair<int, string>(originalLabelPairs[origLabelIndex].second,
                            usedLabels[i]));
     }
 
@@ -893,7 +901,7 @@ avtFilledBoundaryPlot::SortLabels()
         return;
     }
 
-    
+
     sort(sortedUsedLabels.begin(), sortedUsedLabels.end());
     vector < string > sortedLabels(sortedUsedLabels.size());
     for (i = 0; i < sortedUsedLabels.size(); i++)
