@@ -232,8 +232,8 @@ QvisPseudocolorPlotWindow::CreateWindowContents()
 //    Eddie Rusu, Tue Apr 13 12:08:59 PDT 2021
 //    Changed Use Current Plot to Use Actual Data.
 //
-//    Kathleen Biagas, Tue May 4, 2021
-//    Add controls for legend title.
+//    Kathleen Biagas, Tue May 18, 2021
+//    Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -514,16 +514,16 @@ QvisPseudocolorPlotWindow::CreateDataTab(QWidget *pageData)
     miscLayout->addWidget(lightingToggle, 0, 1);
 
     // Create the legend title toggle
-    legendTitleToggle = new QCheckBox(tr("Legend title"), central);
-    connect(legendTitleToggle, SIGNAL(toggled(bool)),
-            this, SLOT(legendTitleToggled(bool)));
-    miscLayout->addWidget(legendTitleToggle, 1, 0);
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
 
     // Create the legend title line edit
-    legendTitle = new QLineEdit(central);
-    connect(legendTitle, SIGNAL(editingFinished()),
-            this, SLOT(legendTitleProcessText()));
-    miscLayout->addWidget(legendTitle, 1, 1);
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 
@@ -939,7 +939,7 @@ QvisPseudocolorPlotWindow::CreateExtrasTab(QWidget *pageExtras)
 //   Add logic for belowMinColor, aboveMaxColor.
 //
 //   Kathleen Biagas, Tue May 4, 2021
-//   Add controls for legend title.
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -1364,8 +1364,23 @@ QvisPseudocolorPlotWindow::UpdateWindow(bool doAll)
             disconnect(legendToggle, SIGNAL(toggled(bool)),
                        this, SLOT(legendToggled(bool)));
             legendToggle->setChecked(pcAtts->GetLegendFlag());
+            customLegendTitleToggle->setEnabled(pcAtts->GetLegendFlag());
+            customLegendTitle->setEnabled(pcAtts->GetLegendFlag() &&
+                                    pcAtts->GetCustomLegendTitleEnabled());
             connect(legendToggle, SIGNAL(toggled(bool)),
                     this, SLOT(legendToggled(bool)));
+            break;
+        case PseudocolorAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(pcAtts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(pcAtts->GetLegendFlag() &&
+                                    pcAtts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+        case PseudocolorAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(pcAtts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
             break;
 
             // lighting
@@ -1377,19 +1392,6 @@ QvisPseudocolorPlotWindow::UpdateWindow(bool doAll)
             lightingToggle->setChecked(pcAtts->GetLightingFlag());
             connect(lightingToggle, SIGNAL(toggled(bool)),
                     this, SLOT(lightingToggled(bool)));
-            break;
-        case PseudocolorAttributes::ID_legendTitleEnabled:
-            // Disconnect the slot before setting the toggle and
-            // reconnect it after. This prevents multiple updates.
-            disconnect(legendTitleToggle, SIGNAL(toggled(bool)),
-                       this, SLOT(legendTitleToggled(bool)));
-            legendTitleToggle->setChecked(pcAtts->GetLegendTitleEnabled());
-            legendTitle->setEnabled(pcAtts->GetLegendTitleEnabled());
-            connect(legendTitleToggle, SIGNAL(toggled(bool)),
-                    this, SLOT(legendTitleToggled(bool)));
-            break;
-        case PseudocolorAttributes::ID_legendTitle:
-            legendTitle->setText(pcAtts->GetLegendTitle().c_str());
             break;
         }
     } // end for
@@ -2320,6 +2322,24 @@ QvisPseudocolorPlotWindow::legendToggled(bool val)
 }
 
 void
+QvisPseudocolorPlotWindow::customLegendTitleToggled(bool val)
+{
+    pcAtts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+void
+QvisPseudocolorPlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != pcAtts->GetCustomLegendTitle())
+    {
+        pcAtts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
+}
+
+void
 QvisPseudocolorPlotWindow::lightingToggled(bool val)
 {
     pcAtts->SetLightingFlag(val);
@@ -2500,23 +2520,5 @@ QvisPseudocolorPlotWindow::endPointSettings()
 
         endPointResolutionLabel->hide();
         endPointResolution->hide();
-    }
-}
-
-void
-QvisPseudocolorPlotWindow::legendTitleToggled(bool val)
-{
-    pcAtts->SetLegendTitleEnabled(val);
-    Apply();
-}
-
-void
-QvisPseudocolorPlotWindow::legendTitleProcessText()
-{
-    // Only do it if it changed.
-    if(legendTitle->text().toStdString() != pcAtts->GetLegendTitle())
-    {
-        pcAtts->SetLegendTitle(legendTitle->text().toStdString());
-        Apply();
     }
 }

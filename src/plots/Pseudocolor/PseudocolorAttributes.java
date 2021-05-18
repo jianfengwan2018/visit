@@ -112,11 +112,11 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         renderPoints = 0;
         smoothingLevel = 0;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         lightingFlag = true;
         wireframeColor = new ColorAttribute(0, 0, 0, 0);
         pointColor = new ColorAttribute(0, 0, 0, 0);
-        legendTitleEnabled = false;
-        legendTitle = new String("");
     }
 
     public PseudocolorAttributes(int nMoreFields)
@@ -173,11 +173,11 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         renderPoints = 0;
         smoothingLevel = 0;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         lightingFlag = true;
         wireframeColor = new ColorAttribute(0, 0, 0, 0);
         pointColor = new ColorAttribute(0, 0, 0, 0);
-        legendTitleEnabled = false;
-        legendTitle = new String("");
     }
 
     public PseudocolorAttributes(PseudocolorAttributes obj)
@@ -234,11 +234,11 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         renderPoints = obj.renderPoints;
         smoothingLevel = obj.smoothingLevel;
         legendFlag = obj.legendFlag;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         lightingFlag = obj.lightingFlag;
         wireframeColor = new ColorAttribute(obj.wireframeColor);
         pointColor = new ColorAttribute(obj.pointColor);
-        legendTitleEnabled = obj.legendTitleEnabled;
-        legendTitle = new String(obj.legendTitle);
 
         SelectAll();
     }
@@ -306,11 +306,11 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
                 (renderPoints == obj.renderPoints) &&
                 (smoothingLevel == obj.smoothingLevel) &&
                 (legendFlag == obj.legendFlag) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (lightingFlag == obj.lightingFlag) &&
                 (wireframeColor == obj.wireframeColor) &&
-                (pointColor == obj.pointColor) &&
-                (legendTitleEnabled == obj.legendTitleEnabled) &&
-                (legendTitle.equals(obj.legendTitle)));
+                (pointColor == obj.pointColor));
     }
 
     public String GetName() { return "Pseudocolor"; }
@@ -617,33 +617,33 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         Select(49);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(50);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(51);
+    }
+
     public void SetLightingFlag(boolean lightingFlag_)
     {
         lightingFlag = lightingFlag_;
-        Select(50);
+        Select(52);
     }
 
     public void SetWireframeColor(ColorAttribute wireframeColor_)
     {
         wireframeColor = wireframeColor_;
-        Select(51);
+        Select(53);
     }
 
     public void SetPointColor(ColorAttribute pointColor_)
     {
         pointColor = pointColor_;
-        Select(52);
-    }
-
-    public void SetLegendTitleEnabled(boolean legendTitleEnabled_)
-    {
-        legendTitleEnabled = legendTitleEnabled_;
-        Select(53);
-    }
-
-    public void SetLegendTitle(String legendTitle_)
-    {
-        legendTitle = legendTitle_;
         Select(54);
     }
 
@@ -698,11 +698,11 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
     public int            GetRenderPoints() { return renderPoints; }
     public int            GetSmoothingLevel() { return smoothingLevel; }
     public boolean        GetLegendFlag() { return legendFlag; }
+    public boolean        GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String         GetCustomLegendTitle() { return customLegendTitle; }
     public boolean        GetLightingFlag() { return lightingFlag; }
     public ColorAttribute GetWireframeColor() { return wireframeColor; }
     public ColorAttribute GetPointColor() { return pointColor; }
-    public boolean        GetLegendTitleEnabled() { return legendTitleEnabled; }
-    public String         GetLegendTitle() { return legendTitle; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -808,15 +808,15 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(49, buf))
             buf.WriteBool(legendFlag);
         if(WriteSelect(50, buf))
-            buf.WriteBool(lightingFlag);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(51, buf))
-            wireframeColor.Write(buf);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(52, buf))
-            pointColor.Write(buf);
+            buf.WriteBool(lightingFlag);
         if(WriteSelect(53, buf))
-            buf.WriteBool(legendTitleEnabled);
+            wireframeColor.Write(buf);
         if(WriteSelect(54, buf))
-            buf.WriteString(legendTitle);
+            pointColor.Write(buf);
     }
 
     public void ReadAtts(int index, CommunicationBuffer buf)
@@ -976,21 +976,21 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
             SetLegendFlag(buf.ReadBool());
             break;
         case 50:
-            SetLightingFlag(buf.ReadBool());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 51:
-            wireframeColor.Read(buf);
-            Select(51);
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 52:
-            pointColor.Read(buf);
-            Select(52);
+            SetLightingFlag(buf.ReadBool());
             break;
         case 53:
-            SetLegendTitleEnabled(buf.ReadBool());
+            wireframeColor.Read(buf);
+            Select(53);
             break;
         case 54:
-            SetLegendTitle(buf.ReadString());
+            pointColor.Read(buf);
+            Select(54);
             break;
         }
     }
@@ -1109,11 +1109,11 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
         str = str + intToString("renderPoints", renderPoints, indent) + "\n";
         str = str + intToString("smoothingLevel", smoothingLevel, indent) + "\n";
         str = str + boolToString("legendFlag", legendFlag, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + boolToString("lightingFlag", lightingFlag, indent) + "\n";
         str = str + indent + "wireframeColor = {" + wireframeColor.Red() + ", " + wireframeColor.Green() + ", " + wireframeColor.Blue() + ", " + wireframeColor.Alpha() + "}\n";
         str = str + indent + "pointColor = {" + pointColor.Red() + ", " + pointColor.Green() + ", " + pointColor.Blue() + ", " + pointColor.Alpha() + "}\n";
-        str = str + boolToString("legendTitleEnabled", legendTitleEnabled, indent) + "\n";
-        str = str + stringToString("legendTitle", legendTitle, indent) + "\n";
         return str;
     }
 
@@ -1169,10 +1169,10 @@ public class PseudocolorAttributes extends AttributeSubject implements Plugin
     private int            renderPoints;
     private int            smoothingLevel;
     private boolean        legendFlag;
+    private boolean        customLegendTitleEnabled;
+    private String         customLegendTitle;
     private boolean        lightingFlag;
     private ColorAttribute wireframeColor;
     private ColorAttribute pointColor;
-    private boolean        legendTitleEnabled;
-    private String         legendTitle;
 }
 

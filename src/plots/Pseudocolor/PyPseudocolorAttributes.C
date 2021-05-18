@@ -368,6 +368,13 @@ PyPseudocolorAttributes_ToString(const PseudocolorAttributes *atts, const char *
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     if(atts->GetLightingFlag())
         snprintf(tmpStr, 1000, "%slightingFlag = 1\n", prefix);
     else
@@ -378,13 +385,6 @@ PyPseudocolorAttributes_ToString(const PseudocolorAttributes *atts, const char *
     str += tmpStr;
     const unsigned char *pointColor = atts->GetPointColor().GetColor();
     snprintf(tmpStr, 1000, "%spointColor = (%d, %d, %d, %d)\n", prefix, int(pointColor[0]), int(pointColor[1]), int(pointColor[2]), int(pointColor[3]));
-    str += tmpStr;
-    if(atts->GetLegendTitleEnabled())
-        snprintf(tmpStr, 1000, "%slegendTitleEnabled = 1\n", prefix);
-    else
-        snprintf(tmpStr, 1000, "%slegendTitleEnabled = 0\n", prefix);
-    str += tmpStr;
-    snprintf(tmpStr, 1000, "%slegendTitle = \"%s\"\n", prefix, atts->GetLegendTitle().c_str());
     str += tmpStr;
     return str;
 }
@@ -1798,6 +1798,54 @@ PseudocolorAttributes_GetLegendFlag(PyObject *self, PyObject *args)
 }
 
 /*static*/ PyObject *
+PseudocolorAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    PseudocolorAttributesObject *obj = (PseudocolorAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+PseudocolorAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    PseudocolorAttributesObject *obj = (PseudocolorAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+PseudocolorAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    PseudocolorAttributesObject *obj = (PseudocolorAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+PseudocolorAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    PseudocolorAttributesObject *obj = (PseudocolorAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
+    return retval;
+}
+
+/*static*/ PyObject *
 PseudocolorAttributes_SetLightingFlag(PyObject *self, PyObject *args)
 {
     PseudocolorAttributesObject *obj = (PseudocolorAttributesObject *)self;
@@ -1975,54 +2023,6 @@ PseudocolorAttributes_GetPointColor(PyObject *self, PyObject *args)
     return retval;
 }
 
-/*static*/ PyObject *
-PseudocolorAttributes_SetLegendTitleEnabled(PyObject *self, PyObject *args)
-{
-    PseudocolorAttributesObject *obj = (PseudocolorAttributesObject *)self;
-
-    int ival;
-    if(!PyArg_ParseTuple(args, "i", &ival))
-        return NULL;
-
-    // Set the legendTitleEnabled in the object.
-    obj->data->SetLegendTitleEnabled(ival != 0);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-/*static*/ PyObject *
-PseudocolorAttributes_GetLegendTitleEnabled(PyObject *self, PyObject *args)
-{
-    PseudocolorAttributesObject *obj = (PseudocolorAttributesObject *)self;
-    PyObject *retval = PyInt_FromLong(obj->data->GetLegendTitleEnabled()?1L:0L);
-    return retval;
-}
-
-/*static*/ PyObject *
-PseudocolorAttributes_SetLegendTitle(PyObject *self, PyObject *args)
-{
-    PseudocolorAttributesObject *obj = (PseudocolorAttributesObject *)self;
-
-    char *str;
-    if(!PyArg_ParseTuple(args, "s", &str))
-        return NULL;
-
-    // Set the legendTitle in the object.
-    obj->data->SetLegendTitle(std::string(str));
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-/*static*/ PyObject *
-PseudocolorAttributes_GetLegendTitle(PyObject *self, PyObject *args)
-{
-    PseudocolorAttributesObject *obj = (PseudocolorAttributesObject *)self;
-    PyObject *retval = PyString_FromString(obj->data->GetLegendTitle().c_str());
-    return retval;
-}
-
 
 
 PyMethodDef PyPseudocolorAttributes_methods[PSEUDOCOLORATTRIBUTES_NMETH] = {
@@ -2127,16 +2127,16 @@ PyMethodDef PyPseudocolorAttributes_methods[PSEUDOCOLORATTRIBUTES_NMETH] = {
     {"GetSmoothingLevel", PseudocolorAttributes_GetSmoothingLevel, METH_VARARGS},
     {"SetLegendFlag", PseudocolorAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", PseudocolorAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", PseudocolorAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", PseudocolorAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", PseudocolorAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", PseudocolorAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetLightingFlag", PseudocolorAttributes_SetLightingFlag, METH_VARARGS},
     {"GetLightingFlag", PseudocolorAttributes_GetLightingFlag, METH_VARARGS},
     {"SetWireframeColor", PseudocolorAttributes_SetWireframeColor, METH_VARARGS},
     {"GetWireframeColor", PseudocolorAttributes_GetWireframeColor, METH_VARARGS},
     {"SetPointColor", PseudocolorAttributes_SetPointColor, METH_VARARGS},
     {"GetPointColor", PseudocolorAttributes_GetPointColor, METH_VARARGS},
-    {"SetLegendTitleEnabled", PseudocolorAttributes_SetLegendTitleEnabled, METH_VARARGS},
-    {"GetLegendTitleEnabled", PseudocolorAttributes_GetLegendTitleEnabled, METH_VARARGS},
-    {"SetLegendTitle", PseudocolorAttributes_SetLegendTitle, METH_VARARGS},
-    {"GetLegendTitle", PseudocolorAttributes_GetLegendTitle, METH_VARARGS},
     {NULL, NULL}
 };
 
@@ -2340,16 +2340,16 @@ PyPseudocolorAttributes_getattr(PyObject *self, char *name)
         return PseudocolorAttributes_GetSmoothingLevel(self, NULL);
     if(strcmp(name, "legendFlag") == 0)
         return PseudocolorAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return PseudocolorAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return PseudocolorAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "lightingFlag") == 0)
         return PseudocolorAttributes_GetLightingFlag(self, NULL);
     if(strcmp(name, "wireframeColor") == 0)
         return PseudocolorAttributes_GetWireframeColor(self, NULL);
     if(strcmp(name, "pointColor") == 0)
         return PseudocolorAttributes_GetPointColor(self, NULL);
-    if(strcmp(name, "legendTitleEnabled") == 0)
-        return PseudocolorAttributes_GetLegendTitleEnabled(self, NULL);
-    if(strcmp(name, "legendTitle") == 0)
-        return PseudocolorAttributes_GetLegendTitle(self, NULL);
 
     // Try and handle legacy fields in PseudocolorAttributes
     if(strcmp(name, "useColorTableOpacity") == 0)
@@ -2501,16 +2501,16 @@ PyPseudocolorAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = PseudocolorAttributes_SetSmoothingLevel(self, tuple);
     else if(strcmp(name, "legendFlag") == 0)
         obj = PseudocolorAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = PseudocolorAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = PseudocolorAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "lightingFlag") == 0)
         obj = PseudocolorAttributes_SetLightingFlag(self, tuple);
     else if(strcmp(name, "wireframeColor") == 0)
         obj = PseudocolorAttributes_SetWireframeColor(self, tuple);
     else if(strcmp(name, "pointColor") == 0)
         obj = PseudocolorAttributes_SetPointColor(self, tuple);
-    else if(strcmp(name, "legendTitleEnabled") == 0)
-        obj = PseudocolorAttributes_SetLegendTitleEnabled(self, tuple);
-    else if(strcmp(name, "legendTitle") == 0)
-        obj = PseudocolorAttributes_SetLegendTitle(self, tuple);
 
     // Try and handle legacy fields in PseudocolorAttributes
     if(obj == NULL)

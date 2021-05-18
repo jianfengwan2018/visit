@@ -640,8 +640,8 @@ avtPseudocolorPlot::NeedZBufferToCompositeEvenIn2D(void)
 //    Kathleen Biagas, Tue Nov  5 11:42:38 PST 2019
 //    Remove glyphMapper.
 //
-//    Kathleen Biagas, Tue May 4, 2021
-//    Set legend's title from atts if enabled.
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
 //
 // ****************************************************************************
 
@@ -767,8 +767,8 @@ avtPseudocolorPlot::SetAtts(const AttributeGroup *a)
     rgb[2] = atts.GetPointColor().Blue()/255.;
     mapper->SetPointsColor(rgb);
 
-    if(atts.GetLegendTitleEnabled())
-        varLegend->SetTitle(atts.GetLegendTitle().c_str());
+    if(atts.GetCustomLegendTitleEnabled())
+        varLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
     else
         varLegend->SetTitle("Pseudocolor");
 }

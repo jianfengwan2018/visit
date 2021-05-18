@@ -331,8 +331,8 @@ void PseudocolorAttributes::Init()
     renderPoints = 0;
     smoothingLevel = 0;
     legendFlag = true;
+    customLegendTitleEnabled = false;
     lightingFlag = true;
-    legendTitleEnabled = false;
 
     PseudocolorAttributes::SelectAll();
 }
@@ -404,11 +404,11 @@ void PseudocolorAttributes::Copy(const PseudocolorAttributes &obj)
     renderPoints = obj.renderPoints;
     smoothingLevel = obj.smoothingLevel;
     legendFlag = obj.legendFlag;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     lightingFlag = obj.lightingFlag;
     wireframeColor = obj.wireframeColor;
     pointColor = obj.pointColor;
-    legendTitleEnabled = obj.legendTitleEnabled;
-    legendTitle = obj.legendTitle;
 
     PseudocolorAttributes::SelectAll();
 }
@@ -622,11 +622,11 @@ PseudocolorAttributes::operator == (const PseudocolorAttributes &obj) const
             (renderPoints == obj.renderPoints) &&
             (smoothingLevel == obj.smoothingLevel) &&
             (legendFlag == obj.legendFlag) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (lightingFlag == obj.lightingFlag) &&
             (wireframeColor == obj.wireframeColor) &&
-            (pointColor == obj.pointColor) &&
-            (legendTitleEnabled == obj.legendTitleEnabled) &&
-            (legendTitle == obj.legendTitle));
+            (pointColor == obj.pointColor));
 }
 
 // ****************************************************************************
@@ -857,11 +857,11 @@ PseudocolorAttributes::SelectAll()
     Select(ID_renderPoints,             (void *)&renderPoints);
     Select(ID_smoothingLevel,           (void *)&smoothingLevel);
     Select(ID_legendFlag,               (void *)&legendFlag);
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,        (void *)&customLegendTitle);
     Select(ID_lightingFlag,             (void *)&lightingFlag);
     Select(ID_wireframeColor,           (void *)&wireframeColor);
     Select(ID_pointColor,               (void *)&pointColor);
-    Select(ID_legendTitleEnabled,       (void *)&legendTitleEnabled);
-    Select(ID_legendTitle,              (void *)&legendTitle);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1198,6 +1198,18 @@ PseudocolorAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool 
         node->AddNode(new DataNode("legendFlag", legendFlag));
     }
 
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
+    }
+
     if(completeSave || !FieldsEqual(ID_lightingFlag, &defaultObject))
     {
         addToParent = true;
@@ -1220,18 +1232,6 @@ PseudocolorAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool 
         }
         else
             delete pointColorNode;
-    if(completeSave || !FieldsEqual(ID_legendTitleEnabled, &defaultObject))
-    {
-        addToParent = true;
-        node->AddNode(new DataNode("legendTitleEnabled", legendTitleEnabled));
-    }
-
-    if(completeSave || !FieldsEqual(ID_legendTitle, &defaultObject))
-    {
-        addToParent = true;
-        node->AddNode(new DataNode("legendTitle", legendTitle));
-    }
-
 
     // Add the node to the parent node.
     if(addToParent || forceAdd)
@@ -1508,16 +1508,16 @@ PseudocolorAttributes::SetFromNode(DataNode *parentNode)
         SetSmoothingLevel(node->AsInt());
     if((node = searchNode->GetNode("legendFlag")) != 0)
         SetLegendFlag(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("lightingFlag")) != 0)
         SetLightingFlag(node->AsBool());
     if((node = searchNode->GetNode("wireframeColor")) != 0)
         wireframeColor.SetFromNode(node);
     if((node = searchNode->GetNode("pointColor")) != 0)
         pointColor.SetFromNode(node);
-    if((node = searchNode->GetNode("legendTitleEnabled")) != 0)
-        SetLegendTitleEnabled(node->AsBool());
-    if((node = searchNode->GetNode("legendTitle")) != 0)
-        SetLegendTitle(node->AsString());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1875,6 +1875,20 @@ PseudocolorAttributes::SetLegendFlag(bool legendFlag_)
 }
 
 void
+PseudocolorAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+PseudocolorAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 PseudocolorAttributes::SetLightingFlag(bool lightingFlag_)
 {
     lightingFlag = lightingFlag_;
@@ -1893,20 +1907,6 @@ PseudocolorAttributes::SetPointColor(const ColorAttribute &pointColor_)
 {
     pointColor = pointColor_;
     Select(ID_pointColor, (void *)&pointColor);
-}
-
-void
-PseudocolorAttributes::SetLegendTitleEnabled(bool legendTitleEnabled_)
-{
-    legendTitleEnabled = legendTitleEnabled_;
-    Select(ID_legendTitleEnabled, (void *)&legendTitleEnabled);
-}
-
-void
-PseudocolorAttributes::SetLegendTitle(const std::string &legendTitle_)
-{
-    legendTitle = legendTitle_;
-    Select(ID_legendTitle, (void *)&legendTitle);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2256,6 +2256,24 @@ PseudocolorAttributes::GetLegendFlag() const
 }
 
 bool
+PseudocolorAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+PseudocolorAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+PseudocolorAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
+bool
 PseudocolorAttributes::GetLightingFlag() const
 {
     return lightingFlag;
@@ -2283,24 +2301,6 @@ ColorAttribute &
 PseudocolorAttributes::GetPointColor()
 {
     return pointColor;
-}
-
-bool
-PseudocolorAttributes::GetLegendTitleEnabled() const
-{
-    return legendTitleEnabled;
-}
-
-const std::string &
-PseudocolorAttributes::GetLegendTitle() const
-{
-    return legendTitle;
-}
-
-std::string &
-PseudocolorAttributes::GetLegendTitle()
-{
-    return legendTitle;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2350,6 +2350,12 @@ PseudocolorAttributes::SelectEndPointRadiusVar()
 }
 
 void
+PseudocolorAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 PseudocolorAttributes::SelectWireframeColor()
 {
     Select(ID_wireframeColor, (void *)&wireframeColor);
@@ -2359,12 +2365,6 @@ void
 PseudocolorAttributes::SelectPointColor()
 {
     Select(ID_pointColor, (void *)&pointColor);
-}
-
-void
-PseudocolorAttributes::SelectLegendTitle()
-{
-    Select(ID_legendTitle, (void *)&legendTitle);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2441,11 +2441,11 @@ PseudocolorAttributes::GetFieldName(int index) const
     case ID_renderPoints:             return "renderPoints";
     case ID_smoothingLevel:           return "smoothingLevel";
     case ID_legendFlag:               return "legendFlag";
+    case ID_customLegendTitleEnabled: return "customLegendTitleEnabled";
+    case ID_customLegendTitle:        return "customLegendTitle";
     case ID_lightingFlag:             return "lightingFlag";
     case ID_wireframeColor:           return "wireframeColor";
     case ID_pointColor:               return "pointColor";
-    case ID_legendTitleEnabled:       return "legendTitleEnabled";
-    case ID_legendTitle:              return "legendTitle";
     default:  return "invalid index";
     }
 }
@@ -2520,11 +2520,11 @@ PseudocolorAttributes::GetFieldType(int index) const
     case ID_renderPoints:             return FieldType_int;
     case ID_smoothingLevel:           return FieldType_int;
     case ID_legendFlag:               return FieldType_bool;
+    case ID_customLegendTitleEnabled: return FieldType_bool;
+    case ID_customLegendTitle:        return FieldType_string;
     case ID_lightingFlag:             return FieldType_bool;
     case ID_wireframeColor:           return FieldType_color;
     case ID_pointColor:               return FieldType_color;
-    case ID_legendTitleEnabled:       return FieldType_bool;
-    case ID_legendTitle:              return FieldType_string;
     default:  return FieldType_unknown;
     }
 }
@@ -2599,11 +2599,11 @@ PseudocolorAttributes::GetFieldTypeName(int index) const
     case ID_renderPoints:             return "int";
     case ID_smoothingLevel:           return "int";
     case ID_legendFlag:               return "bool";
+    case ID_customLegendTitleEnabled: return "bool";
+    case ID_customLegendTitle:        return "string";
     case ID_lightingFlag:             return "bool";
     case ID_wireframeColor:           return "color";
     case ID_pointColor:               return "color";
-    case ID_legendTitleEnabled:       return "bool";
-    case ID_legendTitle:              return "string";
     default:  return "invalid index";
     }
 }
@@ -2880,6 +2880,16 @@ PseudocolorAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
         retval = (legendFlag == obj.legendFlag);
         }
         break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
+        }
+        break;
     case ID_lightingFlag:
         {  // new scope
         retval = (lightingFlag == obj.lightingFlag);
@@ -2893,16 +2903,6 @@ PseudocolorAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_pointColor:
         {  // new scope
         retval = (pointColor == obj.pointColor);
-        }
-        break;
-    case ID_legendTitleEnabled:
-        {  // new scope
-        retval = (legendTitleEnabled == obj.legendTitleEnabled);
-        }
-        break;
-    case ID_legendTitle:
-        {  // new scope
-        retval = (legendTitle == obj.legendTitle);
         }
         break;
     default: retval = false;

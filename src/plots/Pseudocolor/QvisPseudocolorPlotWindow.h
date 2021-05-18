@@ -95,8 +95,8 @@ class PseudocolorAttributes;
 //   visibility and/or enabled state of certain controls based on the rendering
 //   type(s) in effect.
 //
-//   Kathleen Biagas, Tue May 4, 2021
-//   Add controls for legend title.
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -187,9 +187,9 @@ private slots:
     void pointColorChanged(const QColor &color);
 
     void legendToggled(bool on);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
     void lightingToggled(bool on);
-    void legendTitleToggled(bool on);
-    void legendTitleProcessText();
 
 private:
     int                   plotType;
@@ -277,9 +277,9 @@ private:
     QButtonGroup          *smoothingLevelButtons;
 
     QCheckBox             *legendToggle;
+    QCheckBox             *customLegendTitleToggle;
+    QLineEdit             *customLegendTitle;
     QCheckBox             *lightingToggle;
-    QCheckBox             *legendTitleToggle;
-    QLineEdit             *legendTitle;
 
     void lineSettings(void);
     void endPointSettings(void);
