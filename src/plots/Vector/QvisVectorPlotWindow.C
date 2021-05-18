@@ -3,7 +3,7 @@
 // details.  No copyright assignment is required to contribute to VisIt.
 
 #include <QvisVectorPlotWindow.h>
-#include <QLayout> 
+#include <QLayout>
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
@@ -23,7 +23,7 @@
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::QvisVectorPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor for the QvisVectorPlotWindow class.
 //
 // Arguments:
@@ -58,7 +58,7 @@ QvisVectorPlotWindow::QvisVectorPlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::~QvisVectorPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor for the QvisVectorPlotWindow class.
 //
 // Programmer: Brad Whitlock
@@ -82,7 +82,7 @@ QvisVectorPlotWindow::~QvisVectorPlotWindow()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   This method creates the widgets that are in the window and sets
 //   up their signals/slots.
 //
@@ -110,7 +110,7 @@ QvisVectorPlotWindow::~QvisVectorPlotWindow()
 //   Added scaleByMagnitude and autoScale.
 //
 //   Kathleen Bonnell, Wed Dec 22 16:42:35 PST 2004
-//   Added widgets for min/max and limits selection. 
+//   Added widgets for min/max and limits selection.
 //
 //   Jeremy Meredith, Mon Mar 19 16:24:08 EDT 2007
 //   Added controls for lineStem, stemWidth, and geometryquality.
@@ -142,7 +142,7 @@ QvisVectorPlotWindow::~QvisVectorPlotWindow()
 //
 //   Hank Childs, Tue Aug 24 07:42:05 PDT 2010
 //   Add location widgets.  Also reorgnized into three tabs.
-//    
+//
 //   Kathleen Bonnell, Mon Jan 17 18:07:08 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
 //
@@ -186,7 +186,7 @@ QvisVectorPlotWindow::CreateWindowContents()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::CreateSamplingTab
 //
-// Purpose: 
+// Purpose:
 //   Populates the sampling tab.
 //
 // Programmer: Allen Sanderson
@@ -273,13 +273,15 @@ QvisVectorPlotWindow::CreateSamplingTab(QWidget *pageVector)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::CreateDataTab
 //
-// Purpose: 
+// Purpose:
 //   Populates the data tab.
 //
 // Programmer: Allen Sanderson
 // Creation:   September 20 2013
 //
 // Modifications:
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -307,7 +309,7 @@ QvisVectorPlotWindow::CreateDataTab(QWidget *pageVector)
     limitsSelect->addItem(tr("Use Original Data"));
     limitsSelect->addItem(tr("Use Current Plot"));
     connect(limitsSelect, SIGNAL(activated(int)),
-            this, SLOT(limitsSelectChanged(int))); 
+            this, SLOT(limitsSelectChanged(int)));
     limitsLayout->addWidget(limitsSelect, 0, 1, 1, 2, Qt::AlignLeft);
 
     // Create the min toggle and line edit
@@ -317,7 +319,7 @@ QvisVectorPlotWindow::CreateDataTab(QWidget *pageVector)
             this, SLOT(minToggled(bool)));
     minLineEdit = new QLineEdit(central);
     connect(minLineEdit, SIGNAL(returnPressed()),
-            this, SLOT(processMinLimitText())); 
+            this, SLOT(processMinLimitText()));
     limitsLayout->addWidget(minLineEdit, 1, 1);
 
     // Create the max toggle and line edit
@@ -327,7 +329,7 @@ QvisVectorPlotWindow::CreateDataTab(QWidget *pageVector)
             this, SLOT(maxToggled(bool)));
     maxLineEdit = new QLineEdit(central);
     connect(maxLineEdit, SIGNAL(returnPressed()),
-            this, SLOT(processMaxLimitText())); 
+            this, SLOT(processMaxLimitText()));
     limitsLayout->addWidget(maxLineEdit, 2, 1);
 
     //
@@ -381,19 +383,31 @@ QvisVectorPlotWindow::CreateDataTab(QWidget *pageVector)
     QGridLayout *miscLayout = new QGridLayout(miscGroup);
     miscLayout->setMargin(5);
     miscLayout->setSpacing(10);
- 
+
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Legend"), central);
     connect(legendToggle, SIGNAL(toggled(bool)),
             this, SLOT(legendToggled(bool)));
     miscLayout->addWidget(legendToggle, 0, 0);
+
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::CreateGeometryTab
 //
-// Purpose: 
+// Purpose:
 //   Populates the geometry tab.
 //
 // Programmer: Allen Sanderson
@@ -433,7 +447,7 @@ QvisVectorPlotWindow::CreateGeometryTab(QWidget *pageGlyphs)
 
     // Add the scale by magnitude toggle button.
     scaleByMagnitudeToggle = new QCheckBox(tr("Scale by magnitude"), scaleGroupBox);
-    connect(scaleByMagnitudeToggle, SIGNAL(clicked(bool)), 
+    connect(scaleByMagnitudeToggle, SIGNAL(clicked(bool)),
             this, SLOT(scaleByMagnitudeToggled(bool)));
     sgLayout->addWidget(scaleByMagnitudeToggle, 0, 2);
 
@@ -454,7 +468,7 @@ QvisVectorPlotWindow::CreateGeometryTab(QWidget *pageGlyphs)
     styleLayout->setMargin(5);
     styleLayout->setSpacing(10);
     styleLayout->setColumnStretch(1, 10);
-    
+
     int row = 0;
     glyphTypeLabel = new QLabel(tr("Glyph type"), styleGroupBox);
     styleLayout->addWidget(glyphTypeLabel, row, 0);
@@ -499,7 +513,7 @@ QvisVectorPlotWindow::CreateGeometryTab(QWidget *pageGlyphs)
             this, SLOT(lineWidthChanged(int)));
     lineWidthLabel->setBuddy(lineWidth);
 
-    
+
     // Add the cylinder width edit.
     stemWidthEdit = new QLineEdit(styleGroupBox);
     connect(stemWidthEdit, SIGNAL(returnPressed()),
@@ -566,7 +580,7 @@ QvisVectorPlotWindow::CreateGeometryTab(QWidget *pageGlyphs)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::CreateExtrasTab
 //
-// Purpose: 
+// Purpose:
 //   Populates the extras tab.
 //
 // Programmer: Allen Sanderson
@@ -584,7 +598,7 @@ QvisVectorPlotWindow::CreateExtrasTab(QWidget *pageExtras)
     topLayout->setSpacing(10);
 
     // Create the blank stuff to fill in gaps.
-    
+
     QGroupBox * blankGroup = new QGroupBox(central);
 //    blankGroup->setTitle(tr("Blank"));
     topLayout->addWidget(blankGroup);
@@ -592,7 +606,7 @@ QvisVectorPlotWindow::CreateExtrasTab(QWidget *pageExtras)
     QGridLayout *blankLayout = new QGridLayout(blankGroup);
     blankLayout->setMargin(5);
     blankLayout->setSpacing(10);
- 
+
     blankLayout->addWidget(new QLabel(tr(""), central), 0,0);
     blankLayout->addWidget(new QLabel(tr(""), central), 1,0);
     blankLayout->addWidget(new QLabel(tr(""), central), 2,0);
@@ -602,7 +616,7 @@ QvisVectorPlotWindow::CreateExtrasTab(QWidget *pageExtras)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   This method is called when the window's subject is changed. The
 //   subject tells this window what attributes changed and we put the
 //   new values into those widgets.
@@ -611,9 +625,9 @@ QvisVectorPlotWindow::CreateExtrasTab(QWidget *pageExtras)
 //   doAll : If this flag is true, update all the widgets regardless
 //           of whether or not they are selected.
 //
-// Returns:    
+// Returns:
 //
-// Note:       
+// Note:
 //
 // Programmer: Brad Whitlock
 // Creation:   Thu Mar 22 23:51:26 PST 2001
@@ -643,7 +657,7 @@ QvisVectorPlotWindow::CreateExtrasTab(QWidget *pageExtras)
 //   Added scaleByMagnitude and autoScale.
 //
 //   Kathleen Bonnell, Wed Dec 22 16:42:35 PST 2004
-//   Update widgets for min/max and limits selection. 
+//   Update widgets for min/max and limits selection.
 //
 //   Jeremy Meredith, Mon Mar 19 16:24:08 EDT 2007
 //   Added controls for lineStem, stemWidth, and geometryquality.
@@ -656,7 +670,7 @@ QvisVectorPlotWindow::CreateExtrasTab(QWidget *pageExtras)
 //   Qt 4.
 //
 //   Dave Pugmire, Mon Jul 19 09:38:17 EDT 2010
-//   Add ellipsoid glyphing.   
+//   Add ellipsoid glyphing.
 //
 //   Hank Childs, Tue Aug 24 17:35:39 PDT 2010
 //   Add support for advanced vector placements.
@@ -667,6 +681,9 @@ QvisVectorPlotWindow::CreateExtrasTab(QWidget *pageExtras)
 //   Kathleen Biagas, Thu Apr 9 07:19:54 MST 2015
 //   Use helper function DoubleToQString for consistency in formatting across
 //   all windows.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -683,7 +700,7 @@ QvisVectorPlotWindow::UpdateWindow(bool doAll)
             if(!vectorAtts->IsSelected(i))
                 continue;
         }
-        
+
         switch(i)
         {
           case VectorAttributes::ID_glyphLocation:
@@ -768,9 +785,23 @@ QvisVectorPlotWindow::UpdateWindow(bool doAll)
           case VectorAttributes::ID_useLegend:
             legendToggle->blockSignals(true);
             legendToggle->setChecked(vectorAtts->GetUseLegend());
+            customLegendTitleToggle->setEnabled(vectorAtts->GetUseLegend());
+            customLegendTitle->setEnabled(vectorAtts->GetUseLegend() &&
+                                    vectorAtts->GetCustomLegendTitleEnabled());
             legendToggle->blockSignals(false);
             break;
-
+          case VectorAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(vectorAtts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(vectorAtts->GetUseLegend() &&
+                                    vectorAtts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+          case VectorAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(vectorAtts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
+            break;
           case VectorAttributes::ID_scale:
             scaleLineEdit->setText(DoubleToQString(vectorAtts->GetScale()));
             break;
@@ -789,7 +820,7 @@ QvisVectorPlotWindow::UpdateWindow(bool doAll)
             glyphType->blockSignals(true);
             glyphType->setCurrentIndex(int(vectorAtts->GetGlyphType()));
             glyphType->blockSignals(false);
-            
+
             UpdateLineStem();
             break;
           case VectorAttributes::ID_headOn:
@@ -844,7 +875,7 @@ QvisVectorPlotWindow::UpdateWindow(bool doAll)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets the current values for one or all of the lineEdit widgets.
 //
 // Arguments:
@@ -897,7 +928,7 @@ QvisVectorPlotWindow::GetCurrentValues(int which_widget)
             vectorAtts->SetStride(val);
         else
         {
-            ResettingError(tr("stride"), 
+            ResettingError(tr("stride"),
                 IntToQString(vectorAtts->GetStride()));
             vectorAtts->SetStride(vectorAtts->GetStride());
         }
@@ -983,7 +1014,7 @@ QvisVectorPlotWindow::GetCurrentValues(int which_widget)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::Apply
 //
-// Purpose: 
+// Purpose:
 //   This method applies the vector attributes and optionally tells the viewer
 //   to apply them to the plot.
 //
@@ -996,7 +1027,7 @@ QvisVectorPlotWindow::GetCurrentValues(int which_widget)
 // Creation:   Thu Mar 22 23:52:51 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1047,7 +1078,7 @@ QvisVectorPlotWindow::reset()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::vectorColorChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   vector color.
 //
@@ -1075,7 +1106,7 @@ QvisVectorPlotWindow::vectorColorChanged(const QColor &color)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::processScaleText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   scale line edit.
 //
@@ -1083,7 +1114,7 @@ QvisVectorPlotWindow::vectorColorChanged(const QColor &color)
 // Creation:   Fri Mar 23 12:22:33 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1096,7 +1127,7 @@ QvisVectorPlotWindow::processScaleText()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::scaleByMagnitudeToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's scale by magnitude toggle button.
 //
@@ -1104,7 +1135,7 @@ QvisVectorPlotWindow::processScaleText()
 // Creation:   Tue Nov 23 10:18:29 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1117,7 +1148,7 @@ QvisVectorPlotWindow::scaleByMagnitudeToggled(bool)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::autoScaleToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's auto scale toggle button.
 //
@@ -1125,7 +1156,7 @@ QvisVectorPlotWindow::scaleByMagnitudeToggled(bool)
 // Creation:   Tue Nov 23 10:18:29 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1138,7 +1169,7 @@ QvisVectorPlotWindow::autoScaleToggled(bool)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::reduceMethodChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   method used to reduce the number of vectors.
 //
@@ -1149,20 +1180,20 @@ QvisVectorPlotWindow::autoScaleToggled(bool)
 // Creation:   Fri Mar 23 12:24:08 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
 QvisVectorPlotWindow::reduceMethodChanged(int index)
 {
     vectorAtts->SetUseStride(index != 0);
-    Apply();   
+    Apply();
 }
 
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::locationMethodChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   method used to place the vectors.
 //
@@ -1173,24 +1204,24 @@ QvisVectorPlotWindow::reduceMethodChanged(int index)
 // Creation:   August 24, 2010
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
 QvisVectorPlotWindow::locationMethodChanged(int index)
 {
-    vectorAtts->SetGlyphLocation(index == 0 
+    vectorAtts->SetGlyphLocation(index == 0
                                    ? VectorAttributes::AdaptsToMeshResolution
                                    : VectorAttributes::UniformInSpace);
     if (vectorAtts->GetGlyphLocation() == VectorAttributes::UniformInSpace)
         vectorAtts->SetUseStride(false);
-    Apply();   
+    Apply();
 }
 
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::processNVectorsText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   N vectors line edit.
 //
@@ -1198,7 +1229,7 @@ QvisVectorPlotWindow::locationMethodChanged(int index)
 // Creation:   Fri Mar 23 12:22:33 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1211,7 +1242,7 @@ QvisVectorPlotWindow::processNVectorsText()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::processStrideText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   stride line edit.
 //
@@ -1219,7 +1250,7 @@ QvisVectorPlotWindow::processNVectorsText()
 // Creation:   Fri Mar 23 12:22:33 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1252,7 +1283,7 @@ QvisVectorPlotWindow::limitToOrigToggled(bool val)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::legendToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's legend toggle button.
 //
@@ -1260,7 +1291,7 @@ QvisVectorPlotWindow::limitToOrigToggled(bool val)
 // Creation:   Fri Mar 23 12:24:55 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1271,9 +1302,54 @@ QvisVectorPlotWindow::legendToggled(bool)
 }
 
 // ****************************************************************************
+// Method: QvisVectorPlotWindow::customLegendTitleToggled
+//
+// Purpose:
+//   This is a Qt slot function that is called when the user toggles the
+//   window's custom legend title toggle button.
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+QvisVectorPlotWindow::customLegendTitleToggled(bool val)
+{
+    vectorAtts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+// ****************************************************************************
+// Method: QvisVectorPlotWindow::customLegendTitleProcessText
+//
+// Purpose:
+//   This is a Qt slot function that is called when the user changes the
+//   window's custom legend title.
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+void
+QvisVectorPlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != vectorAtts->GetCustomLegendTitle())
+    {
+        vectorAtts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
+}
+
+// ****************************************************************************
 // Method: QvisVectorPlotWindow::colorByMagnitudeToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's "color by magnitude" toggle button.
 //
@@ -1283,7 +1359,7 @@ QvisVectorPlotWindow::legendToggled(bool)
 // Modifications:
 //   Kathleen Bonnell, Wed Dec 22 16:42:35 PST 2004
 //   Set the enabled state for the limitsGroup based on ColorByMag.
-//   
+//
 // ****************************************************************************
 
 void
@@ -1297,7 +1373,7 @@ QvisVectorPlotWindow::colorModeChanged(int index)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::colorTableClicked
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the desired color table name into
 //   the vector plot attributes.
 //
@@ -1310,7 +1386,7 @@ QvisVectorPlotWindow::colorModeChanged(int index)
 // Creation:   Sat Jun 16 18:30:51 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1325,7 +1401,7 @@ QvisVectorPlotWindow::colorTableClicked(bool useDefault,
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::invertColorTableToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the invert color table flag into the
 //   vector plot attributes.
 //
@@ -1336,7 +1412,7 @@ QvisVectorPlotWindow::colorTableClicked(bool useDefault,
 // Creation:   January  17, 2011
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1349,15 +1425,15 @@ QvisVectorPlotWindow::invertColorTableToggled(bool val)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::limitsSelectChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
-//   window's limits selection combo box. 
+//   window's limits selection combo box.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisVectorPlotWindow::limitsSelectChanged(int mode)
@@ -1373,15 +1449,15 @@ QvisVectorPlotWindow::limitsSelectChanged(int mode)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::processMinLimitText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
-//   window's min line edit text. 
+//   window's min line edit text.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisVectorPlotWindow::processMinLimitText()
@@ -1393,15 +1469,15 @@ QvisVectorPlotWindow::processMinLimitText()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::processMaxLimitText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
-//   window's max line edit text. 
+//   window's max line edit text.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisVectorPlotWindow::processMaxLimitText()
@@ -1413,15 +1489,15 @@ QvisVectorPlotWindow::processMaxLimitText()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::minToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's min toggle button.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisVectorPlotWindow::minToggled(bool val)
@@ -1433,15 +1509,15 @@ QvisVectorPlotWindow::minToggled(bool val)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::maxToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's max toggle button.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisVectorPlotWindow::maxToggled(bool val)
@@ -1467,13 +1543,13 @@ void
 QvisVectorPlotWindow::glyphTypeChanged(int newType)
 {
     vectorAtts->SetGlyphType((VectorAttributes::GlyphType) newType);
-    Apply();    
+    Apply();
 }
 
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::drawHeadToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's "drawhead" toggle button.
 //
@@ -1481,7 +1557,7 @@ QvisVectorPlotWindow::glyphTypeChanged(int newType)
 // Creation:   Fri Mar 23 12:25:29 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1497,7 +1573,7 @@ QvisVectorPlotWindow::drawHeadToggled(bool val)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::processHeadSizeText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   head size line edit.
 //
@@ -1505,7 +1581,7 @@ QvisVectorPlotWindow::drawHeadToggled(bool val)
 // Creation:   Fri Mar 23 12:22:33 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1518,7 +1594,7 @@ QvisVectorPlotWindow::processHeadSizeText()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::lineStemMethodChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   window's line stem method.
 //
@@ -1526,7 +1602,7 @@ QvisVectorPlotWindow::processHeadSizeText()
 // Creation:   March 19, 2007
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisVectorPlotWindow::lineStemChanged(int val)
@@ -1538,7 +1614,7 @@ QvisVectorPlotWindow::lineStemChanged(int val)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::UpdateLineStem
 //
-// Purpose: 
+// Purpose:
 //   Updates the line stem attributes
 //
 // Programmer: Brad Whitlock
@@ -1563,7 +1639,7 @@ QvisVectorPlotWindow::UpdateLineStem()
     {
       lineWidth->show();
       lineWidthLabel->show();
-      
+
       stemWidthEdit->hide();
       stemWidthLabel->hide();
     }
@@ -1571,7 +1647,7 @@ QvisVectorPlotWindow::UpdateLineStem()
     {
       lineWidth->hide();
       lineWidthLabel->hide();
-      
+
       stemWidthEdit->show();
       stemWidthLabel->show();
     }
@@ -1587,7 +1663,7 @@ QvisVectorPlotWindow::UpdateLineStem()
 
     lineWidth->hide();
     lineWidthLabel->hide();
-    
+
     stemWidthEdit->hide();
     stemWidthLabel->hide();
   }
@@ -1597,15 +1673,15 @@ QvisVectorPlotWindow::UpdateLineStem()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::processStemWidthText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
-//   window's stem width edit text. 
+//   window's stem width edit text.
 //
 // Programmer: Jeremy Meredith
 // Creation:   March 19, 2007
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisVectorPlotWindow::processStemWidthText()
@@ -1617,7 +1693,7 @@ QvisVectorPlotWindow::processStemWidthText()
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::lineWidthChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   lineWidth widget.
 //
@@ -1628,7 +1704,7 @@ QvisVectorPlotWindow::processStemWidthText()
 // Creation:   Fri Mar 23 12:20:44 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1662,7 +1738,7 @@ QvisVectorPlotWindow::originTypeChanged(int index)
 // ****************************************************************************
 // Method: QvisVectorPlotWindow::geometryQualityChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's high quality button.
 //
@@ -1670,7 +1746,7 @@ QvisVectorPlotWindow::originTypeChanged(int index)
 // Creation:   March 19, 2007
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisVectorPlotWindow::geometryQualityChanged(int val)

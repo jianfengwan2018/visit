@@ -26,7 +26,7 @@ import llnl.visit.ColorAttribute;
 
 public class VectorAttributes extends AttributeSubject implements Plugin
 {
-    private static int VectorAttributes_numAdditionalAtts = 27;
+    private static int VectorAttributes_numAdditionalAtts = 29;
 
     // Enum values
     public final static int QUALITY_FAST = 0;
@@ -68,6 +68,8 @@ public class VectorAttributes extends AttributeSubject implements Plugin
         invertColorTable = false;
         vectorColor = new ColorAttribute(0, 0, 0);
         useLegend = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         scale = 0.25;
         scaleByMagnitude = true;
         autoScale = true;
@@ -101,6 +103,8 @@ public class VectorAttributes extends AttributeSubject implements Plugin
         invertColorTable = false;
         vectorColor = new ColorAttribute(0, 0, 0);
         useLegend = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         scale = 0.25;
         scaleByMagnitude = true;
         autoScale = true;
@@ -134,6 +138,8 @@ public class VectorAttributes extends AttributeSubject implements Plugin
         invertColorTable = obj.invertColorTable;
         vectorColor = new ColorAttribute(obj.vectorColor);
         useLegend = obj.useLegend;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         scale = obj.scale;
         scaleByMagnitude = obj.scaleByMagnitude;
         autoScale = obj.autoScale;
@@ -178,6 +184,8 @@ public class VectorAttributes extends AttributeSubject implements Plugin
                 (invertColorTable == obj.invertColorTable) &&
                 (vectorColor == obj.vectorColor) &&
                 (useLegend == obj.useLegend) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (scale == obj.scale) &&
                 (scaleByMagnitude == obj.scaleByMagnitude) &&
                 (autoScale == obj.autoScale) &&
@@ -286,76 +294,88 @@ public class VectorAttributes extends AttributeSubject implements Plugin
         Select(14);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(15);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(16);
+    }
+
     public void SetScale(double scale_)
     {
         scale = scale_;
-        Select(15);
+        Select(17);
     }
 
     public void SetScaleByMagnitude(boolean scaleByMagnitude_)
     {
         scaleByMagnitude = scaleByMagnitude_;
-        Select(16);
+        Select(18);
     }
 
     public void SetAutoScale(boolean autoScale_)
     {
         autoScale = autoScale_;
-        Select(17);
+        Select(19);
     }
 
     public void SetGlyphType(int glyphType_)
     {
         glyphType = glyphType_;
-        Select(18);
+        Select(20);
     }
 
     public void SetHeadOn(boolean headOn_)
     {
         headOn = headOn_;
-        Select(19);
+        Select(21);
     }
 
     public void SetHeadSize(double headSize_)
     {
         headSize = headSize_;
-        Select(20);
+        Select(22);
     }
 
     public void SetLineStem(int lineStem_)
     {
         lineStem = lineStem_;
-        Select(21);
+        Select(23);
     }
 
     public void SetLineWidth(int lineWidth_)
     {
         lineWidth = lineWidth_;
-        Select(22);
+        Select(24);
     }
 
     public void SetStemWidth(double stemWidth_)
     {
         stemWidth = stemWidth_;
-        Select(23);
+        Select(25);
     }
 
     public void SetVectorOrigin(int vectorOrigin_)
     {
         vectorOrigin = vectorOrigin_;
-        Select(24);
+        Select(26);
     }
 
     public void SetGeometryQuality(int geometryQuality_)
     {
         geometryQuality = geometryQuality_;
-        Select(25);
+        Select(27);
     }
 
     public void SetAnimationStep(int animationStep_)
     {
         animationStep = animationStep_;
-        Select(26);
+        Select(28);
     }
 
     // Property getting methods
@@ -374,6 +394,8 @@ public class VectorAttributes extends AttributeSubject implements Plugin
     public boolean        GetInvertColorTable() { return invertColorTable; }
     public ColorAttribute GetVectorColor() { return vectorColor; }
     public boolean        GetUseLegend() { return useLegend; }
+    public boolean        GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String         GetCustomLegendTitle() { return customLegendTitle; }
     public double         GetScale() { return scale; }
     public boolean        GetScaleByMagnitude() { return scaleByMagnitude; }
     public boolean        GetAutoScale() { return autoScale; }
@@ -421,28 +443,32 @@ public class VectorAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(14, buf))
             buf.WriteBool(useLegend);
         if(WriteSelect(15, buf))
-            buf.WriteDouble(scale);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(16, buf))
-            buf.WriteBool(scaleByMagnitude);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(17, buf))
-            buf.WriteBool(autoScale);
+            buf.WriteDouble(scale);
         if(WriteSelect(18, buf))
-            buf.WriteInt(glyphType);
+            buf.WriteBool(scaleByMagnitude);
         if(WriteSelect(19, buf))
-            buf.WriteBool(headOn);
+            buf.WriteBool(autoScale);
         if(WriteSelect(20, buf))
-            buf.WriteDouble(headSize);
+            buf.WriteInt(glyphType);
         if(WriteSelect(21, buf))
-            buf.WriteInt(lineStem);
+            buf.WriteBool(headOn);
         if(WriteSelect(22, buf))
-            buf.WriteInt(lineWidth);
+            buf.WriteDouble(headSize);
         if(WriteSelect(23, buf))
-            buf.WriteDouble(stemWidth);
+            buf.WriteInt(lineStem);
         if(WriteSelect(24, buf))
-            buf.WriteInt(vectorOrigin);
+            buf.WriteInt(lineWidth);
         if(WriteSelect(25, buf))
-            buf.WriteInt(geometryQuality);
+            buf.WriteDouble(stemWidth);
         if(WriteSelect(26, buf))
+            buf.WriteInt(vectorOrigin);
+        if(WriteSelect(27, buf))
+            buf.WriteInt(geometryQuality);
+        if(WriteSelect(28, buf))
             buf.WriteInt(animationStep);
     }
 
@@ -497,39 +523,45 @@ public class VectorAttributes extends AttributeSubject implements Plugin
             SetUseLegend(buf.ReadBool());
             break;
         case 15:
-            SetScale(buf.ReadDouble());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 16:
-            SetScaleByMagnitude(buf.ReadBool());
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 17:
-            SetAutoScale(buf.ReadBool());
+            SetScale(buf.ReadDouble());
             break;
         case 18:
-            SetGlyphType(buf.ReadInt());
+            SetScaleByMagnitude(buf.ReadBool());
             break;
         case 19:
-            SetHeadOn(buf.ReadBool());
+            SetAutoScale(buf.ReadBool());
             break;
         case 20:
-            SetHeadSize(buf.ReadDouble());
+            SetGlyphType(buf.ReadInt());
             break;
         case 21:
-            SetLineStem(buf.ReadInt());
+            SetHeadOn(buf.ReadBool());
             break;
         case 22:
-            SetLineWidth(buf.ReadInt());
+            SetHeadSize(buf.ReadDouble());
             break;
         case 23:
-            SetStemWidth(buf.ReadDouble());
+            SetLineStem(buf.ReadInt());
             break;
         case 24:
-            SetVectorOrigin(buf.ReadInt());
+            SetLineWidth(buf.ReadInt());
             break;
         case 25:
-            SetGeometryQuality(buf.ReadInt());
+            SetStemWidth(buf.ReadDouble());
             break;
         case 26:
+            SetVectorOrigin(buf.ReadInt());
+            break;
+        case 27:
+            SetGeometryQuality(buf.ReadInt());
+            break;
+        case 28:
             SetAnimationStep(buf.ReadInt());
             break;
         }
@@ -563,6 +595,8 @@ public class VectorAttributes extends AttributeSubject implements Plugin
         str = str + boolToString("invertColorTable", invertColorTable, indent) + "\n";
         str = str + indent + "vectorColor = {" + vectorColor.Red() + ", " + vectorColor.Green() + ", " + vectorColor.Blue() + ", " + vectorColor.Alpha() + "}\n";
         str = str + boolToString("useLegend", useLegend, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + doubleToString("scale", scale, indent) + "\n";
         str = str + boolToString("scaleByMagnitude", scaleByMagnitude, indent) + "\n";
         str = str + boolToString("autoScale", autoScale, indent) + "\n";
@@ -617,6 +651,8 @@ public class VectorAttributes extends AttributeSubject implements Plugin
     private boolean        invertColorTable;
     private ColorAttribute vectorColor;
     private boolean        useLegend;
+    private boolean        customLegendTitleEnabled;
+    private String         customLegendTitle;
     private double         scale;
     private boolean        scaleByMagnitude;
     private boolean        autoScale;

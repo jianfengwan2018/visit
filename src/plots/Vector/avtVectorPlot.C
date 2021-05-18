@@ -70,7 +70,7 @@ avtVectorPlot::avtVectorPlot()
     //
     // This is to allow the legend to be reference counted so the behavior can
     // still access it after the plot is deleted.  The legend cannot be
-    // reference counted all of the time since we need to know that it is a 
+    // reference counted all of the time since we need to know that it is a
     // VariableLegend.
     //
     varLegendRefPtr = varLegend;
@@ -149,8 +149,8 @@ avtVectorPlot::Create()
 //  Purpose: Sets the number of polygons each point in the plot's output will
 //  be glyphed into.
 //
-//  Programmer:  Mark C. Miller 
-//  Creation:    August 11, 2004 
+//  Programmer:  Mark C. Miller
+//  Creation:    August 11, 2004
 //
 //  Modifications:
 //    Jeremy Meredith, Thu Aug 12 14:15:55 PDT 2004
@@ -214,7 +214,7 @@ avtVectorPlot::GetMapper(void)
 //    Hank Childs, Tue Jul 17 07:42:08 PDT 2001
 //    Added a filter for ghost zones.
 //
-//    Kathleen Bonnell, Mon Aug  9 14:27:08 PDT 2004 
+//    Kathleen Bonnell, Mon Aug  9 14:27:08 PDT 2004
 //    Added code to create a name for the magnitude scalar variable.
 //    Tell the vectorFilter to create that scalar var.
 //
@@ -241,15 +241,15 @@ avtVectorPlot::ApplyOperators(avtDataObject_p input)
 //  Method: avtVectorPlot::ApplyRenderingTransformation
 //
 //  Purpose:
-//      Applies the rendering transformation. 
+//      Applies the rendering transformation.
 //
 //  Arguments:
 //      input   The input data object.
 //
-//  Returns:    The data object after rendering transformations. 
+//  Returns:    The data object after rendering transformations.
 //
-//  Programmer: Kathleen Bonnell 
-//  Creation:   October 22, 2002 
+//  Programmer: Kathleen Bonnell
+//  Creation:   October 22, 2002
 //
 //  Modifications:
 //
@@ -286,7 +286,7 @@ avtVectorPlot::ApplyRenderingTransformation(avtDataObject_p input)
     vectorFilter->SetInput(dob);
 
     ComputeMagVarName(varname);
-    vectorFilter->SetMagVarName(magVarName); 
+    vectorFilter->SetMagVarName(magVarName);
 
     return vectorFilter->GetOutput();
 }
@@ -310,10 +310,10 @@ avtVectorPlot::ApplyRenderingTransformation(avtDataObject_p input)
 //
 //    Kathleen Bonnell, Mon Sep 29 12:31:18 PDT 2003
 //    Set AntialiasedRenderOrder, so that vector lines get drawn without
-//    the 'halo'. 
-//    
-//    Kathleen Bonnell, Wed Dec 22 17:01:09 PST 2004 
-//    Added call to SetLimitsMode. 
+//    the 'halo'.
+//
+//    Kathleen Bonnell, Wed Dec 22 17:01:09 PST 2004
+//    Added call to SetLimitsMode.
 //
 // ****************************************************************************
 
@@ -345,14 +345,14 @@ avtVectorPlot::CustomizeBehavior(void)
 //
 //    Kathleen Bonnell, Mon Aug 27 12:21:22 PDT 2001
 //    Set the render order to MUST_GO_LAST for 2D, DOES_NOT_MATTER otherwise.
-//   
+//
 //    Hank Childs, Tue Sep  4 16:14:49 PDT 2001
 //    Reflect new interface for avtDataAttributes.
 //
 //    Brad Whitlock, Wed Dec 4 15:55:40 PST 2002
 //    I added code to set the legend ranges.
 //
-//    Kathleen Bonnell, Thu Aug 12 19:28:34 PDT 2004 
+//    Kathleen Bonnell, Thu Aug 12 19:28:34 PDT 2004
 //    I added call to ComputeMagVarName and SetMapperColors.
 //
 // ****************************************************************************
@@ -362,7 +362,7 @@ avtVectorPlot::CustomizeMapper(avtDataObjectInformation &doi)
 {
     ComputeMagVarName(varname);
     SetMapperColors();
-    
+
     int dim = doi.GetAttributes().GetSpatialDimension();
     if (dim == 2)
     {
@@ -403,12 +403,12 @@ avtVectorPlot::CustomizeMapper(avtDataObjectInformation &doi)
 //    Brad Whitlock, Fri Jun 15 15:14:39 PST 2001
 //    Added code to set the color table used when coloring by magnitude.
 //
-//    Kathleen Bonnell, Mon Jun 25 12:45:06 PDT 2001 
-//    Added code to set the line style. 
+//    Kathleen Bonnell, Mon Jun 25 12:45:06 PDT 2001
+//    Added code to set the line style.
 //
-//    Kathleen Bonnell, Sat Aug 18 18:09:04 PDT 2001 
-//    Use enum types from LineAttributes to ensure proper 
-//    pattern is sent down to vtk 
+//    Kathleen Bonnell, Sat Aug 18 18:09:04 PDT 2001
+//    Use enum types from LineAttributes to ensure proper
+//    pattern is sent down to vtk
 //
 //    Jeremy Meredith, Thu Aug 23 14:11:40 PDT 2001
 //    Made it use the color table name "Default" instead of the boolean flag.
@@ -417,16 +417,16 @@ avtVectorPlot::CustomizeMapper(avtDataObjectInformation &doi)
 //    Added origin offset.
 //
 //    Kathleen Bonnell, Thu Aug 12 12:05:01 PDT 2004
-//    Set lut single color when ColorByMag is off. 
+//    Set lut single color when ColorByMag is off.
 //
-//    Kathleen Bonnell, Mon Aug  9 14:33:26 PDT 2004 
-//    Moved some code into SetMapperColors and added call to this new method. 
+//    Kathleen Bonnell, Mon Aug  9 14:33:26 PDT 2004
+//    Moved some code into SetMapperColors and added call to this new method.
 //
 //    Eric Brugger, Wed Nov 24 10:21:36 PST 2004
 //    I added scaleByMagnitude and autoScale.
 //
-//    Kathleen Bonnell, Wed Dec 22 17:01:09 PST 2004 
-//    Added call to SetLimitsMode. 
+//    Kathleen Bonnell, Wed Dec 22 17:01:09 PST 2004
+//    Added call to SetLimitsMode.
 //
 //    Jeremy Meredith, Mon Mar 19 17:15:54 EDT 2007
 //    Added more options to the vector glyph: settings now exist for
@@ -451,6 +451,9 @@ avtVectorPlot::CustomizeMapper(avtDataObjectInformation &doi)
 //
 //    Kathleen Bonnell, Mon Jan 17 18:04:56 MST 2011
 //    Consider InvertColorTable flag when setting updateColors.
+//
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
 //
 // ****************************************************************************
 
@@ -499,7 +502,7 @@ avtVectorPlot::SetAtts(const AttributeGroup *a)
     }
 
     vectorGlyph->SetArrow(atts.GetGlyphType() == VectorAttributes::Arrow);
-    
+
     vectorGlyph->SetMakeHead(atts.GetHeadOn());
     vectorGlyph->SetHeadSize(atts.GetHeadSize());
     vectorGlyph->SetLineStem(atts.GetLineStem());
@@ -547,12 +550,17 @@ avtVectorPlot::SetAtts(const AttributeGroup *a)
     // Update the legend.
     //
     SetLegend(atts.GetUseLegend());
+
+    if(atts.GetCustomLegendTitleEnabled())
+        varLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        varLegend->SetTitle("Vector");
 }
 
 // ****************************************************************************
 //  Method: avtVectorPlot::SetColorTable
 //
-//  Purpose: 
+//  Purpose:
 //      Sets the plot's color table if the color table is the same as that of
 //      the plot or we are using the default color table for the plot.
 //
@@ -568,13 +576,13 @@ avtVectorPlot::SetAtts(const AttributeGroup *a)
 //    Jeremy Meredith, Thu Aug 23 14:11:40 PDT 2001
 //    Made it use the color table name "Default" instead of the boolean flag.
 //
-//    Kathleen Bonnell, Thu Aug 30 10:47:07 PDT 2001 
-//    Main functionality now resides in avtLookupTable::SetColorTable. 
+//    Kathleen Bonnell, Thu Aug 30 10:47:07 PDT 2001
+//    Main functionality now resides in avtLookupTable::SetColorTable.
 //
-//    Kathleen Bonnell, Fri Aug 31 15:21:45 PDT 2001 
-//    Added logic (that got lost when I moved functionality to 
+//    Kathleen Bonnell, Fri Aug 31 15:21:45 PDT 2001
+//    Added logic (that got lost when I moved functionality to
 //    avtLookupTable) to ensure that changing active color in color table
-//    window will affect this plot if its color table is "Default". 
+//    window will affect this plot if its color table is "Default".
 //
 //    Brad Whitlock, Wed Dec 4 15:54:38 PST 2002
 //    I added code to set the LUT colors for the case where we are using
@@ -652,14 +660,14 @@ avtVectorPlot::SetLegend(bool legendOn)
 // ****************************************************************************
 // Method: avtVectorPlot::SetLegendRanges
 //
-// Purpose: 
+// Purpose:
 //   Sets the range to use for the legend.
 //
 // Programmer: Brad Whitlock
 // Date:       Mon Dec 2 12:07:05 PDT 2002
 //
 // Modifications:
-//    Kathleen Bonnell, Wed Dec 22 17:01:09 PST 2004 
+//    Kathleen Bonnell, Wed Dec 22 17:01:09 PST 2004
 //    Account for user-set min and max or limitsMode.
 //
 // ****************************************************************************
@@ -706,7 +714,7 @@ void
 avtVectorPlot::ReleaseData(void)
 {
     avtPointDataPlot::ReleaseData();
- 
+
     if (vectorFilter != NULL)
     {
         vectorFilter->ReleaseData();
@@ -728,8 +736,8 @@ avtVectorPlot::ReleaseData(void)
 //    Appends '_AVT_mag' to the name of the vector variable -- to creat a name
 //    for the scalar magnitude variable.
 //
-//  Programmer: Kathleen Bonnell 
-//  Creation:   August 9, 2004 
+//  Programmer: Kathleen Bonnell
+//  Creation:   August 9, 2004
 //
 // ****************************************************************************
 
@@ -743,10 +751,10 @@ avtVectorPlot::ComputeMagVarName(const std::string &vn)
 //  Method: avtVectorPlot::SetMapperColors
 //
 //  Purpose:
-//    Tells the vectorMapper how to color the data. 
+//    Tells the vectorMapper how to color the data.
 //
-//  Programmer: Kathleen Bonnell 
-//  Creation:   August 12, 2004 
+//  Programmer: Kathleen Bonnell
+//  Creation:   August 12, 2004
 //
 // ****************************************************************************
 
@@ -774,7 +782,7 @@ avtVectorPlot::SetMapperColors()
 //    limitsMode  Specifies which type of limits.
 //
 //  Programmer:   Kathleen Bonnell
-//  Creation:     December 22, 2004 
+//  Creation:     December 22, 2004
 //
 //  Modifications:
 //
@@ -791,7 +799,7 @@ avtVectorPlot::SetLimitsMode(int limitsMode)
 
     float userMin = atts.GetMinFlag() ? atts.GetMin() : min;
     float userMax = atts.GetMaxFlag() ? atts.GetMax() : max;
-      
+
     if (dataExtents.size() == 2)
     {
         vectorMapper->SetMin(dataExtents[0]);
@@ -801,14 +809,14 @@ avtVectorPlot::SetLimitsMode(int limitsMode)
     {
         if (userMin >= userMax)
         {
-            EXCEPTION1(InvalidLimitsException, false); 
+            EXCEPTION1(InvalidLimitsException, false);
         }
         else
         {
             vectorMapper->SetMin(userMin);
             vectorMapper->SetMax(userMax);
         }
-    } 
+    }
     else if (atts.GetMinFlag())
     {
         vectorMapper->SetMin(userMin);

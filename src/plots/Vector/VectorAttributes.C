@@ -258,6 +258,7 @@ void VectorAttributes::Init()
     colorByMagnitude = true;
     invertColorTable = false;
     useLegend = true;
+    customLegendTitleEnabled = false;
     scale = 0.25;
     scaleByMagnitude = true;
     autoScale = true;
@@ -306,6 +307,8 @@ void VectorAttributes::Copy(const VectorAttributes &obj)
     invertColorTable = obj.invertColorTable;
     vectorColor = obj.vectorColor;
     useLegend = obj.useLegend;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     scale = obj.scale;
     scaleByMagnitude = obj.scaleByMagnitude;
     autoScale = obj.autoScale;
@@ -492,6 +495,8 @@ VectorAttributes::operator == (const VectorAttributes &obj) const
             (invertColorTable == obj.invertColorTable) &&
             (vectorColor == obj.vectorColor) &&
             (useLegend == obj.useLegend) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (scale == obj.scale) &&
             (scaleByMagnitude == obj.scaleByMagnitude) &&
             (autoScale == obj.autoScale) &&
@@ -647,33 +652,35 @@ VectorAttributes::NewInstance(bool copy) const
 void
 VectorAttributes::SelectAll()
 {
-    Select(ID_glyphLocation,    (void *)&glyphLocation);
-    Select(ID_useStride,        (void *)&useStride);
-    Select(ID_nVectors,         (void *)&nVectors);
-    Select(ID_stride,           (void *)&stride);
-    Select(ID_origOnly,         (void *)&origOnly);
-    Select(ID_limitsMode,       (void *)&limitsMode);
-    Select(ID_minFlag,          (void *)&minFlag);
-    Select(ID_min,              (void *)&min);
-    Select(ID_maxFlag,          (void *)&maxFlag);
-    Select(ID_max,              (void *)&max);
-    Select(ID_colorByMagnitude, (void *)&colorByMagnitude);
-    Select(ID_colorTableName,   (void *)&colorTableName);
-    Select(ID_invertColorTable, (void *)&invertColorTable);
-    Select(ID_vectorColor,      (void *)&vectorColor);
-    Select(ID_useLegend,        (void *)&useLegend);
-    Select(ID_scale,            (void *)&scale);
-    Select(ID_scaleByMagnitude, (void *)&scaleByMagnitude);
-    Select(ID_autoScale,        (void *)&autoScale);
-    Select(ID_glyphType,        (void *)&glyphType);
-    Select(ID_headOn,           (void *)&headOn);
-    Select(ID_headSize,         (void *)&headSize);
-    Select(ID_lineStem,         (void *)&lineStem);
-    Select(ID_lineWidth,        (void *)&lineWidth);
-    Select(ID_stemWidth,        (void *)&stemWidth);
-    Select(ID_vectorOrigin,     (void *)&vectorOrigin);
-    Select(ID_geometryQuality,  (void *)&geometryQuality);
-    Select(ID_animationStep,    (void *)&animationStep);
+    Select(ID_glyphLocation,            (void *)&glyphLocation);
+    Select(ID_useStride,                (void *)&useStride);
+    Select(ID_nVectors,                 (void *)&nVectors);
+    Select(ID_stride,                   (void *)&stride);
+    Select(ID_origOnly,                 (void *)&origOnly);
+    Select(ID_limitsMode,               (void *)&limitsMode);
+    Select(ID_minFlag,                  (void *)&minFlag);
+    Select(ID_min,                      (void *)&min);
+    Select(ID_maxFlag,                  (void *)&maxFlag);
+    Select(ID_max,                      (void *)&max);
+    Select(ID_colorByMagnitude,         (void *)&colorByMagnitude);
+    Select(ID_colorTableName,           (void *)&colorTableName);
+    Select(ID_invertColorTable,         (void *)&invertColorTable);
+    Select(ID_vectorColor,              (void *)&vectorColor);
+    Select(ID_useLegend,                (void *)&useLegend);
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,        (void *)&customLegendTitle);
+    Select(ID_scale,                    (void *)&scale);
+    Select(ID_scaleByMagnitude,         (void *)&scaleByMagnitude);
+    Select(ID_autoScale,                (void *)&autoScale);
+    Select(ID_glyphType,                (void *)&glyphType);
+    Select(ID_headOn,                   (void *)&headOn);
+    Select(ID_headSize,                 (void *)&headSize);
+    Select(ID_lineStem,                 (void *)&lineStem);
+    Select(ID_lineWidth,                (void *)&lineWidth);
+    Select(ID_stemWidth,                (void *)&stemWidth);
+    Select(ID_vectorOrigin,             (void *)&vectorOrigin);
+    Select(ID_geometryQuality,          (void *)&geometryQuality);
+    Select(ID_animationStep,            (void *)&animationStep);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -796,6 +803,18 @@ VectorAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool force
     {
         addToParent = true;
         node->AddNode(new DataNode("useLegend", useLegend));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
     }
 
     if(completeSave || !FieldsEqual(ID_scale, &defaultObject))
@@ -964,6 +983,10 @@ VectorAttributes::SetFromNode(DataNode *parentNode)
         vectorColor.SetFromNode(node);
     if((node = searchNode->GetNode("useLegend")) != 0)
         SetUseLegend(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("scale")) != 0)
         SetScale(node->AsDouble());
     if((node = searchNode->GetNode("scaleByMagnitude")) != 0)
@@ -1156,6 +1179,20 @@ VectorAttributes::SetUseLegend(bool useLegend_)
 }
 
 void
+VectorAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+VectorAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 VectorAttributes::SetScale(double scale_)
 {
     scale = scale_;
@@ -1345,6 +1382,24 @@ VectorAttributes::GetUseLegend() const
     return useLegend;
 }
 
+bool
+VectorAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+VectorAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+VectorAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
 double
 VectorAttributes::GetScale() const
 {
@@ -1433,6 +1488,12 @@ VectorAttributes::SelectVectorColor()
     Select(ID_vectorColor, (void *)&vectorColor);
 }
 
+void
+VectorAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Keyframing methods
 ///////////////////////////////////////////////////////////////////////////////
@@ -1457,33 +1518,35 @@ VectorAttributes::GetFieldName(int index) const
 {
     switch (index)
     {
-    case ID_glyphLocation:    return "glyphLocation";
-    case ID_useStride:        return "useStride";
-    case ID_nVectors:         return "nVectors";
-    case ID_stride:           return "stride";
-    case ID_origOnly:         return "origOnly";
-    case ID_limitsMode:       return "limitsMode";
-    case ID_minFlag:          return "minFlag";
-    case ID_min:              return "min";
-    case ID_maxFlag:          return "maxFlag";
-    case ID_max:              return "max";
-    case ID_colorByMagnitude: return "colorByMagnitude";
-    case ID_colorTableName:   return "colorTableName";
-    case ID_invertColorTable: return "invertColorTable";
-    case ID_vectorColor:      return "vectorColor";
-    case ID_useLegend:        return "useLegend";
-    case ID_scale:            return "scale";
-    case ID_scaleByMagnitude: return "scaleByMagnitude";
-    case ID_autoScale:        return "autoScale";
-    case ID_glyphType:        return "glyphType";
-    case ID_headOn:           return "headOn";
-    case ID_headSize:         return "headSize";
-    case ID_lineStem:         return "lineStem";
-    case ID_lineWidth:        return "lineWidth";
-    case ID_stemWidth:        return "stemWidth";
-    case ID_vectorOrigin:     return "vectorOrigin";
-    case ID_geometryQuality:  return "geometryQuality";
-    case ID_animationStep:    return "animationStep";
+    case ID_glyphLocation:            return "glyphLocation";
+    case ID_useStride:                return "useStride";
+    case ID_nVectors:                 return "nVectors";
+    case ID_stride:                   return "stride";
+    case ID_origOnly:                 return "origOnly";
+    case ID_limitsMode:               return "limitsMode";
+    case ID_minFlag:                  return "minFlag";
+    case ID_min:                      return "min";
+    case ID_maxFlag:                  return "maxFlag";
+    case ID_max:                      return "max";
+    case ID_colorByMagnitude:         return "colorByMagnitude";
+    case ID_colorTableName:           return "colorTableName";
+    case ID_invertColorTable:         return "invertColorTable";
+    case ID_vectorColor:              return "vectorColor";
+    case ID_useLegend:                return "useLegend";
+    case ID_customLegendTitleEnabled: return "customLegendTitleEnabled";
+    case ID_customLegendTitle:        return "customLegendTitle";
+    case ID_scale:                    return "scale";
+    case ID_scaleByMagnitude:         return "scaleByMagnitude";
+    case ID_autoScale:                return "autoScale";
+    case ID_glyphType:                return "glyphType";
+    case ID_headOn:                   return "headOn";
+    case ID_headSize:                 return "headSize";
+    case ID_lineStem:                 return "lineStem";
+    case ID_lineWidth:                return "lineWidth";
+    case ID_stemWidth:                return "stemWidth";
+    case ID_vectorOrigin:             return "vectorOrigin";
+    case ID_geometryQuality:          return "geometryQuality";
+    case ID_animationStep:            return "animationStep";
     default:  return "invalid index";
     }
 }
@@ -1508,33 +1571,35 @@ VectorAttributes::GetFieldType(int index) const
 {
     switch (index)
     {
-    case ID_glyphLocation:    return FieldType_enum;
-    case ID_useStride:        return FieldType_bool;
-    case ID_nVectors:         return FieldType_int;
-    case ID_stride:           return FieldType_int;
-    case ID_origOnly:         return FieldType_bool;
-    case ID_limitsMode:       return FieldType_enum;
-    case ID_minFlag:          return FieldType_bool;
-    case ID_min:              return FieldType_double;
-    case ID_maxFlag:          return FieldType_bool;
-    case ID_max:              return FieldType_double;
-    case ID_colorByMagnitude: return FieldType_bool;
-    case ID_colorTableName:   return FieldType_colortable;
-    case ID_invertColorTable: return FieldType_bool;
-    case ID_vectorColor:      return FieldType_color;
-    case ID_useLegend:        return FieldType_bool;
-    case ID_scale:            return FieldType_double;
-    case ID_scaleByMagnitude: return FieldType_bool;
-    case ID_autoScale:        return FieldType_bool;
-    case ID_glyphType:        return FieldType_enum;
-    case ID_headOn:           return FieldType_bool;
-    case ID_headSize:         return FieldType_double;
-    case ID_lineStem:         return FieldType_enum;
-    case ID_lineWidth:        return FieldType_linewidth;
-    case ID_stemWidth:        return FieldType_double;
-    case ID_vectorOrigin:     return FieldType_enum;
-    case ID_geometryQuality:  return FieldType_enum;
-    case ID_animationStep:    return FieldType_int;
+    case ID_glyphLocation:            return FieldType_enum;
+    case ID_useStride:                return FieldType_bool;
+    case ID_nVectors:                 return FieldType_int;
+    case ID_stride:                   return FieldType_int;
+    case ID_origOnly:                 return FieldType_bool;
+    case ID_limitsMode:               return FieldType_enum;
+    case ID_minFlag:                  return FieldType_bool;
+    case ID_min:                      return FieldType_double;
+    case ID_maxFlag:                  return FieldType_bool;
+    case ID_max:                      return FieldType_double;
+    case ID_colorByMagnitude:         return FieldType_bool;
+    case ID_colorTableName:           return FieldType_colortable;
+    case ID_invertColorTable:         return FieldType_bool;
+    case ID_vectorColor:              return FieldType_color;
+    case ID_useLegend:                return FieldType_bool;
+    case ID_customLegendTitleEnabled: return FieldType_bool;
+    case ID_customLegendTitle:        return FieldType_string;
+    case ID_scale:                    return FieldType_double;
+    case ID_scaleByMagnitude:         return FieldType_bool;
+    case ID_autoScale:                return FieldType_bool;
+    case ID_glyphType:                return FieldType_enum;
+    case ID_headOn:                   return FieldType_bool;
+    case ID_headSize:                 return FieldType_double;
+    case ID_lineStem:                 return FieldType_enum;
+    case ID_lineWidth:                return FieldType_linewidth;
+    case ID_stemWidth:                return FieldType_double;
+    case ID_vectorOrigin:             return FieldType_enum;
+    case ID_geometryQuality:          return FieldType_enum;
+    case ID_animationStep:            return FieldType_int;
     default:  return FieldType_unknown;
     }
 }
@@ -1559,33 +1624,35 @@ VectorAttributes::GetFieldTypeName(int index) const
 {
     switch (index)
     {
-    case ID_glyphLocation:    return "enum";
-    case ID_useStride:        return "bool";
-    case ID_nVectors:         return "int";
-    case ID_stride:           return "int";
-    case ID_origOnly:         return "bool";
-    case ID_limitsMode:       return "enum";
-    case ID_minFlag:          return "bool";
-    case ID_min:              return "double";
-    case ID_maxFlag:          return "bool";
-    case ID_max:              return "double";
-    case ID_colorByMagnitude: return "bool";
-    case ID_colorTableName:   return "colortable";
-    case ID_invertColorTable: return "bool";
-    case ID_vectorColor:      return "color";
-    case ID_useLegend:        return "bool";
-    case ID_scale:            return "double";
-    case ID_scaleByMagnitude: return "bool";
-    case ID_autoScale:        return "bool";
-    case ID_glyphType:        return "enum";
-    case ID_headOn:           return "bool";
-    case ID_headSize:         return "double";
-    case ID_lineStem:         return "enum";
-    case ID_lineWidth:        return "linewidth";
-    case ID_stemWidth:        return "double";
-    case ID_vectorOrigin:     return "enum";
-    case ID_geometryQuality:  return "enum";
-    case ID_animationStep:    return "int";
+    case ID_glyphLocation:            return "enum";
+    case ID_useStride:                return "bool";
+    case ID_nVectors:                 return "int";
+    case ID_stride:                   return "int";
+    case ID_origOnly:                 return "bool";
+    case ID_limitsMode:               return "enum";
+    case ID_minFlag:                  return "bool";
+    case ID_min:                      return "double";
+    case ID_maxFlag:                  return "bool";
+    case ID_max:                      return "double";
+    case ID_colorByMagnitude:         return "bool";
+    case ID_colorTableName:           return "colortable";
+    case ID_invertColorTable:         return "bool";
+    case ID_vectorColor:              return "color";
+    case ID_useLegend:                return "bool";
+    case ID_customLegendTitleEnabled: return "bool";
+    case ID_customLegendTitle:        return "string";
+    case ID_scale:                    return "double";
+    case ID_scaleByMagnitude:         return "bool";
+    case ID_autoScale:                return "bool";
+    case ID_glyphType:                return "enum";
+    case ID_headOn:                   return "bool";
+    case ID_headSize:                 return "double";
+    case ID_lineStem:                 return "enum";
+    case ID_lineWidth:                return "linewidth";
+    case ID_stemWidth:                return "double";
+    case ID_vectorOrigin:             return "enum";
+    case ID_geometryQuality:          return "enum";
+    case ID_animationStep:            return "int";
     default:  return "invalid index";
     }
 }
@@ -1685,6 +1752,16 @@ VectorAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_useLegend:
         {  // new scope
         retval = (useLegend == obj.useLegend);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_scale:
@@ -1792,10 +1869,10 @@ VectorAttributes::ProcessOldVersions(DataNode *parentNode,
     {
         DataNode *k = 0;
         if((k = searchNode->GetNode("colorByMag")) != 0)
-	{
+        {
             searchNode->AddNode(new DataNode("colorByMagnitude", k->AsBool()));
             searchNode->RemoveNode(k, true);
-	}
+        }
     }
 }
 

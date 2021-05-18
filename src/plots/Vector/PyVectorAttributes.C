@@ -120,6 +120,13 @@ PyVectorAttributes_ToString(const VectorAttributes *atts, const char *prefix)
     else
         snprintf(tmpStr, 1000, "%suseLegend = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     snprintf(tmpStr, 1000, "%sscale = %g\n", prefix, atts->GetScale());
     str += tmpStr;
     if(atts->GetScaleByMagnitude())
@@ -653,6 +660,54 @@ VectorAttributes_GetUseLegend(PyObject *self, PyObject *args)
 }
 
 /*static*/ PyObject *
+VectorAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    VectorAttributesObject *obj = (VectorAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+VectorAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    VectorAttributesObject *obj = (VectorAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+VectorAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    VectorAttributesObject *obj = (VectorAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+VectorAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    VectorAttributesObject *obj = (VectorAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
+    return retval;
+}
+
+/*static*/ PyObject *
 VectorAttributes_SetScale(PyObject *self, PyObject *args)
 {
     VectorAttributesObject *obj = (VectorAttributesObject *)self;
@@ -1010,6 +1065,10 @@ PyMethodDef PyVectorAttributes_methods[VECTORATTRIBUTES_NMETH] = {
     {"GetVectorColor", VectorAttributes_GetVectorColor, METH_VARARGS},
     {"SetUseLegend", VectorAttributes_SetUseLegend, METH_VARARGS},
     {"GetUseLegend", VectorAttributes_GetUseLegend, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", VectorAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", VectorAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", VectorAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", VectorAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetScale", VectorAttributes_SetScale, METH_VARARGS},
     {"GetScale", VectorAttributes_GetScale, METH_VARARGS},
     {"SetScaleByMagnitude", VectorAttributes_SetScaleByMagnitude, METH_VARARGS},
@@ -1095,6 +1154,10 @@ PyVectorAttributes_getattr(PyObject *self, char *name)
         return VectorAttributes_GetVectorColor(self, NULL);
     if(strcmp(name, "useLegend") == 0)
         return VectorAttributes_GetUseLegend(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return VectorAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return VectorAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "scale") == 0)
         return VectorAttributes_GetScale(self, NULL);
     if(strcmp(name, "scaleByMagnitude") == 0)
@@ -1228,6 +1291,10 @@ PyVectorAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = VectorAttributes_SetVectorColor(self, tuple);
     else if(strcmp(name, "useLegend") == 0)
         obj = VectorAttributes_SetUseLegend(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = VectorAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = VectorAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "scale") == 0)
         obj = VectorAttributes_SetScale(self, tuple);
     else if(strcmp(name, "scaleByMagnitude") == 0)

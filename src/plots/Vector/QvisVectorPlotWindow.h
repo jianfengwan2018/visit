@@ -27,7 +27,7 @@ class VectorAttributes;
 //   This class is a postable window that watches vector plot attributes and
 //   always represents their current state.
 //
-// Notes:      
+// Notes:
 //
 // Programmer: Hank Childs & Brad Whitlock
 // Creation:   Thu Mar 22 23:40:52 PST 2001
@@ -45,7 +45,7 @@ class VectorAttributes;
 //   Eric Brugger, Tue Nov 23 10:13:05 PST 2004
 //   Added scaleByMagnitude and autoScale.
 //
-//   Kathleen Bonnell, Wed Dec 22 16:42:35 PST 2004 
+//   Kathleen Bonnell, Wed Dec 22 16:42:35 PST 2004
 //   Added widgets for min/max and limitsSelection.
 //
 //   Jeremy Meredith, Mon Mar 19 16:24:08 EDT 2007
@@ -63,13 +63,16 @@ class VectorAttributes;
 //   Change layout of window for 2.0 interface changes.
 //
 //   Dave Pugmire, Mon Jul 19 09:38:17 EDT 2010
-//   Add ellipsoid glyphing.   
+//   Add ellipsoid glyphing.
 //
 //   Hank Childs, Tue Aug 24 07:37:27 PDT 2010
 //   Add option for glyph location.
 //
 //   Kathleen Bonnell, Mon Jan 17 18:02:39 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -118,6 +121,8 @@ private slots:
     void colorTableClicked(bool useDefault, const QString &ctName);
     void invertColorTableToggled(bool val);
     void legendToggled(bool);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
 
     void processScaleText();
     void scaleByMagnitudeToggled(bool);
@@ -152,9 +157,12 @@ private:
     QLineEdit            *minLineEdit;
 
     QvisColorButton      *vectorColor;
-    QButtonGroup         *colorButtonGroup; 
+    QButtonGroup         *colorButtonGroup;
     QvisColorTableWidget *colorTableWidget;
+
     QCheckBox            *legendToggle;
+    QCheckBox            *customLegendTitleToggle;
+    QLineEdit            *customLegendTitle;
 
     QLineEdit            *scaleLineEdit;
     QCheckBox            *scaleByMagnitudeToggle;
