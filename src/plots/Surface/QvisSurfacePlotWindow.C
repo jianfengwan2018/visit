@@ -26,11 +26,11 @@
 // ****************************************************************************
 // Method: QvisSurfacePlotWindow::QvisSurfacePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor for the QvisSurfacePlotWindow class.
 //
 // Programmer: Kathleen Bonnell
-// Creation:   March 06, 2001 
+// Creation:   March 06, 2001
 //
 // Modifications:
 //    Eric Brugger, Fri Mar 16 16:17:18 PST 2001
@@ -52,14 +52,14 @@ QvisSurfacePlotWindow::QvisSurfacePlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisSurfacePlotWindow::~QvisSurfacePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor for the QvisSurfacePlotWindow class.
 //
 // Programmer: Kathleen Bonnell
-// Creation:   March 06, 2001 
+// Creation:   March 06, 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 QvisSurfacePlotWindow::~QvisSurfacePlotWindow()
@@ -70,12 +70,12 @@ QvisSurfacePlotWindow::~QvisSurfacePlotWindow()
 // ****************************************************************************
 // Method: QvisSurfacePlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   This method creates the widgets that are in the window and sets
 //   up their signals/slots.
 //
 // Programmer: Kathleen Bonnell
-// Creation:   March 06, 2001 
+// Creation:   March 06, 2001
 //
 // Modifications:
 //   Brad Whitlock, Sat Jun 16 18:28:35 PST 2001
@@ -85,9 +85,9 @@ QvisSurfacePlotWindow::~QvisSurfacePlotWindow()
 //   Swapped the creation order of the wireframe label and button so the
 //   button was created by the time the label wanted to buddy it.
 //
-//   Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001 
+//   Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001
 //   Added limitsSelect button and associated colorinMin/Max.  Changed old
-//   min/max to scalingMin/max. 
+//   min/max to scalingMin/max.
 //
 //   Brad Whitlock, Fri Oct 26 16:47:44 PST 2001
 //   Enabled wireframe color.
@@ -95,10 +95,10 @@ QvisSurfacePlotWindow::~QvisSurfacePlotWindow()
 //   Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002
 //   Once again use the same limits for coloring and for scaling.  Removed
 //   coloringMin/Max.  Renamed scalingMin/Max to simply min/max.
-//   Moved limitsSelect to same window area as limits line edits. 
+//   Moved limitsSelect to same window area as limits line edits.
 //
-//   Kathleen Bonnell, Wed May 29 13:40:22 PDT 2002  
-//   Remove 'Specify' from limitSelect. 
+//   Kathleen Bonnell, Wed May 29 13:40:22 PDT 2002
+//   Remove 'Specify' from limitSelect.
 //
 //   Brad Whitlock, Wed Apr 23 12:01:18 PDT 2008
 //   Added tr()'s
@@ -114,6 +114,9 @@ QvisSurfacePlotWindow::~QvisSurfacePlotWindow()
 //
 //   Kathleen Bonnell, Mon Jan 17 17:54:48 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -135,7 +138,7 @@ QvisSurfacePlotWindow::CreateWindowContents()
     // Create the scale radio buttons
     //
     dataLayout->addWidget( new QLabel(tr("Scale"), central), 0, 0);
-    
+
     // Create the radio buttons
     scalingButtons = new QButtonGroup(central);
 
@@ -154,7 +157,7 @@ QvisSurfacePlotWindow::CreateWindowContents()
     connect(scalingButtons, SIGNAL(buttonClicked(int)),
             this, SLOT(scaleClicked(int)));
 
-    // Create the skew factor line edit    
+    // Create the skew factor line edit
     skewLineEdit = new QLineEdit(central);
     dataLayout->addWidget(skewLineEdit, 0, 4);
     connect(skewLineEdit, SIGNAL(returnPressed()),
@@ -177,7 +180,7 @@ QvisSurfacePlotWindow::CreateWindowContents()
     limitsSelect->addItem(tr("Use Original Data"));
     limitsSelect->addItem(tr("Use Current Plot"));
     connect(limitsSelect, SIGNAL(activated(int)),
-            this, SLOT(limitsSelectChanged(int))); 
+            this, SLOT(limitsSelectChanged(int)));
     limitsLayout->addWidget(limitsSelect, 0, 1, 1, 2, Qt::AlignLeft);
 
     // Create the min toggle and line edit
@@ -187,7 +190,7 @@ QvisSurfacePlotWindow::CreateWindowContents()
             this, SLOT(minToggled(bool)));
     minLineEdit = new QLineEdit(central);
     connect(minLineEdit, SIGNAL(returnPressed()),
-            this, SLOT(processMinLimitText())); 
+            this, SLOT(processMinLimitText()));
     limitsLayout->addWidget(minLineEdit, 1, 1);
 
     // Create the max toggle and line edit
@@ -197,7 +200,7 @@ QvisSurfacePlotWindow::CreateWindowContents()
             this, SLOT(maxToggled(bool)));
     maxLineEdit = new QLineEdit(central);
     connect(maxLineEdit, SIGNAL(returnPressed()),
-            this, SLOT(processMaxLimitText())); 
+            this, SLOT(processMaxLimitText()));
     limitsLayout->addWidget(maxLineEdit, 1, 3);
 
 
@@ -209,7 +212,7 @@ QvisSurfacePlotWindow::CreateWindowContents()
     connect(surfaceGroup, SIGNAL(toggled(bool)),
             this, SLOT(surfaceToggled(bool)));
     topLayout->addWidget(surfaceGroup);
- 
+
 
     QGridLayout *surfaceLayout = new QGridLayout(surfaceGroup);
     surfaceLayout->setMargin(5);
@@ -253,7 +256,7 @@ QvisSurfacePlotWindow::CreateWindowContents()
     connect(wireframeGroup, SIGNAL(toggled(bool)),
             this, SLOT(wireframeToggled(bool)));
     topLayout->addWidget(wireframeGroup);
- 
+
     QGridLayout *wireframeLayout = new QGridLayout(wireframeGroup);
     wireframeLayout->setMargin(5);
     wireframeLayout->setSpacing(10);
@@ -288,7 +291,7 @@ QvisSurfacePlotWindow::CreateWindowContents()
     QGridLayout *miscLayout = new QGridLayout(miscGroup);
     miscLayout->setMargin(5);
     miscLayout->setSpacing(10);
- 
+
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Legend"), central);
     connect(legendToggle, SIGNAL(toggled(bool)),
@@ -300,12 +303,24 @@ QvisSurfacePlotWindow::CreateWindowContents()
     connect(lightingToggle, SIGNAL(toggled(bool)),
             this, SLOT(lightingToggled(bool)));
     miscLayout->addWidget(lightingToggle, 0, 1);
+
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 // ****************************************************************************
 // Method: QvisSurfacePlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   This method is called when the window's subject is changed. The
 //   subject tells this window what attributes changed and we put the
 //   new values into those widgets.
@@ -314,12 +329,12 @@ QvisSurfacePlotWindow::CreateWindowContents()
 //   doAll : If this flag is true, update all the widgets regardless
 //           of whether or not they are selected.
 //
-// Returns:    
+// Returns:
 //
-// Note:       
+// Note:
 //
 // Programmer: Kathleen Bonnell
-// Creation:   March 06, 2001 
+// Creation:   March 06, 2001
 //
 // Modifications:
 //   Kathleen Bonnell, Mon Mar 26 18:17:53 PST 2001
@@ -332,9 +347,9 @@ QvisSurfacePlotWindow::CreateWindowContents()
 //   Kathleen Bonnell, Thu Jun 21 16:33:54 PDT 2001
 //   Enable lineStyle and lineStyleLabel.
 //
-//   Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001 
+//   Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001
 //   Added limitsSelect button and associated colorinMin/Max.  Changed old
-//   min/max to scalingMin/max. 
+//   min/max to scalingMin/max.
 //
 //   Brad Whitlock, Fri Oct 26 17:07:55 PST 2001
 //   Enabled the wireframe widgets.
@@ -342,12 +357,12 @@ QvisSurfacePlotWindow::CreateWindowContents()
 //   Brad Whitlock, Fri Nov 9 11:31:26 PDT 2001
 //   Changed a constant name so it conforms to the name given by xml2atts.
 //
-//   Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002 
+//   Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002
 //   Reflect change in atts ordering.
 //
-//   Kathleen Bonnell, Wed May 29 13:40:22 PDT 2002  
+//   Kathleen Bonnell, Wed May 29 13:40:22 PDT 2002
 //   Remove MinMaxEnabled as user setting minmax no longer dependent upon
-//   limits mode. 
+//   limits mode.
 //
 //   Jeremy Meredith, Tue Nov 16 11:39:53 PST 2004
 //   Replaced simple QString::sprintf's with a setNum because there seems
@@ -355,13 +370,16 @@ QvisSurfacePlotWindow::CreateWindowContents()
 //
 //   Brad Whitlock, Fri Jul 18 11:58:52 PDT 2008
 //   Qt 4.
-//  
+//
 //   Kathleen Bonnell, Mon Jan 17 17:54:48 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
 //
 //   Kathleen Biagas, Thu Apr 9 07:19:54 MST 2015
 //   Use helper function DoubleToQString for consistency in formatting across
 //   all windows.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -384,7 +402,24 @@ QvisSurfacePlotWindow::UpdateWindow(bool doAll)
         case SurfaceAttributes::ID_legendFlag:
             legendToggle->blockSignals(true);
             legendToggle->setChecked(surfaceAtts->GetLegendFlag());
+            customLegendTitleToggle->setEnabled(surfaceAtts->GetLegendFlag());
+            customLegendTitle->setEnabled(surfaceAtts->GetLegendFlag() &&
+                                    surfaceAtts->GetCustomLegendTitleEnabled());
             legendToggle->blockSignals(false);
+            break;
+
+        case SurfaceAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(surfaceAtts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(surfaceAtts->GetLegendFlag() &&
+                                    surfaceAtts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+
+        case SurfaceAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(surfaceAtts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
             break;
 
         case SurfaceAttributes::ID_lightingFlag:
@@ -495,7 +530,7 @@ QvisSurfacePlotWindow::UpdateWindow(bool doAll)
 // ****************************************************************************
 // Method: QvisSurfacePlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets the current values from the text fields and puts the values in the
 //   surfaceAtts.
 //
@@ -504,16 +539,16 @@ QvisSurfacePlotWindow::UpdateWindow(bool doAll)
 //                  the value. An index of -1 gets them all.
 //
 // Programmer: Kathleen Bonnell
-// Creation:   March 06, 2001 
+// Creation:   March 06, 2001
 //
 // Modifications:
-//   Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001 
+//   Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001
 //   Changed old min/max to scalingMin/Max. Added coloringMin/Max.
 //
 //   Brad Whitlock, Fri Feb 15 11:51:09 PDT 2002
 //   Fixed format strings.
 //
-//   Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002 
+//   Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002
 //   Changed back to min/max, removed scalingMin/Max and coloringMin/Max.
 //
 //   Brad Whitlock, Wed Apr 23 12:03:20 PDT 2008
@@ -537,7 +572,7 @@ QvisSurfacePlotWindow::GetCurrentValues(int which_widget)
             surfaceAtts->SetSkewFactor(val);
         else
         {
-            ResettingError("skew factor", 
+            ResettingError("skew factor",
                 DoubleToQString(surfaceAtts->GetSkewFactor()));
             surfaceAtts->SetSkewFactor(surfaceAtts->GetSkewFactor());
         }
@@ -550,7 +585,7 @@ QvisSurfacePlotWindow::GetCurrentValues(int which_widget)
             surfaceAtts->SetMin(val);
         else
         {
-            ResettingError("minimum", 
+            ResettingError("minimum",
                 DoubleToQString(surfaceAtts->GetMin()));
             surfaceAtts->SetMin(surfaceAtts->GetMin());
         }
@@ -563,7 +598,7 @@ QvisSurfacePlotWindow::GetCurrentValues(int which_widget)
             surfaceAtts->SetMax(val);
         else
         {
-            ResettingError("maximum", 
+            ResettingError("maximum",
                 DoubleToQString(surfaceAtts->GetMax()));
             surfaceAtts->SetMax(surfaceAtts->GetMax());
         }
@@ -740,6 +775,55 @@ QvisSurfacePlotWindow::legendToggled(bool val)
 {
     surfaceAtts->SetLegendFlag(val);
     Apply();
+}
+
+// ****************************************************************************
+// Method: QvisSurfacePlotWindow::customLegendTitleToggled
+//
+// Purpose:
+//   This is a Qt slot function that is called when the window's
+//   custom legend title toggle button is clicked.
+//
+// Arguments:
+//   val : The new toggle value.
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+QvisSurfacePlotWindow::customLegendTitleToggled(bool val)
+{
+    surfaceAtts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+// ****************************************************************************
+// Method: QvisSurfacePlotWindow::customLegendTitleProcessText
+//
+// Purpose:
+//   This is a Qt slot function that is called when the window's
+//   custom legend title text is changed.
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+QvisSurfacePlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != surfaceAtts->GetCustomLegendTitle())
+    {
+        surfaceAtts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
 }
 
 
@@ -966,7 +1050,7 @@ QvisSurfacePlotWindow::processSkewText()
 //   val : The toggle's new value.
 //
 // Programmer: Kathleen Bonnell
-// Creation:   October 11, 2001 
+// Creation:   October 11, 2001
 //
 // Modifications:
 //
@@ -1010,7 +1094,7 @@ QvisSurfacePlotWindow::processMinLimitText()
 //   val : The toggle's new value.
 //
 // Programmer: Kathleen Bonnell
-// Creation:   October 11, 2001 
+// Creation:   October 11, 2001
 //
 // Modifications:
 //
@@ -1031,7 +1115,7 @@ QvisSurfacePlotWindow::maxToggled(bool val)
 //   This is a Qt slot function that is called when the max limit changes.
 //
 // Programmer: Kathleen Bonnell
-// Creation:   October 11, 2001 
+// Creation:   October 11, 2001
 //
 // Modifications:
 //
@@ -1075,7 +1159,7 @@ QvisSurfacePlotWindow::colorTableClicked(bool , const QString &ctName)
 // ****************************************************************************
 // Method: QvisSurfacePlotWindow::invertColorTableToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the invert color table flag into the
 //   surface plot attributes.
 //
@@ -1086,7 +1170,7 @@ QvisSurfacePlotWindow::colorTableClicked(bool , const QString &ctName)
 // Creation:   January  17, 2011
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1100,13 +1184,13 @@ QvisSurfacePlotWindow::invertColorTableToggled(bool val)
 // Method: QvisSurfacePlotWindow::limitsSelectChanged
 //
 // Purpose:
-//   This is a Qt slot function that sets 
+//   This is a Qt slot function that sets
 //
 // Arguments:
-//   limitsMode : Which type of limits should be used for coloring. 
-//              
+//   limitsMode : Which type of limits should be used for coloring.
 //
-// Programmer: Kathleen Bonnell 
+//
+// Programmer: Kathleen Bonnell
 // Creation:   October 11, 2001
 //
 // ****************************************************************************
@@ -1123,4 +1207,3 @@ QvisSurfacePlotWindow::limitsSelectChanged(int limitsMode)
         Apply();
     }
 }
-

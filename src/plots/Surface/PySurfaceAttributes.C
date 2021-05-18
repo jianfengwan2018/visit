@@ -48,6 +48,13 @@ PySurfaceAttributes_ToString(const SurfaceAttributes *atts, const char *prefix)
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     if(atts->GetLightingFlag())
         snprintf(tmpStr, 1000, "%slightingFlag = 1\n", prefix);
     else
@@ -166,6 +173,54 @@ SurfaceAttributes_GetLegendFlag(PyObject *self, PyObject *args)
 {
     SurfaceAttributesObject *obj = (SurfaceAttributesObject *)self;
     PyObject *retval = PyInt_FromLong(obj->data->GetLegendFlag()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+SurfaceAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    SurfaceAttributesObject *obj = (SurfaceAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+SurfaceAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    SurfaceAttributesObject *obj = (SurfaceAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+SurfaceAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    SurfaceAttributesObject *obj = (SurfaceAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+SurfaceAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    SurfaceAttributesObject *obj = (SurfaceAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
     return retval;
 }
 
@@ -683,6 +738,10 @@ PyMethodDef PySurfaceAttributes_methods[SURFACEATTRIBUTES_NMETH] = {
     {"Notify", SurfaceAttributes_Notify, METH_VARARGS},
     {"SetLegendFlag", SurfaceAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", SurfaceAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", SurfaceAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", SurfaceAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", SurfaceAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", SurfaceAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetLightingFlag", SurfaceAttributes_SetLightingFlag, METH_VARARGS},
     {"GetLightingFlag", SurfaceAttributes_GetLightingFlag, METH_VARARGS},
     {"SetSurfaceFlag", SurfaceAttributes_SetSurfaceFlag, METH_VARARGS},
@@ -738,6 +797,10 @@ PySurfaceAttributes_getattr(PyObject *self, char *name)
 {
     if(strcmp(name, "legendFlag") == 0)
         return SurfaceAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return SurfaceAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return SurfaceAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "lightingFlag") == 0)
         return SurfaceAttributes_GetLightingFlag(self, NULL);
     if(strcmp(name, "surfaceFlag") == 0)
@@ -829,6 +892,10 @@ PySurfaceAttributes_setattr(PyObject *self, char *name, PyObject *args)
 
     if(strcmp(name, "legendFlag") == 0)
         obj = SurfaceAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = SurfaceAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = SurfaceAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "lightingFlag") == 0)
         obj = SurfaceAttributes_SetLightingFlag(self, tuple);
     else if(strcmp(name, "surfaceFlag") == 0)

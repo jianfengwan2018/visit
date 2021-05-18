@@ -69,12 +69,15 @@ public:
 
     // Property selection methods
     virtual void SelectAll();
+    void SelectCustomLegendTitle();
     void SelectSurfaceColor();
     void SelectWireframeColor();
     void SelectColorTableName();
 
     // Property setting methods
     void SetLegendFlag(bool legendFlag_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
     void SetLightingFlag(bool lightingFlag_);
     void SetSurfaceFlag(bool surfaceFlag_);
     void SetWireframeFlag(bool wireframeFlag_);
@@ -94,6 +97,9 @@ public:
 
     // Property getting methods
     bool                 GetLegendFlag() const;
+    bool                 GetCustomLegendTitleEnabled() const;
+    const std::string    &GetCustomLegendTitle() const;
+          std::string    &GetCustomLegendTitle();
     bool                 GetLightingFlag() const;
     bool                 GetSurfaceFlag() const;
     bool                 GetWireframeFlag() const;
@@ -147,6 +153,8 @@ public:
     // IDs that can be used to identify fields in case statements
     enum {
         ID_legendFlag = 0,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID_lightingFlag,
         ID_surfaceFlag,
         ID_wireframeFlag,
@@ -168,6 +176,8 @@ public:
 
 private:
     bool           legendFlag;
+    bool           customLegendTitleEnabled;
+    std::string    customLegendTitle;
     bool           lightingFlag;
     bool           surfaceFlag;
     bool           wireframeFlag;
@@ -189,6 +199,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define SURFACEATTRIBUTES_TMFS "bbbbibbbiiaadddsb"
+#define SURFACEATTRIBUTES_TMFS "bbsbbbibbbiiaadddsb"
 
 #endif

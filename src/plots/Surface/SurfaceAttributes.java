@@ -26,7 +26,7 @@ import llnl.visit.ColorAttribute;
 
 public class SurfaceAttributes extends AttributeSubject implements Plugin
 {
-    private static int SurfaceAttributes_numAdditionalAtts = 17;
+    private static int SurfaceAttributes_numAdditionalAtts = 19;
 
     // Enum values
     public final static int COLORBYTYPE_CONSTANT = 0;
@@ -45,6 +45,8 @@ public class SurfaceAttributes extends AttributeSubject implements Plugin
         super(SurfaceAttributes_numAdditionalAtts);
 
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         lightingFlag = true;
         surfaceFlag = true;
         wireframeFlag = false;
@@ -68,6 +70,8 @@ public class SurfaceAttributes extends AttributeSubject implements Plugin
         super(SurfaceAttributes_numAdditionalAtts + nMoreFields);
 
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         lightingFlag = true;
         surfaceFlag = true;
         wireframeFlag = false;
@@ -91,6 +95,8 @@ public class SurfaceAttributes extends AttributeSubject implements Plugin
         super(obj);
 
         legendFlag = obj.legendFlag;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         lightingFlag = obj.lightingFlag;
         surfaceFlag = obj.surfaceFlag;
         wireframeFlag = obj.wireframeFlag;
@@ -125,6 +131,8 @@ public class SurfaceAttributes extends AttributeSubject implements Plugin
     {
         // Create the return value
         return ((legendFlag == obj.legendFlag) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (lightingFlag == obj.lightingFlag) &&
                 (surfaceFlag == obj.surfaceFlag) &&
                 (wireframeFlag == obj.wireframeFlag) &&
@@ -153,104 +161,118 @@ public class SurfaceAttributes extends AttributeSubject implements Plugin
         Select(0);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(1);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(2);
+    }
+
     public void SetLightingFlag(boolean lightingFlag_)
     {
         lightingFlag = lightingFlag_;
-        Select(1);
+        Select(3);
     }
 
     public void SetSurfaceFlag(boolean surfaceFlag_)
     {
         surfaceFlag = surfaceFlag_;
-        Select(2);
+        Select(4);
     }
 
     public void SetWireframeFlag(boolean wireframeFlag_)
     {
         wireframeFlag = wireframeFlag_;
-        Select(3);
+        Select(5);
     }
 
     public void SetLimitsMode(int limitsMode_)
     {
         limitsMode = limitsMode_;
-        Select(4);
+        Select(6);
     }
 
     public void SetMinFlag(boolean minFlag_)
     {
         minFlag = minFlag_;
-        Select(5);
+        Select(7);
     }
 
     public void SetMaxFlag(boolean maxFlag_)
     {
         maxFlag = maxFlag_;
-        Select(6);
+        Select(8);
     }
 
     public void SetColorByZFlag(boolean colorByZFlag_)
     {
         colorByZFlag = colorByZFlag_;
-        Select(7);
+        Select(9);
     }
 
     public void SetScaling(int scaling_)
     {
         scaling = scaling_;
-        Select(8);
+        Select(10);
     }
 
     public void SetLineWidth(int lineWidth_)
     {
         lineWidth = lineWidth_;
-        Select(9);
+        Select(11);
     }
 
     public void SetSurfaceColor(ColorAttribute surfaceColor_)
     {
         surfaceColor = surfaceColor_;
-        Select(10);
+        Select(12);
     }
 
     public void SetWireframeColor(ColorAttribute wireframeColor_)
     {
         wireframeColor = wireframeColor_;
-        Select(11);
+        Select(13);
     }
 
     public void SetSkewFactor(double skewFactor_)
     {
         skewFactor = skewFactor_;
-        Select(12);
+        Select(14);
     }
 
     public void SetMin(double min_)
     {
         min = min_;
-        Select(13);
+        Select(15);
     }
 
     public void SetMax(double max_)
     {
         max = max_;
-        Select(14);
+        Select(16);
     }
 
     public void SetColorTableName(String colorTableName_)
     {
         colorTableName = colorTableName_;
-        Select(15);
+        Select(17);
     }
 
     public void SetInvertColorTable(boolean invertColorTable_)
     {
         invertColorTable = invertColorTable_;
-        Select(16);
+        Select(18);
     }
 
     // Property getting methods
     public boolean        GetLegendFlag() { return legendFlag; }
+    public boolean        GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String         GetCustomLegendTitle() { return customLegendTitle; }
     public boolean        GetLightingFlag() { return lightingFlag; }
     public boolean        GetSurfaceFlag() { return surfaceFlag; }
     public boolean        GetWireframeFlag() { return wireframeFlag; }
@@ -274,36 +296,40 @@ public class SurfaceAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(0, buf))
             buf.WriteBool(legendFlag);
         if(WriteSelect(1, buf))
-            buf.WriteBool(lightingFlag);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(2, buf))
-            buf.WriteBool(surfaceFlag);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(3, buf))
-            buf.WriteBool(wireframeFlag);
+            buf.WriteBool(lightingFlag);
         if(WriteSelect(4, buf))
-            buf.WriteInt(limitsMode);
+            buf.WriteBool(surfaceFlag);
         if(WriteSelect(5, buf))
-            buf.WriteBool(minFlag);
+            buf.WriteBool(wireframeFlag);
         if(WriteSelect(6, buf))
-            buf.WriteBool(maxFlag);
+            buf.WriteInt(limitsMode);
         if(WriteSelect(7, buf))
-            buf.WriteBool(colorByZFlag);
+            buf.WriteBool(minFlag);
         if(WriteSelect(8, buf))
-            buf.WriteInt(scaling);
+            buf.WriteBool(maxFlag);
         if(WriteSelect(9, buf))
-            buf.WriteInt(lineWidth);
+            buf.WriteBool(colorByZFlag);
         if(WriteSelect(10, buf))
-            surfaceColor.Write(buf);
+            buf.WriteInt(scaling);
         if(WriteSelect(11, buf))
-            wireframeColor.Write(buf);
+            buf.WriteInt(lineWidth);
         if(WriteSelect(12, buf))
-            buf.WriteDouble(skewFactor);
+            surfaceColor.Write(buf);
         if(WriteSelect(13, buf))
-            buf.WriteDouble(min);
+            wireframeColor.Write(buf);
         if(WriteSelect(14, buf))
-            buf.WriteDouble(max);
+            buf.WriteDouble(skewFactor);
         if(WriteSelect(15, buf))
-            buf.WriteString(colorTableName);
+            buf.WriteDouble(min);
         if(WriteSelect(16, buf))
+            buf.WriteDouble(max);
+        if(WriteSelect(17, buf))
+            buf.WriteString(colorTableName);
+        if(WriteSelect(18, buf))
             buf.WriteBool(invertColorTable);
     }
 
@@ -315,53 +341,59 @@ public class SurfaceAttributes extends AttributeSubject implements Plugin
             SetLegendFlag(buf.ReadBool());
             break;
         case 1:
-            SetLightingFlag(buf.ReadBool());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 2:
-            SetSurfaceFlag(buf.ReadBool());
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 3:
-            SetWireframeFlag(buf.ReadBool());
+            SetLightingFlag(buf.ReadBool());
             break;
         case 4:
-            SetLimitsMode(buf.ReadInt());
+            SetSurfaceFlag(buf.ReadBool());
             break;
         case 5:
-            SetMinFlag(buf.ReadBool());
+            SetWireframeFlag(buf.ReadBool());
             break;
         case 6:
-            SetMaxFlag(buf.ReadBool());
+            SetLimitsMode(buf.ReadInt());
             break;
         case 7:
-            SetColorByZFlag(buf.ReadBool());
+            SetMinFlag(buf.ReadBool());
             break;
         case 8:
-            SetScaling(buf.ReadInt());
+            SetMaxFlag(buf.ReadBool());
             break;
         case 9:
-            SetLineWidth(buf.ReadInt());
+            SetColorByZFlag(buf.ReadBool());
             break;
         case 10:
-            surfaceColor.Read(buf);
-            Select(10);
+            SetScaling(buf.ReadInt());
             break;
         case 11:
-            wireframeColor.Read(buf);
-            Select(11);
+            SetLineWidth(buf.ReadInt());
             break;
         case 12:
-            SetSkewFactor(buf.ReadDouble());
+            surfaceColor.Read(buf);
+            Select(12);
             break;
         case 13:
-            SetMin(buf.ReadDouble());
+            wireframeColor.Read(buf);
+            Select(13);
             break;
         case 14:
-            SetMax(buf.ReadDouble());
+            SetSkewFactor(buf.ReadDouble());
             break;
         case 15:
-            SetColorTableName(buf.ReadString());
+            SetMin(buf.ReadDouble());
             break;
         case 16:
+            SetMax(buf.ReadDouble());
+            break;
+        case 17:
+            SetColorTableName(buf.ReadString());
+            break;
+        case 18:
             SetInvertColorTable(buf.ReadBool());
             break;
         }
@@ -371,6 +403,8 @@ public class SurfaceAttributes extends AttributeSubject implements Plugin
     {
         String str = new String();
         str = str + boolToString("legendFlag", legendFlag, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + boolToString("lightingFlag", lightingFlag, indent) + "\n";
         str = str + boolToString("surfaceFlag", surfaceFlag, indent) + "\n";
         str = str + boolToString("wireframeFlag", wireframeFlag, indent) + "\n";
@@ -405,6 +439,8 @@ public class SurfaceAttributes extends AttributeSubject implements Plugin
 
     // Attributes
     private boolean        legendFlag;
+    private boolean        customLegendTitleEnabled;
+    private String         customLegendTitle;
     private boolean        lightingFlag;
     private boolean        surfaceFlag;
     private boolean        wireframeFlag;

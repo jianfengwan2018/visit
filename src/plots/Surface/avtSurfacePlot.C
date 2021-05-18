@@ -5,7 +5,7 @@
 // ************************************************************************* //
 //                             avtSurfacePlot.C                              //
 // ************************************************************************* //
- 
+
 #include <avtSurfacePlot.h>
 #include <avtSurfaceFilter.h>
 #include <avtSurfaceMapper.h>
@@ -32,12 +32,12 @@
 //    avtSurfaceAndWireframeRenderer.  Added intialization of
 //    new member 'property', and 'LUT'.
 //
-//    Kathleen Bonnell, Thu Aug 30 11:09:23 PDT 2001 
-//    Change from vtkLookupTable to avtLookupTable. 
-//    
-//    Kathleen Bonnell, Thu Sep 27 13:49:17 PDT 2001 
-//    Use new renderer methods for setting primitive drawing. 
-//    
+//    Kathleen Bonnell, Thu Aug 30 11:09:23 PDT 2001
+//    Change from vtkLookupTable to avtLookupTable.
+//
+//    Kathleen Bonnell, Thu Sep 27 13:49:17 PDT 2001
+//    Use new renderer methods for setting primitive drawing.
+//
 //    Hank Childs, Tue Apr 23 20:16:50 PDT 2002
 //    Instantiate renderer through 'New' to insulate from graphics library
 //    issues.
@@ -45,7 +45,7 @@
 //    Hank Childs, Mon May 20 10:47:18 PDT 2002
 //    Reflect that our renderer is now reference counted.
 //
-//    Hank Childs, Thu Sep 12 14:01:37 PDT 2002          
+//    Hank Childs, Thu Sep 12 14:01:37 PDT 2002
 //    Initialize surfaceFilter.
 //
 //    Eric Brugger, Wed Jul 16 11:22:08 PDT 2003
@@ -74,7 +74,7 @@ avtSurfacePlot::avtSurfacePlot()
     //
     // This is to allow the legend to reference counted so the behavior can
     // still access it after the plot is deleted.  The legend cannot be
-    // reference counted all of the time since we need to know that it is a 
+    // reference counted all of the time since we need to know that it is a
     // VariableLegend.
     //
     varLegendRefPtr = varLegend;
@@ -92,12 +92,12 @@ avtSurfacePlot::avtSurfacePlot()
 //  Modifications:
 //
 //    Kathleen Bonnell, Mon Aug 20 09:09:21 PDT 2001
-//    Added destruction of renderer, property, and LUT. 
+//    Added destruction of renderer, property, and LUT.
 //
 //    Hank Childs, Mon May 20 10:47:18 PDT 2002
 //    Do not delete the renderer, because it is now reference counted.
 //
-//    Hank Childs, Thu Sep 12 14:01:37 PDT 2002          
+//    Hank Childs, Thu Sep 12 14:01:37 PDT 2002
 //    Delete surface surfaceFilter.
 //
 //    Kathleen Bonnell, Mon May 24 14:13:55 PDT 2004
@@ -174,7 +174,7 @@ avtSurfacePlot::GetMapper(void)
 //  Method: avtSurfacePlot::ApplyOperators
 //
 //  Purpose:
-//      Applies the operators associated with a surface plot -- 
+//      Applies the operators associated with a surface plot --
 //      an avtSurfaceFilter.
 //
 //  Arguments:
@@ -190,7 +190,7 @@ avtSurfacePlot::GetMapper(void)
 //    Hank Childs, Fri Jun 15 09:40:58 PDT 2001
 //    Use more general data objects instead of derived types.
 //
-//    Hank Childs, Thu Sep 12 14:01:37 PDT 2002          
+//    Hank Childs, Thu Sep 12 14:01:37 PDT 2002
 //    Clean up memory leak.
 //
 // ****************************************************************************
@@ -225,14 +225,14 @@ avtSurfacePlot::ApplyOperators(avtDataObject_p input)
 //  Method: avtSurfacePlot::ApplyRenderingTransformation
 //
 //  Purpose:
-//    Applies the rendering transformation associated with a surface plot -- 
-//    avtWireframeFilter. 
+//    Applies the rendering transformation associated with a surface plot --
+//    avtWireframeFilter.
 //
 //  Arguments:
 //    input   The input data object.
 //
-//  Returns:    The data object after the wireframeFilter is applied. 
-// 
+//  Returns:    The data object after the wireframeFilter is applied.
+//
 //  Programmer:  Kathleen Bonnell
 //  Creation:    October 22, 2002
 //
@@ -256,7 +256,7 @@ avtSurfacePlot::ApplyRenderingTransformation(avtDataObject_p input)
 //  Method: avtSurfacePlot::CustomizeBehavior
 //
 //  Purpose:
-//      Customizes the behavior as appropriate for a surface plot.  
+//      Customizes the behavior as appropriate for a surface plot.
 //
 //  Programmer: Kathleen Bonnell
 //  Creation:   March 05, 2001
@@ -268,13 +268,13 @@ avtSurfacePlot::ApplyRenderingTransformation(avtDataObject_p input)
 //    Added calls to retrieve from mapper, set in legend the variable's true
 //    extents.  Turn off color bar when coloring surface by constant color.
 //
-//    Kathleen Bonnell, Wed Apr 25 14:28:22 PDT 2001 
-//    Reflect change in InvalidLimitsException signature. 
-//    
+//    Kathleen Bonnell, Wed Apr 25 14:28:22 PDT 2001
+//    Reflect change in InvalidLimitsException signature.
+//
 //    Jeremy Meredith, Tue Jun  5 20:45:02 PDT 2001
 //    Allow storage of attributes as a class member.
 //
-//    Kathleen Bonnell, Tue Aug 21 10:15:07 PDT 2001 
+//    Kathleen Bonnell, Tue Aug 21 10:15:07 PDT 2001
 //    GetRange is now a call to the base avtMapper class,
 //    so does not take into account user-defined min/max.
 //    Added that functionality.  Set renderer's scalar range
@@ -284,17 +284,17 @@ avtSurfacePlot::ApplyRenderingTransformation(avtDataObject_p input)
 //    Kathleen Bonnell, Thu Aug 30 11:09:23 PDT 2001
 //    Set the legend's lut from avtLUT.
 //
-//    Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001 
+//    Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001
 //    Moved the bulk of the code to method SetLimitsMode, so that
 //    changes to 'coloring' attributes won't require this plot to be
-//    recalculated. 
+//    recalculated.
 //
-//    Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002  
-//    Moved code that sets legend's LUT to SetScaling method. 
+//    Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002
+//    Moved code that sets legend's LUT to SetScaling method.
 //
-//    Kathleen Bonnell, Mon Sep 29 12:31:18 PDT 2003 
+//    Kathleen Bonnell, Mon Sep 29 12:31:18 PDT 2003
 //    Set AntialiasedRenderOrder depending upon whether or not the wireframe
-//    is being drawn without the surface. 
+//    is being drawn without the surface.
 //
 //    Kathleen Biagas, Mon Jul 18 17:11:51 MST 2016
 //    VTK-7 port: Remove property.
@@ -314,7 +314,7 @@ avtSurfacePlot::CustomizeBehavior()
     behavior->SetRenderOrder(DOES_NOT_MATTER);
     if (atts.GetWireframeFlag() && !atts.GetSurfaceFlag())
       behavior->SetAntialiasedRenderOrder(ABSOLUTELY_LAST);
-    else 
+    else
       behavior->SetAntialiasedRenderOrder(DOES_NOT_MATTER);
 }
 
@@ -344,42 +344,45 @@ avtSurfacePlot::CustomizeBehavior()
 //    Brad Whitlock, Fri Jun 15 14:24:28 PST 2001
 //    Added code to set the colors table.
 //
-//    Kathleen Bonnell, Thu Jun 21 17:33:08 PDT 2001 
-//    Added code to set the line style. 
+//    Kathleen Bonnell, Thu Jun 21 17:33:08 PDT 2001
+//    Added code to set the line style.
 //
-//    Kathleen Bonnell, Mon Aug 20 09:09:21 PDT 2001 
+//    Kathleen Bonnell, Mon Aug 20 09:09:21 PDT 2001
 //    Added calls to set renderer and property values
 //    based on atts.
 //
 //    Jeremy Meredith, Thu Aug 23 14:11:40 PDT 2001
 //    Made it use the color table name "Default" instead of the boolean flag.
 //
-//    Kathleen Bonnell, Thu Aug 30 16:45:39 PDT 2001 
+//    Kathleen Bonnell, Thu Aug 30 16:45:39 PDT 2001
 //    Removed an if-test before call to SetColorTable.  The case is
 //    handled from within SetColorTable.
 //
-//    Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001 
-//    Added call to SetLimitsMode. 
-//    
-//    Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002 
-//    Re-ordered method calls. 
-//    
-//    Kathleen Bonnell, Tue Nov 26 15:39:16 PST 2002
-//    Notify renderer when lut colors are updated. 
-//    
-//    Kathleen Bonnell, Mon Sep 29 12:31:18 PDT 2003 
-//    Set AntialiasedRenderOrder depending upon whether or not the wireframe
-//    is being drawn without the surface. 
+//    Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001
+//    Added call to SetLimitsMode.
 //
-//    Kathleen Bonnell, Thu Sep  2 11:44:09 PDT 2004 
-//    Set renderer's CanApplyGlobalRepresentation flag. 
-//    
+//    Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002
+//    Re-ordered method calls.
+//
+//    Kathleen Bonnell, Tue Nov 26 15:39:16 PST 2002
+//    Notify renderer when lut colors are updated.
+//
+//    Kathleen Bonnell, Mon Sep 29 12:31:18 PDT 2003
+//    Set AntialiasedRenderOrder depending upon whether or not the wireframe
+//    is being drawn without the surface.
+//
+//    Kathleen Bonnell, Thu Sep  2 11:44:09 PDT 2004
+//    Set renderer's CanApplyGlobalRepresentation flag.
+//
 //    Kathleen Bonnell, Mon Jan 17 17:51:40 MST 2011
 //    Account for InvertColorTable when determining updateColors.
 //
 //    Kathleen Biagas, Mon Jul 18 17:11:51 MST 2016
 //    VTK-7 port: Use surface-plot specific mapper instead of user-specified
 //    with avtSurfaceAndWireframeRenderer.
+//
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
 //
 // ****************************************************************************
 
@@ -397,10 +400,10 @@ avtSurfacePlot::SetAtts(const AttributeGroup *a)
     // changed and copy the state object.
     needsRecalculation = atts.ChangesRequireRecalculation(*newAtts);
     atts = *newAtts;
- 
+
     if (atts.GetSurfaceFlag())
     {
-        SetSurfaceAttributes(atts.GetColorByZFlag()); 
+        SetSurfaceAttributes(atts.GetColorByZFlag());
     }
     SetWireframeAttributes(atts.GetWireframeFlag());
     mapper->SetIgnoreLighting(!atts.GetLightingFlag());
@@ -422,14 +425,19 @@ avtSurfacePlot::SetAtts(const AttributeGroup *a)
 
     if (atts.GetWireframeFlag() && !atts.GetSurfaceFlag())
         behavior->SetAntialiasedRenderOrder(ABSOLUTELY_LAST);
-    else 
+    else
         behavior->SetAntialiasedRenderOrder(DOES_NOT_MATTER);
+
+    if(atts.GetCustomLegendTitleEnabled())
+        varLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        varLegend->SetTitle("Subset");
 }
 
 // ****************************************************************************
 // Method: avtSurfacePlot::SetColorTable
 //
-// Purpose: 
+// Purpose:
 //   Sets the plot's color table if the color table is the same as that of
 //   the plot or we are using the default color table for the plot.
 //
@@ -447,12 +455,12 @@ avtSurfacePlot::SetAtts(const AttributeGroup *a)
 //    Made it use the color table name "Default" instead of the boolean flag.
 //
 //    Kathleen Bonnell, Thu Aug 30 11:09:23 PDT 2001
-//    Main functionality now resides in avtLookupTable::SetColorTable. 
+//    Main functionality now resides in avtLookupTable::SetColorTable.
 //
-//    Kathleen Bonnell, Fri Aug 31 15:21:45 PDT 2001 
+//    Kathleen Bonnell, Fri Aug 31 15:21:45 PDT 2001
 //    Added logic (which existed here prior to moving functionality to
 //    avtLookupTable) to ensure changing active color in color table window
-//    affects this plot if its color table is default.  
+//    affects this plot if its color table is default.
 //
 //    Kathleen Bonnell, Mon Jan 17 17:52:24 MST 2011
 //    Retrieve invertColorTable toggle and pass to avtLUT.
@@ -522,7 +530,7 @@ avtSurfacePlot::SetLegend(bool legendOn)
 //    Jeremy Meredith, Tue Jun  5 20:45:02 PDT 2001
 //    Allow storage of attributes as a class member.
 //
-//    Kathleen Bonnell, Mon Aug 20 19:01:04 PDT 2001 
+//    Kathleen Bonnell, Mon Aug 20 19:01:04 PDT 2001
 //    Changed functionality to only create the specific type
 //    of lookup table.  Removed call to set hue range, as it
 //    is unnecessary with Brads' new color tables.
@@ -530,8 +538,8 @@ avtSurfacePlot::SetLegend(bool legendOn)
 //    Kathleen Bonnell, Thu Aug 30 11:09:23 PDT 2001
 //    Use avtLUT methods to set the renderer's lut.
 //
-//    Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002  
-//    Set legend's LUT. 
+//    Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002
+//    Set legend's LUT.
 //
 // ****************************************************************************
 
@@ -542,7 +550,7 @@ avtSurfacePlot::SetScaling(const int mode, const double skew)
     varLegend->SetScaling(mode, skew);
 
     if (mode == SurfaceAttributes::Log &&
-        atts.GetColorByZFlag()) 
+        atts.GetColorByZFlag())
     {
         mapper->SetLookupTable(avtLUT->GetLogLookupTable());
     }
@@ -562,13 +570,13 @@ avtSurfacePlot::SetScaling(const int mode, const double skew)
 //  Method: avtSurfacePlot::SetWireframeAttributes
 //
 //  Purpose:
-//    Sets the necessary attributes for drawing the wireframe. 
+//    Sets the necessary attributes for drawing the wireframe.
 //
 //  Arguments:
-//    on          True if we want to draw the wireframe. 
+//    on          True if we want to draw the wireframe.
 //
 //  Programmer:   Kathleen Bonnell
-//  Creation:     August 21, 2001 
+//  Creation:     August 21, 2001
 //
 // ****************************************************************************
 
@@ -595,10 +603,10 @@ avtSurfacePlot::SetWireframeAttributes(bool on)
 //    Sets the coloring mode for the surface.
 //
 //  Arguments:
-//    useScalars  True if we want to color by the scalars, false otherwise. 
+//    useScalars  True if we want to color by the scalars, false otherwise.
 //
 //  Programmer:   Kathleen Bonnell
-//  Creation:     August 21, 2001 
+//  Creation:     August 21, 2001
 //
 //  Modifications:
 //    Kathleen Bonnell, Tue Nov 26 15:39:16 PST 2002
@@ -610,7 +618,7 @@ avtSurfacePlot::SetWireframeAttributes(bool on)
 void
 avtSurfacePlot::SetSurfaceAttributes(bool useScalars)
 {
-    mapper->SetScalarVisibility(useScalars); 
+    mapper->SetScalarVisibility(useScalars);
     if (!useScalars)
     {
         const unsigned char * col = atts.GetSurfaceColor().GetColor();
@@ -630,16 +638,16 @@ avtSurfacePlot::SetSurfaceAttributes(bool useScalars)
 //    Sets the limits used for coloring.
 //
 //  Arguments:
-//    mode        Which type of limits to use. 
+//    mode        Which type of limits to use.
 //
 //  Programmer:   Kathleen Bonnell
-//  Creation:     October 4, 2001 
+//  Creation:     October 4, 2001
 //
 //  Modifications:
-//    Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002 
+//    Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002
 //    Test for invalid user-specified min/max.
 //
-//    Kathleen Bonnell, Wed May 29 13:40:22 PDT 2002 
+//    Kathleen Bonnell, Wed May 29 13:40:22 PDT 2002
 //    Always allow user-specified min/max.
 //
 //    Eric Brugger, Wed Jul 16 11:22:08 PDT 2003
@@ -650,7 +658,7 @@ avtSurfacePlot::SetSurfaceAttributes(bool useScalars)
 void
 avtSurfacePlot::SetLimitsMode(int mode)
 {
-    double origMin, origMax; 
+    double origMin, origMax;
     double userMin, userMax;
 
     if (!mapper->GetDataRange(origMin, origMax))
@@ -677,7 +685,7 @@ avtSurfacePlot::SetLimitsMode(int mode)
 
     if ((userMin >= userMax) && atts.GetMinFlag() && atts.GetMaxFlag())
     {
-        EXCEPTION1(InvalidLimitsException, false); 
+        EXCEPTION1(InvalidLimitsException, false);
     }
     else if ((userMin > userMax) && atts.GetMinFlag())
     {
@@ -687,39 +695,39 @@ avtSurfacePlot::SetLimitsMode(int mode)
     {
         userMin = userMax;
     }
-   
-    //  
-    //  Before setting the range for the legend and renderer, need to 
-    //  check for non-positive limits if log scaling is to be used. 
-    //  
+
+    //
+    //  Before setting the range for the legend and renderer, need to
+    //  check for non-positive limits if log scaling is to be used.
+    //
     if (atts.GetScaling() == SurfaceAttributes::Log  &&
         (userMin <=0. || userMax <= 0.) )
     {
-        EXCEPTION1(InvalidLimitsException, true); 
+        EXCEPTION1(InvalidLimitsException, true);
     }
 
     mapper->SetScalarRange(userMin, userMax);
 
     // this sets range for labels
     varLegend->SetRange(userMin, userMax);
-    
-    // this sets range for limit text 
+
+    // this sets range for limit text
     varLegend->SetVarRange(origMin, origMax);
-    
-    if (!atts.GetColorByZFlag()) 
+
+    if (!atts.GetColorByZFlag())
     {
         varLegend->SetColorBarVisibility(0);
         char msg[250];
-        snprintf(msg, 250, "Z-min:  %# -9.4g\nZ-max:  %# -9.4g", 
+        snprintf(msg, 250, "Z-min:  %# -9.4g\nZ-max:  %# -9.4g",
                  origMin, origMax);
         varLegend->SetMessage(msg);
     }
     else
     {
-        // 
-        // Make sure we render the color bar, in case we turned it off 
-        // previously. 
-        // 
+        //
+        // Make sure we render the color bar, in case we turned it off
+        // previously.
+        //
         varLegend->SetColorBarVisibility(1);
         varLegend->SetMessage(NULL);
     }
@@ -740,12 +748,12 @@ avtSurfacePlot::SetLimitsMode(int mode)
 //    Added avtWireframeFilter.
 //
 // ****************************************************************************
- 
+
 void
 avtSurfacePlot::ReleaseData(void)
 {
     avtSurfaceDataPlot::ReleaseData();
- 
+
     if (surfaceFilter != NULL)
     {
         surfaceFilter->ReleaseData();

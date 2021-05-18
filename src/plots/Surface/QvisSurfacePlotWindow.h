@@ -22,14 +22,14 @@ class QvisLineWidthWidget;
 // ****************************************************************************
 // Class: QvisSurfacePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   This class is an observer window that watches material plot attributes
 //   and always represents their current state.
 //
 // Notes:
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   March 06, 2001 
+// Programmer: Kathleen Bonnell
+// Creation:   March 06, 2001
 //
 // Modifications:
 //   Eric Brugger, Fri Mar 16 14:42:45 PST 2001
@@ -41,17 +41,20 @@ class QvisLineWidthWidget;
 //
 //   Kathleen Bonnell, Thu Oct 11 12:45:30 PDT 2001
 //   Changed limits (min/max) related members to reflect distinction between
-//   limits used for scaling and limits used for coloring.   
+//   limits used for scaling and limits used for coloring.
 //   Added limitsSelect
 //
-//   Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002 
-//   Revert back to using one min/max for both scaling and coloring purposes. 
-//   
+//   Kathleen Bonnell, Thu Mar 28 14:03:19 PST 2002
+//   Revert back to using one min/max for both scaling and coloring purposes.
+//
 //   Allen Sanderson, Sun Mar  7 12:49:56 PST 2010
 //   Change layout of window for 2.0 interface changes.
 //
 //   Kathleen Bonnell, Mon Jan 17 17:54:48 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -77,13 +80,15 @@ protected:
 private slots:
     void lineWidthChanged(int newWidth);
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
     void lightingToggled(bool val);
     void scaleClicked(int button);
     void surfaceToggled(bool val);
     void wireframeToggled(bool val);
     void surfaceColorChanged(const QColor &color);
     void wireframeColorChanged(const QColor &color);
-    void colorModeChanged(int ); 
+    void colorModeChanged(int );
     void minToggled(bool);
     void processMinLimitText();
     void maxToggled(bool);
@@ -119,6 +124,8 @@ private:
     QLineEdit              *maxLineEdit;
 
     QCheckBox              *legendToggle;
+    QCheckBox              *customLegendTitleToggle;
+    QLineEdit              *customLegendTitle;
     QCheckBox              *lightingToggle;
 };
 

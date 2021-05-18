@@ -135,6 +135,7 @@ SurfaceAttributes::LimitsMode_FromString(const std::string &s, SurfaceAttributes
 void SurfaceAttributes::Init()
 {
     legendFlag = true;
+    customLegendTitleEnabled = false;
     lightingFlag = true;
     surfaceFlag = true;
     wireframeFlag = false;
@@ -170,6 +171,8 @@ void SurfaceAttributes::Init()
 void SurfaceAttributes::Copy(const SurfaceAttributes &obj)
 {
     legendFlag = obj.legendFlag;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     lightingFlag = obj.lightingFlag;
     surfaceFlag = obj.surfaceFlag;
     wireframeFlag = obj.wireframeFlag;
@@ -348,6 +351,8 @@ SurfaceAttributes::operator == (const SurfaceAttributes &obj) const
 {
     // Create the return value
     return ((legendFlag == obj.legendFlag) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (lightingFlag == obj.lightingFlag) &&
             (surfaceFlag == obj.surfaceFlag) &&
             (wireframeFlag == obj.wireframeFlag) &&
@@ -507,23 +512,25 @@ SurfaceAttributes::NewInstance(bool copy) const
 void
 SurfaceAttributes::SelectAll()
 {
-    Select(ID_legendFlag,       (void *)&legendFlag);
-    Select(ID_lightingFlag,     (void *)&lightingFlag);
-    Select(ID_surfaceFlag,      (void *)&surfaceFlag);
-    Select(ID_wireframeFlag,    (void *)&wireframeFlag);
-    Select(ID_limitsMode,       (void *)&limitsMode);
-    Select(ID_minFlag,          (void *)&minFlag);
-    Select(ID_maxFlag,          (void *)&maxFlag);
-    Select(ID_colorByZFlag,     (void *)&colorByZFlag);
-    Select(ID_scaling,          (void *)&scaling);
-    Select(ID_lineWidth,        (void *)&lineWidth);
-    Select(ID_surfaceColor,     (void *)&surfaceColor);
-    Select(ID_wireframeColor,   (void *)&wireframeColor);
-    Select(ID_skewFactor,       (void *)&skewFactor);
-    Select(ID_min,              (void *)&min);
-    Select(ID_max,              (void *)&max);
-    Select(ID_colorTableName,   (void *)&colorTableName);
-    Select(ID_invertColorTable, (void *)&invertColorTable);
+    Select(ID_legendFlag,               (void *)&legendFlag);
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,        (void *)&customLegendTitle);
+    Select(ID_lightingFlag,             (void *)&lightingFlag);
+    Select(ID_surfaceFlag,              (void *)&surfaceFlag);
+    Select(ID_wireframeFlag,            (void *)&wireframeFlag);
+    Select(ID_limitsMode,               (void *)&limitsMode);
+    Select(ID_minFlag,                  (void *)&minFlag);
+    Select(ID_maxFlag,                  (void *)&maxFlag);
+    Select(ID_colorByZFlag,             (void *)&colorByZFlag);
+    Select(ID_scaling,                  (void *)&scaling);
+    Select(ID_lineWidth,                (void *)&lineWidth);
+    Select(ID_surfaceColor,             (void *)&surfaceColor);
+    Select(ID_wireframeColor,           (void *)&wireframeColor);
+    Select(ID_skewFactor,               (void *)&skewFactor);
+    Select(ID_min,                      (void *)&min);
+    Select(ID_max,                      (void *)&max);
+    Select(ID_colorTableName,           (void *)&colorTableName);
+    Select(ID_invertColorTable,         (void *)&invertColorTable);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -560,6 +567,18 @@ SurfaceAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool forc
     {
         addToParent = true;
         node->AddNode(new DataNode("legendFlag", legendFlag));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
     }
 
     if(completeSave || !FieldsEqual(ID_lightingFlag, &defaultObject))
@@ -700,6 +719,10 @@ SurfaceAttributes::SetFromNode(DataNode *parentNode)
     DataNode *node;
     if((node = searchNode->GetNode("legendFlag")) != 0)
         SetLegendFlag(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("lightingFlag")) != 0)
         SetLightingFlag(node->AsBool());
     if((node = searchNode->GetNode("surfaceFlag")) != 0)
@@ -771,6 +794,20 @@ SurfaceAttributes::SetLegendFlag(bool legendFlag_)
 {
     legendFlag = legendFlag_;
     Select(ID_legendFlag, (void *)&legendFlag);
+}
+
+void
+SurfaceAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+SurfaceAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
 }
 
 void
@@ -896,6 +933,24 @@ SurfaceAttributes::GetLegendFlag() const
 }
 
 bool
+SurfaceAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+SurfaceAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+SurfaceAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
+bool
 SurfaceAttributes::GetLightingFlag() const
 {
     return lightingFlag;
@@ -1014,6 +1069,12 @@ SurfaceAttributes::GetInvertColorTable() const
 ///////////////////////////////////////////////////////////////////////////////
 
 void
+SurfaceAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 SurfaceAttributes::SelectSurfaceColor()
 {
     Select(ID_surfaceColor, (void *)&surfaceColor);
@@ -1055,23 +1116,25 @@ SurfaceAttributes::GetFieldName(int index) const
 {
     switch (index)
     {
-    case ID_legendFlag:       return "legendFlag";
-    case ID_lightingFlag:     return "lightingFlag";
-    case ID_surfaceFlag:      return "surfaceFlag";
-    case ID_wireframeFlag:    return "wireframeFlag";
-    case ID_limitsMode:       return "limitsMode";
-    case ID_minFlag:          return "minFlag";
-    case ID_maxFlag:          return "maxFlag";
-    case ID_colorByZFlag:     return "colorByZFlag";
-    case ID_scaling:          return "scaling";
-    case ID_lineWidth:        return "lineWidth";
-    case ID_surfaceColor:     return "surfaceColor";
-    case ID_wireframeColor:   return "wireframeColor";
-    case ID_skewFactor:       return "skewFactor";
-    case ID_min:              return "min";
-    case ID_max:              return "max";
-    case ID_colorTableName:   return "colorTableName";
-    case ID_invertColorTable: return "invertColorTable";
+    case ID_legendFlag:               return "legendFlag";
+    case ID_customLegendTitleEnabled: return "customLegendTitleEnabled";
+    case ID_customLegendTitle:        return "customLegendTitle";
+    case ID_lightingFlag:             return "lightingFlag";
+    case ID_surfaceFlag:              return "surfaceFlag";
+    case ID_wireframeFlag:            return "wireframeFlag";
+    case ID_limitsMode:               return "limitsMode";
+    case ID_minFlag:                  return "minFlag";
+    case ID_maxFlag:                  return "maxFlag";
+    case ID_colorByZFlag:             return "colorByZFlag";
+    case ID_scaling:                  return "scaling";
+    case ID_lineWidth:                return "lineWidth";
+    case ID_surfaceColor:             return "surfaceColor";
+    case ID_wireframeColor:           return "wireframeColor";
+    case ID_skewFactor:               return "skewFactor";
+    case ID_min:                      return "min";
+    case ID_max:                      return "max";
+    case ID_colorTableName:           return "colorTableName";
+    case ID_invertColorTable:         return "invertColorTable";
     default:  return "invalid index";
     }
 }
@@ -1096,23 +1159,25 @@ SurfaceAttributes::GetFieldType(int index) const
 {
     switch (index)
     {
-    case ID_legendFlag:       return FieldType_bool;
-    case ID_lightingFlag:     return FieldType_bool;
-    case ID_surfaceFlag:      return FieldType_bool;
-    case ID_wireframeFlag:    return FieldType_bool;
-    case ID_limitsMode:       return FieldType_enum;
-    case ID_minFlag:          return FieldType_bool;
-    case ID_maxFlag:          return FieldType_bool;
-    case ID_colorByZFlag:     return FieldType_bool;
-    case ID_scaling:          return FieldType_enum;
-    case ID_lineWidth:        return FieldType_linewidth;
-    case ID_surfaceColor:     return FieldType_color;
-    case ID_wireframeColor:   return FieldType_color;
-    case ID_skewFactor:       return FieldType_double;
-    case ID_min:              return FieldType_double;
-    case ID_max:              return FieldType_double;
-    case ID_colorTableName:   return FieldType_colortable;
-    case ID_invertColorTable: return FieldType_bool;
+    case ID_legendFlag:               return FieldType_bool;
+    case ID_customLegendTitleEnabled: return FieldType_bool;
+    case ID_customLegendTitle:        return FieldType_string;
+    case ID_lightingFlag:             return FieldType_bool;
+    case ID_surfaceFlag:              return FieldType_bool;
+    case ID_wireframeFlag:            return FieldType_bool;
+    case ID_limitsMode:               return FieldType_enum;
+    case ID_minFlag:                  return FieldType_bool;
+    case ID_maxFlag:                  return FieldType_bool;
+    case ID_colorByZFlag:             return FieldType_bool;
+    case ID_scaling:                  return FieldType_enum;
+    case ID_lineWidth:                return FieldType_linewidth;
+    case ID_surfaceColor:             return FieldType_color;
+    case ID_wireframeColor:           return FieldType_color;
+    case ID_skewFactor:               return FieldType_double;
+    case ID_min:                      return FieldType_double;
+    case ID_max:                      return FieldType_double;
+    case ID_colorTableName:           return FieldType_colortable;
+    case ID_invertColorTable:         return FieldType_bool;
     default:  return FieldType_unknown;
     }
 }
@@ -1137,23 +1202,25 @@ SurfaceAttributes::GetFieldTypeName(int index) const
 {
     switch (index)
     {
-    case ID_legendFlag:       return "bool";
-    case ID_lightingFlag:     return "bool";
-    case ID_surfaceFlag:      return "bool";
-    case ID_wireframeFlag:    return "bool";
-    case ID_limitsMode:       return "enum";
-    case ID_minFlag:          return "bool";
-    case ID_maxFlag:          return "bool";
-    case ID_colorByZFlag:     return "bool";
-    case ID_scaling:          return "enum";
-    case ID_lineWidth:        return "linewidth";
-    case ID_surfaceColor:     return "color";
-    case ID_wireframeColor:   return "color";
-    case ID_skewFactor:       return "double";
-    case ID_min:              return "double";
-    case ID_max:              return "double";
-    case ID_colorTableName:   return "colortable";
-    case ID_invertColorTable: return "bool";
+    case ID_legendFlag:               return "bool";
+    case ID_customLegendTitleEnabled: return "bool";
+    case ID_customLegendTitle:        return "string";
+    case ID_lightingFlag:             return "bool";
+    case ID_surfaceFlag:              return "bool";
+    case ID_wireframeFlag:            return "bool";
+    case ID_limitsMode:               return "enum";
+    case ID_minFlag:                  return "bool";
+    case ID_maxFlag:                  return "bool";
+    case ID_colorByZFlag:             return "bool";
+    case ID_scaling:                  return "enum";
+    case ID_lineWidth:                return "linewidth";
+    case ID_surfaceColor:             return "color";
+    case ID_wireframeColor:           return "color";
+    case ID_skewFactor:               return "double";
+    case ID_min:                      return "double";
+    case ID_max:                      return "double";
+    case ID_colorTableName:           return "colortable";
+    case ID_invertColorTable:         return "bool";
     default:  return "invalid index";
     }
 }
@@ -1183,6 +1250,16 @@ SurfaceAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_legendFlag:
         {  // new scope
         retval = (legendFlag == obj.legendFlag);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_lightingFlag:
