@@ -31,7 +31,7 @@ import java.lang.Integer;
 
 public class WellBoreAttributes extends AttributeSubject implements Plugin
 {
-    private static int WellBoreAttributes_numAdditionalAtts = 18;
+    private static int WellBoreAttributes_numAdditionalAtts = 20;
 
     // Enum values
     public final static int WELLRENDERINGMODE_LINES = 0;
@@ -71,6 +71,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         wellStemHeight = 10f;
         wellNameScale = 0.2f;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         nWellBores = 0;
         wellBores = new Vector();
         wellNames = new Vector();
@@ -95,6 +97,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         wellStemHeight = 10f;
         wellNameScale = 0.2f;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         nWellBores = 0;
         wellBores = new Vector();
         wellNames = new Vector();
@@ -127,6 +131,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         wellStemHeight = obj.wellStemHeight;
         wellNameScale = obj.wellNameScale;
         legendFlag = obj.legendFlag;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         nWellBores = obj.nWellBores;
         wellBores = new Vector();
         for(i = 0; i < obj.wellBores.size(); ++i)
@@ -190,6 +196,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
                 (wellStemHeight == obj.wellStemHeight) &&
                 (wellNameScale == obj.wellNameScale) &&
                 (legendFlag == obj.legendFlag) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (nWellBores == obj.nWellBores) &&
                 wellBores_equal &&
                 wellNames_equal);
@@ -289,22 +297,34 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         Select(14);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(15);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(16);
+    }
+
     public void SetNWellBores(int nWellBores_)
     {
         nWellBores = nWellBores_;
-        Select(15);
+        Select(17);
     }
 
     public void SetWellBores(Vector wellBores_)
     {
         wellBores = wellBores_;
-        Select(16);
+        Select(18);
     }
 
     public void SetWellNames(Vector wellNames_)
     {
         wellNames = wellNames_;
-        Select(17);
+        Select(19);
     }
 
     // Property getting methods
@@ -323,6 +343,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
     public float                 GetWellStemHeight() { return wellStemHeight; }
     public float                 GetWellNameScale() { return wellNameScale; }
     public boolean               GetLegendFlag() { return legendFlag; }
+    public boolean               GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String                GetCustomLegendTitle() { return customLegendTitle; }
     public int                   GetNWellBores() { return nWellBores; }
     public Vector                GetWellBores() { return wellBores; }
     public Vector                GetWellNames() { return wellNames; }
@@ -361,10 +383,14 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(14, buf))
             buf.WriteBool(legendFlag);
         if(WriteSelect(15, buf))
-            buf.WriteInt(nWellBores);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(16, buf))
-            buf.WriteIntVector(wellBores);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(17, buf))
+            buf.WriteInt(nWellBores);
+        if(WriteSelect(18, buf))
+            buf.WriteIntVector(wellBores);
+        if(WriteSelect(19, buf))
             buf.WriteStringVector(wellNames);
     }
 
@@ -421,12 +447,18 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
             SetLegendFlag(buf.ReadBool());
             break;
         case 15:
-            SetNWellBores(buf.ReadInt());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 16:
-            SetWellBores(buf.ReadIntVector());
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 17:
+            SetNWellBores(buf.ReadInt());
+            break;
+        case 18:
+            SetWellBores(buf.ReadIntVector());
+            break;
+        case 19:
             SetWellNames(buf.ReadStringVector());
             break;
         }
@@ -480,6 +512,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
         str = str + floatToString("wellStemHeight", wellStemHeight, indent) + "\n";
         str = str + floatToString("wellNameScale", wellNameScale, indent) + "\n";
         str = str + boolToString("legendFlag", legendFlag, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + intToString("nWellBores", nWellBores, indent) + "\n";
         str = str + intVectorToString("wellBores", wellBores, indent) + "\n";
         str = str + stringVectorToString("wellNames", wellNames, indent) + "\n";
@@ -503,6 +537,8 @@ public class WellBoreAttributes extends AttributeSubject implements Plugin
     private float                 wellStemHeight;
     private float                 wellNameScale;
     private boolean               legendFlag;
+    private boolean               customLegendTitleEnabled;
+    private String                customLegendTitle;
     private int                   nWellBores;
     private Vector                wellBores; // vector of Integer objects
     private Vector                wellNames; // vector of String objects

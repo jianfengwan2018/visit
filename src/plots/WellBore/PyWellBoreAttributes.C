@@ -178,6 +178,13 @@ PyWellBoreAttributes_ToString(const WellBoreAttributes *atts, const char *prefix
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     snprintf(tmpStr, 1000, "%snWellBores = %d\n", prefix, atts->GetNWellBores());
     str += tmpStr;
     {   const intVector &wellBores = atts->GetWellBores();
@@ -927,6 +934,54 @@ WellBoreAttributes_GetLegendFlag(PyObject *self, PyObject *args)
 }
 
 /*static*/ PyObject *
+WellBoreAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    WellBoreAttributesObject *obj = (WellBoreAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+WellBoreAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    WellBoreAttributesObject *obj = (WellBoreAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+WellBoreAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    WellBoreAttributesObject *obj = (WellBoreAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+WellBoreAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    WellBoreAttributesObject *obj = (WellBoreAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
+    return retval;
+}
+
+/*static*/ PyObject *
 WellBoreAttributes_SetNWellBores(PyObject *self, PyObject *args)
 {
     WellBoreAttributesObject *obj = (WellBoreAttributesObject *)self;
@@ -1102,6 +1157,10 @@ PyMethodDef PyWellBoreAttributes_methods[WELLBOREATTRIBUTES_NMETH] = {
     {"GetWellNameScale", WellBoreAttributes_GetWellNameScale, METH_VARARGS},
     {"SetLegendFlag", WellBoreAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", WellBoreAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", WellBoreAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", WellBoreAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", WellBoreAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", WellBoreAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetNWellBores", WellBoreAttributes_SetNWellBores, METH_VARARGS},
     {"GetNWellBores", WellBoreAttributes_GetNWellBores, METH_VARARGS},
     {"SetWellBores", WellBoreAttributes_SetWellBores, METH_VARARGS},
@@ -1191,6 +1250,10 @@ PyWellBoreAttributes_getattr(PyObject *self, char *name)
         return WellBoreAttributes_GetWellNameScale(self, NULL);
     if(strcmp(name, "legendFlag") == 0)
         return WellBoreAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return WellBoreAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return WellBoreAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "nWellBores") == 0)
         return WellBoreAttributes_GetNWellBores(self, NULL);
     if(strcmp(name, "wellBores") == 0)
@@ -1273,6 +1336,10 @@ PyWellBoreAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = WellBoreAttributes_SetWellNameScale(self, tuple);
     else if(strcmp(name, "legendFlag") == 0)
         obj = WellBoreAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = WellBoreAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = WellBoreAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "nWellBores") == 0)
         obj = WellBoreAttributes_SetNWellBores(self, tuple);
     else if(strcmp(name, "wellBores") == 0)

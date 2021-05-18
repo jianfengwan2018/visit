@@ -37,9 +37,12 @@ class QvisOpacitySlider;
 // Modifications:
 //   Eric Brugger, Mon Nov 10 13:16:16 PST 2008
 //   Added the ability to display well bore names and stems.
-//   
+//
 //   Kathleen Bonnell, Mon Jan 17 18:17:26 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -93,6 +96,8 @@ class QvisWellBorePlotWindow : public QvisPostableWindowObserver
     void wellStemHeightProcessText();
     void wellNameScaleProcessText();
     void legendFlagChanged(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
   private:
     int                     plotType;
     bool                    wellDefinitionChanged;
@@ -128,6 +133,8 @@ class QvisWellBorePlotWindow : public QvisPostableWindowObserver
     QLabel                 *wellNameScaleLabel;
     QLineEdit              *wellNameScale;
     QCheckBox              *legendFlag;
+    QCheckBox              *customLegendTitleToggle;
+    QLineEdit              *customLegendTitle;
 
     WellBoreAttributes     *atts;
 

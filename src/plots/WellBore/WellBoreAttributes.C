@@ -184,6 +184,7 @@ void WellBoreAttributes::Init()
     wellStemHeight = 10;
     wellNameScale = 0.2;
     legendFlag = true;
+    customLegendTitleEnabled = false;
     nWellBores = 0;
 
     WellBoreAttributes::SelectAll();
@@ -221,6 +222,8 @@ void WellBoreAttributes::Copy(const WellBoreAttributes &obj)
     wellStemHeight = obj.wellStemHeight;
     wellNameScale = obj.wellNameScale;
     legendFlag = obj.legendFlag;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     nWellBores = obj.nWellBores;
     wellBores = obj.wellBores;
     wellNames = obj.wellNames;
@@ -398,6 +401,8 @@ WellBoreAttributes::operator == (const WellBoreAttributes &obj) const
             (wellStemHeight == obj.wellStemHeight) &&
             (wellNameScale == obj.wellNameScale) &&
             (legendFlag == obj.legendFlag) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (nWellBores == obj.nWellBores) &&
             (wellBores == obj.wellBores) &&
             (wellNames == obj.wellNames));
@@ -544,24 +549,26 @@ WellBoreAttributes::NewInstance(bool copy) const
 void
 WellBoreAttributes::SelectAll()
 {
-    Select(ID_defaultPalette,      (void *)&defaultPalette);
-    Select(ID_changedColors,       (void *)&changedColors);
-    Select(ID_colorType,           (void *)&colorType);
-    Select(ID_colorTableName,      (void *)&colorTableName);
-    Select(ID_invertColorTable,    (void *)&invertColorTable);
-    Select(ID_singleColor,         (void *)&singleColor);
-    Select(ID_multiColor,          (void *)&multiColor);
-    Select(ID_drawWellsAs,         (void *)&drawWellsAs);
-    Select(ID_wellCylinderQuality, (void *)&wellCylinderQuality);
-    Select(ID_wellRadius,          (void *)&wellRadius);
-    Select(ID_wellLineWidth,       (void *)&wellLineWidth);
-    Select(ID_wellAnnotation,      (void *)&wellAnnotation);
-    Select(ID_wellStemHeight,      (void *)&wellStemHeight);
-    Select(ID_wellNameScale,       (void *)&wellNameScale);
-    Select(ID_legendFlag,          (void *)&legendFlag);
-    Select(ID_nWellBores,          (void *)&nWellBores);
-    Select(ID_wellBores,           (void *)&wellBores);
-    Select(ID_wellNames,           (void *)&wellNames);
+    Select(ID_defaultPalette,           (void *)&defaultPalette);
+    Select(ID_changedColors,            (void *)&changedColors);
+    Select(ID_colorType,                (void *)&colorType);
+    Select(ID_colorTableName,           (void *)&colorTableName);
+    Select(ID_invertColorTable,         (void *)&invertColorTable);
+    Select(ID_singleColor,              (void *)&singleColor);
+    Select(ID_multiColor,               (void *)&multiColor);
+    Select(ID_drawWellsAs,              (void *)&drawWellsAs);
+    Select(ID_wellCylinderQuality,      (void *)&wellCylinderQuality);
+    Select(ID_wellRadius,               (void *)&wellRadius);
+    Select(ID_wellLineWidth,            (void *)&wellLineWidth);
+    Select(ID_wellAnnotation,           (void *)&wellAnnotation);
+    Select(ID_wellStemHeight,           (void *)&wellStemHeight);
+    Select(ID_wellNameScale,            (void *)&wellNameScale);
+    Select(ID_legendFlag,               (void *)&legendFlag);
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,        (void *)&customLegendTitle);
+    Select(ID_nWellBores,               (void *)&nWellBores);
+    Select(ID_wellBores,                (void *)&wellBores);
+    Select(ID_wellNames,                (void *)&wellNames);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -696,6 +703,18 @@ WellBoreAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool for
     {
         addToParent = true;
         node->AddNode(new DataNode("legendFlag", legendFlag));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
     }
 
     if(completeSave || !FieldsEqual(ID_nWellBores, &defaultObject))
@@ -838,6 +857,10 @@ WellBoreAttributes::SetFromNode(DataNode *parentNode)
         SetWellNameScale(node->AsFloat());
     if((node = searchNode->GetNode("legendFlag")) != 0)
         SetLegendFlag(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("nWellBores")) != 0)
         SetNWellBores(node->AsInt());
     if((node = searchNode->GetNode("wellBores")) != 0)
@@ -953,6 +976,20 @@ WellBoreAttributes::SetLegendFlag(bool legendFlag_)
 {
     legendFlag = legendFlag_;
     Select(ID_legendFlag, (void *)&legendFlag);
+}
+
+void
+WellBoreAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+WellBoreAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
 }
 
 void
@@ -1103,6 +1140,24 @@ WellBoreAttributes::GetLegendFlag() const
     return legendFlag;
 }
 
+bool
+WellBoreAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+WellBoreAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+WellBoreAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
 int
 WellBoreAttributes::GetNWellBores() const
 {
@@ -1168,6 +1223,12 @@ WellBoreAttributes::SelectMultiColor()
 }
 
 void
+WellBoreAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 WellBoreAttributes::SelectWellBores()
 {
     Select(ID_wellBores, (void *)&wellBores);
@@ -1203,24 +1264,26 @@ WellBoreAttributes::GetFieldName(int index) const
 {
     switch (index)
     {
-    case ID_defaultPalette:      return "defaultPalette";
-    case ID_changedColors:       return "changedColors";
-    case ID_colorType:           return "colorType";
-    case ID_colorTableName:      return "colorTableName";
-    case ID_invertColorTable:    return "invertColorTable";
-    case ID_singleColor:         return "singleColor";
-    case ID_multiColor:          return "multiColor";
-    case ID_drawWellsAs:         return "drawWellsAs";
-    case ID_wellCylinderQuality: return "wellCylinderQuality";
-    case ID_wellRadius:          return "wellRadius";
-    case ID_wellLineWidth:       return "wellLineWidth";
-    case ID_wellAnnotation:      return "wellAnnotation";
-    case ID_wellStemHeight:      return "wellStemHeight";
-    case ID_wellNameScale:       return "wellNameScale";
-    case ID_legendFlag:          return "legendFlag";
-    case ID_nWellBores:          return "nWellBores";
-    case ID_wellBores:           return "wellBores";
-    case ID_wellNames:           return "wellNames";
+    case ID_defaultPalette:           return "defaultPalette";
+    case ID_changedColors:            return "changedColors";
+    case ID_colorType:                return "colorType";
+    case ID_colorTableName:           return "colorTableName";
+    case ID_invertColorTable:         return "invertColorTable";
+    case ID_singleColor:              return "singleColor";
+    case ID_multiColor:               return "multiColor";
+    case ID_drawWellsAs:              return "drawWellsAs";
+    case ID_wellCylinderQuality:      return "wellCylinderQuality";
+    case ID_wellRadius:               return "wellRadius";
+    case ID_wellLineWidth:            return "wellLineWidth";
+    case ID_wellAnnotation:           return "wellAnnotation";
+    case ID_wellStemHeight:           return "wellStemHeight";
+    case ID_wellNameScale:            return "wellNameScale";
+    case ID_legendFlag:               return "legendFlag";
+    case ID_customLegendTitleEnabled: return "customLegendTitleEnabled";
+    case ID_customLegendTitle:        return "customLegendTitle";
+    case ID_nWellBores:               return "nWellBores";
+    case ID_wellBores:                return "wellBores";
+    case ID_wellNames:                return "wellNames";
     default:  return "invalid index";
     }
 }
@@ -1245,24 +1308,26 @@ WellBoreAttributes::GetFieldType(int index) const
 {
     switch (index)
     {
-    case ID_defaultPalette:      return FieldType_att;
-    case ID_changedColors:       return FieldType_ucharVector;
-    case ID_colorType:           return FieldType_enum;
-    case ID_colorTableName:      return FieldType_colortable;
-    case ID_invertColorTable:    return FieldType_bool;
-    case ID_singleColor:         return FieldType_color;
-    case ID_multiColor:          return FieldType_att;
-    case ID_drawWellsAs:         return FieldType_enum;
-    case ID_wellCylinderQuality: return FieldType_enum;
-    case ID_wellRadius:          return FieldType_float;
-    case ID_wellLineWidth:       return FieldType_linewidth;
-    case ID_wellAnnotation:      return FieldType_enum;
-    case ID_wellStemHeight:      return FieldType_float;
-    case ID_wellNameScale:       return FieldType_float;
-    case ID_legendFlag:          return FieldType_bool;
-    case ID_nWellBores:          return FieldType_int;
-    case ID_wellBores:           return FieldType_intVector;
-    case ID_wellNames:           return FieldType_stringVector;
+    case ID_defaultPalette:           return FieldType_att;
+    case ID_changedColors:            return FieldType_ucharVector;
+    case ID_colorType:                return FieldType_enum;
+    case ID_colorTableName:           return FieldType_colortable;
+    case ID_invertColorTable:         return FieldType_bool;
+    case ID_singleColor:              return FieldType_color;
+    case ID_multiColor:               return FieldType_att;
+    case ID_drawWellsAs:              return FieldType_enum;
+    case ID_wellCylinderQuality:      return FieldType_enum;
+    case ID_wellRadius:               return FieldType_float;
+    case ID_wellLineWidth:            return FieldType_linewidth;
+    case ID_wellAnnotation:           return FieldType_enum;
+    case ID_wellStemHeight:           return FieldType_float;
+    case ID_wellNameScale:            return FieldType_float;
+    case ID_legendFlag:               return FieldType_bool;
+    case ID_customLegendTitleEnabled: return FieldType_bool;
+    case ID_customLegendTitle:        return FieldType_string;
+    case ID_nWellBores:               return FieldType_int;
+    case ID_wellBores:                return FieldType_intVector;
+    case ID_wellNames:                return FieldType_stringVector;
     default:  return FieldType_unknown;
     }
 }
@@ -1287,24 +1352,26 @@ WellBoreAttributes::GetFieldTypeName(int index) const
 {
     switch (index)
     {
-    case ID_defaultPalette:      return "att";
-    case ID_changedColors:       return "ucharVector";
-    case ID_colorType:           return "enum";
-    case ID_colorTableName:      return "colortable";
-    case ID_invertColorTable:    return "bool";
-    case ID_singleColor:         return "color";
-    case ID_multiColor:          return "att";
-    case ID_drawWellsAs:         return "enum";
-    case ID_wellCylinderQuality: return "enum";
-    case ID_wellRadius:          return "float";
-    case ID_wellLineWidth:       return "linewidth";
-    case ID_wellAnnotation:      return "enum";
-    case ID_wellStemHeight:      return "float";
-    case ID_wellNameScale:       return "float";
-    case ID_legendFlag:          return "bool";
-    case ID_nWellBores:          return "int";
-    case ID_wellBores:           return "intVector";
-    case ID_wellNames:           return "stringVector";
+    case ID_defaultPalette:           return "att";
+    case ID_changedColors:            return "ucharVector";
+    case ID_colorType:                return "enum";
+    case ID_colorTableName:           return "colortable";
+    case ID_invertColorTable:         return "bool";
+    case ID_singleColor:              return "color";
+    case ID_multiColor:               return "att";
+    case ID_drawWellsAs:              return "enum";
+    case ID_wellCylinderQuality:      return "enum";
+    case ID_wellRadius:               return "float";
+    case ID_wellLineWidth:            return "linewidth";
+    case ID_wellAnnotation:           return "enum";
+    case ID_wellStemHeight:           return "float";
+    case ID_wellNameScale:            return "float";
+    case ID_legendFlag:               return "bool";
+    case ID_customLegendTitleEnabled: return "bool";
+    case ID_customLegendTitle:        return "string";
+    case ID_nWellBores:               return "int";
+    case ID_wellBores:                return "intVector";
+    case ID_wellNames:                return "stringVector";
     default:  return "invalid index";
     }
 }
@@ -1404,6 +1471,16 @@ WellBoreAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_legendFlag:
         {  // new scope
         retval = (legendFlag == obj.legendFlag);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_nWellBores:

@@ -159,7 +159,7 @@ avtWellBorePlot::GetDecorationsMapper(void)
 //  Method: avtWellBorePlot::ApplyOperators
 //
 //  Purpose:
-//      Applies the operators associated with a WellBore plot.  
+//      Applies the operators associated with a WellBore plot.
 //      The output from this method is a query-able object.
 //
 //  Arguments:
@@ -184,7 +184,7 @@ avtWellBorePlot::ApplyOperators(avtDataObject_p input)
 //  Method: avtWellBorePlot::ApplyRenderingTransformation
 //
 //  Purpose:
-//      Applies the rendering transformation associated with a WellBore plot.  
+//      Applies the rendering transformation associated with a WellBore plot.
 //
 //  Arguments:
 //      input   The input data object.
@@ -242,7 +242,7 @@ avtWellBorePlot::CustomizeBehavior(void)
 //
 //  Purpose:
 //      A hook from the base class that allows the plot to change its mapper
-//      based on the dataset input. 
+//      based on the dataset input.
 //
 //  Arguments:
 //      doi     The data object information.
@@ -271,8 +271,11 @@ avtWellBorePlot::CustomizeMapper(avtDataObjectInformation &doi)
 //  Creation:   Wed Aug 27 14:59:19 PST 2008
 //
 //  Modifications:
-//      Eric Brugger, Mon Nov 10 09:14:52 PST 2008
-//      Added the ability to display well bore names and stems.
+//    Eric Brugger, Mon Nov 10 09:14:52 PST 2008
+//    Added the ability to display well bore names and stems.
+//
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
 //
 // ****************************************************************************
 
@@ -298,6 +301,11 @@ avtWellBorePlot::SetAtts(const AttributeGroup *a)
 
     decoMapper->SetScale(atts.GetWellNameScale());
     decoMapper->SetLabelVisibility(true);
+
+    if(atts.GetCustomLegendTitleEnabled())
+        levelsLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        levelsLegend->SetTitle("Well Bore");
 }
 
 

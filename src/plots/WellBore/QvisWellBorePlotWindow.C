@@ -35,16 +35,16 @@ using std::string;
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::QvisWellBorePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor
 //
-// Note:       
+// Note:
 //
 // Programmer: Eric Brugger
 // Creation:   Fri Oct 3 14:30:00 PST 2008
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 QvisWellBorePlotWindow::QvisWellBorePlotWindow(const int type,
@@ -64,16 +64,16 @@ QvisWellBorePlotWindow::QvisWellBorePlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::~QvisWellBorePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor
 //
-// Note:       
+// Note:
 //
 // Programmer: Eric Brugger
 // Creation:   Fri Oct 3 14:30:00 PST 2008
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 QvisWellBorePlotWindow::~QvisWellBorePlotWindow()
@@ -84,10 +84,10 @@ QvisWellBorePlotWindow::~QvisWellBorePlotWindow()
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   Creates the widgets for the window.
 //
-// Note:       
+// Note:
 //
 // Programmer: Eric Brugger
 // Creation:   Fri Oct 3 14:30:00 PST 2008
@@ -98,9 +98,12 @@ QvisWellBorePlotWindow::~QvisWellBorePlotWindow()
 //
 //   Eric Brugger, Mon Nov 10 13:18:02 PST 2008
 //   Added the ability to display well bore names and stems.
-//   
+//
 //   Kathleen Bonnell, Mon Jan 17 18:17:26 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -127,7 +130,7 @@ QvisWellBorePlotWindow::CreateWindowContents()
     topLayout->addWidget(wellEditSplitter);
     topLayout->setStretchFactor(wellEditSplitter, 100);
 
-    // Create the well list. 
+    // Create the well list.
     QGroupBox *f1 = new QGroupBox(tr("Well list"), wellEditSplitter);
     QGridLayout *listLayout = new QGridLayout(f1);
 
@@ -295,10 +298,25 @@ QvisWellBorePlotWindow::CreateWindowContents()
     legendFlag = new QCheckBox(tr("Legend"), central);
     connect(legendFlag, SIGNAL(toggled(bool)),
             this, SLOT(legendFlagChanged(bool)));
+
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+
 #ifdef FIX_WELL_NAME_SCALE
     mainLayout->addWidget(legendFlag, 8,0);
+    mainLayout->addWidget(customLegendTitleToggle, 9, 0);
+    mainLayout->addWidget(customLegendTitle, 9, 1);
 #else
     mainLayout->addWidget(legendFlag, 7,0);
+    mainLayout->addWidget(customLegendTitleToggle, 8, 0);
+    mainLayout->addWidget(customLegendTitle, 8, 1);
 #endif
 }
 
@@ -306,10 +324,10 @@ QvisWellBorePlotWindow::CreateWindowContents()
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   Updates the widgets in the window when the subject changes.
 //
-// Note:       
+// Note:
 //
 // Programmer: Eric Brugger
 // Creation:   Fri Oct 3 14:30:00 PST 2008
@@ -320,9 +338,12 @@ QvisWellBorePlotWindow::CreateWindowContents()
 //
 //   Eric Brugger, Mon Nov 10 13:18:02 PST 2008
 //   Added the ability to display well bore names and stems.
-//   
+//
 //   Kathleen Bonnell, Mon Jan 17 18:17:26 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -489,7 +510,22 @@ QvisWellBorePlotWindow::UpdateWindow(bool doAll)
           case WellBoreAttributes::ID_legendFlag:
             legendFlag->blockSignals(true);
             legendFlag->setChecked(atts->GetLegendFlag());
+            customLegendTitleToggle->setEnabled(atts->GetLegendFlag());
+            customLegendTitle->setEnabled(atts->GetLegendFlag() &&
+                                    atts->GetCustomLegendTitleEnabled());
             legendFlag->blockSignals(false);
+            break;
+          case WellBoreAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(atts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(atts->GetLegendFlag() &&
+                                    atts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+          case WellBoreAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(atts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
             break;
           case WellBoreAttributes::ID_nWellBores:
             updateColors = true;
@@ -621,7 +657,7 @@ QvisWellBorePlotWindow::UpdateMultipleAreaColors()
             QColor temp(wellBoreColors[i].Red(), wellBoreColors[i].Green(),
                         wellBoreColors[i].Blue());
 
-            multipleColors->addEntry(QString(""), temp, 
+            multipleColors->addEntry(QString(""), temp,
                                      wellBoreColors[i].Alpha());
         }
     }
@@ -680,7 +716,7 @@ QvisWellBorePlotWindow::UpdateMultipleAreaNames()
     {
         for(int i = 0; i < nEntries; ++i)
         {
-            multipleColors->setAttributeName(i, 
+            multipleColors->setAttributeName(i,
                             atts->GetWellNames()[i].c_str());
         }
     }
@@ -689,7 +725,7 @@ QvisWellBorePlotWindow::UpdateMultipleAreaNames()
         // Set all of the existing names.
         for(int i = 0; i < multipleColors->numEntries(); ++i)
         {
-            multipleColors->setAttributeName(i, 
+            multipleColors->setAttributeName(i,
                             atts->GetWellNames()[i].c_str());
         }
 
@@ -705,7 +741,7 @@ QvisWellBorePlotWindow::UpdateMultipleAreaNames()
         // Set all of the existing names.
         for(int i = 0; i < nEntries; ++i)
         {
-            multipleColors->setAttributeName(i, 
+            multipleColors->setAttributeName(i,
                             atts->GetWellNames()[i].c_str());
         }
 
@@ -830,10 +866,10 @@ QvisWellBorePlotWindow::UpdateWellDefinition(int index)
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets values from certain widgets and stores them in the subject.
 //
-// Note:       
+// Note:
 //
 // Programmer: Eric Brugger
 // Creation:   Fri Oct 3 14:30:00 PST 2008
@@ -841,7 +877,7 @@ QvisWellBorePlotWindow::UpdateWellDefinition(int index)
 // Modifications:
 //   Eric Brugger, Mon Nov 10 13:18:02 PST 2008
 //   Added the ability to display well bore names and stems.
-//   
+//
 //   Kathleen Biagas, Thu Apr  9 08:20:43 PDT 2015
 //   Use helpfer functions.
 //
@@ -859,7 +895,7 @@ QvisWellBorePlotWindow::GetCurrentValues(int which_widget)
         float val;
         if (LineEditGetFloat(wellRadius, val))
             atts->SetWellRadius(val);
-        else 
+        else
         {
             ResettingError(tr("Well radius"), FloatToQString(atts->GetWellRadius()));
             atts->SetWellRadius(atts->GetWellRadius());
@@ -872,7 +908,7 @@ QvisWellBorePlotWindow::GetCurrentValues(int which_widget)
         float val;
         if (LineEditGetFloat(wellStemHeight, val))
             atts->SetWellStemHeight(val);
-        else 
+        else
         {
             ResettingError(tr("Well stem height"), FloatToQString(atts->GetWellStemHeight()));
             atts->SetWellStemHeight(atts->GetWellStemHeight());
@@ -886,7 +922,7 @@ QvisWellBorePlotWindow::GetCurrentValues(int which_widget)
         float val;
         if (LineEditGetFloat(wellNameScale, val))
             atts->SetWellNameScale(val);
-        else 
+        else
         {
             ResettingError(tr("Well name scale"), FloatToQString(atts->GetWellNameScale()));
             atts->SetWellNameScale(atts->GetWellNameScale());
@@ -899,16 +935,16 @@ QvisWellBorePlotWindow::GetCurrentValues(int which_widget)
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::Apply
 //
-// Purpose: 
+// Purpose:
 //   Called to apply changes in the subject.
 //
-// Note:       
+// Note:
 //
 // Programmer: Eric Brugger
 // Creation:   Fri Oct 3 14:30:00 PST 2008
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1021,16 +1057,16 @@ QvisWellBorePlotWindow::ReadWellDefinition()
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::apply
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when apply button is clicked.
 //
-// Note:       
+// Note:
 //
 // Programmer: Eric Brugger
 // Creation:   Fri Oct 3 14:30:00 PST 2008
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1046,16 +1082,16 @@ QvisWellBorePlotWindow::apply()
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::makeDefault
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when "Make default" button is clicked.
 //
-// Note:       
+// Note:
 //
 // Programmer: Eric Brugger
 // Creation:   Fri Oct 3 14:30:00 PST 2008
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1070,16 +1106,16 @@ QvisWellBorePlotWindow::makeDefault()
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::reset
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when reset button is clicked.
 //
-// Note:       
+// Note:
 //
 // Programmer: Eric Brugger
 // Creation:   Fri Oct 3 14:30:00 PST 2008
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1101,7 +1137,7 @@ QvisWellBorePlotWindow::readWellBoresButtonPressed()
 
     //
     // If the user chose to save a file, write out the file.
-    // 
+    //
     if (!fileName.isNull())
     {
         FILE *file = fopen(fileName.toStdString().c_str(), "r");
@@ -1329,7 +1365,7 @@ QvisWellBorePlotWindow::writeWellBoresButtonPressed()
 
     //
     // If the user chose to save a file, write out the file.
-    // 
+    //
     if (!fileName.isNull())
     {
         FILE *file = fopen(fileName.toStdString().c_str(), "w");
@@ -1416,7 +1452,7 @@ QvisWellBorePlotWindow::newWellButtonPressed()
     while (!okay)
     {
         sprintf(newName, "unnamed%d", newid);
-        size_t i = 0; 
+        size_t i = 0;
         while (i < wellNames.size() && wellNames[i] != string(newName))
         {
             i++;
@@ -1524,7 +1560,7 @@ QvisWellBorePlotWindow::wellNameTextChanged(const QString &text)
         while (!okay)
         {
             sprintf(newName, "unnamed%d", newid);
-            size_t i = 0; 
+            size_t i = 0;
             while (i < wellNames.size() && wellNames[i] != string(newName))
             {
                 i++;
@@ -1545,8 +1581,8 @@ QvisWellBorePlotWindow::wellNameTextChanged(const QString &text)
     if(item != 0)
         item->setText(newname);
     BlockAllSignals(false);
-    multipleColors->setAttributeName(index, 
-                    atts->GetWellNames()[index].c_str()); 
+    multipleColors->setAttributeName(index,
+                    atts->GetWellNames()[index].c_str());
 }
 
 
@@ -1631,7 +1667,7 @@ QvisWellBorePlotWindow::colorTableClicked(bool, const QString &ctName)
 // ****************************************************************************
 // Method: QvisWellBorePlotWindow::invertColorTableToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the invert color table flag into the
 //   well bore plot attributes.
 //
@@ -1642,7 +1678,7 @@ QvisWellBorePlotWindow::colorTableClicked(bool, const QString &ctName)
 // Creation:   January  17, 2011
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1726,6 +1762,24 @@ QvisWellBorePlotWindow::legendFlagChanged(bool val)
     atts->SetLegendFlag(val);
     SetUpdate(false);
     Apply();
+}
+
+void
+QvisWellBorePlotWindow::customLegendTitleToggled(bool val)
+{
+    atts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+void
+QvisWellBorePlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != atts->GetCustomLegendTitle())
+    {
+        atts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
 }
 
 
@@ -1947,7 +2001,7 @@ QvisWellBorePlotWindow::GetToken(FILE *file)
     {
         int ibuf = 0;
         buf[ibuf++] = (char) chr;
-        
+
         chr = fgetc(file);
         while (ibuf < 10 && isdigit(chr))
         {

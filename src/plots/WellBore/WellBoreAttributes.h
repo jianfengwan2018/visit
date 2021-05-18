@@ -85,6 +85,7 @@ public:
     void SelectColorTableName();
     void SelectSingleColor();
     void SelectMultiColor();
+    void SelectCustomLegendTitle();
     void SelectWellBores();
     void SelectWellNames();
 
@@ -104,6 +105,8 @@ public:
     void SetWellStemHeight(float wellStemHeight_);
     void SetWellNameScale(float wellNameScale_);
     void SetLegendFlag(bool legendFlag_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
     void SetNWellBores(int nWellBores_);
     void SetWellBores(const intVector &wellBores_);
     void SetWellNames(const stringVector &wellNames_);
@@ -129,6 +132,9 @@ public:
     float                       GetWellStemHeight() const;
     float                       GetWellNameScale() const;
     bool                        GetLegendFlag() const;
+    bool                        GetCustomLegendTitleEnabled() const;
+    const std::string           &GetCustomLegendTitle() const;
+          std::string           &GetCustomLegendTitle();
     int                         GetNWellBores() const;
     const intVector             &GetWellBores() const;
           intVector             &GetWellBores();
@@ -191,6 +197,8 @@ public:
         ID_wellStemHeight,
         ID_wellNameScale,
         ID_legendFlag,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID_nWellBores,
         ID_wellBores,
         ID_wellNames,
@@ -213,6 +221,8 @@ private:
     float                 wellStemHeight;
     float                 wellNameScale;
     bool                  legendFlag;
+    bool                  customLegendTitleEnabled;
+    std::string           customLegendTitle;
     int                   nWellBores;
     intVector             wellBores;
     stringVector          wellNames;
@@ -221,6 +231,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define WELLBOREATTRIBUTES_TMFS "au*isbaaiifiiffbii*s*"
+#define WELLBOREATTRIBUTES_TMFS "au*isbaaiifiiffbbsii*s*"
 
 #endif
