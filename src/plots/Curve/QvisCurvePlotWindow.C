@@ -36,7 +36,7 @@
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::QvisCurvePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor
 //
 // Programmer: xml2window
@@ -63,14 +63,14 @@ QvisCurvePlotWindow::QvisCurvePlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::~QvisCurvePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor
 //
 // Programmer: xml2window
 // Creation:   Tue Jul 23 13:34:33 PST 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 QvisCurvePlotWindow::~QvisCurvePlotWindow()
@@ -81,7 +81,7 @@ QvisCurvePlotWindow::~QvisCurvePlotWindow()
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   Creates the widgets for the window.
 //
 // Programmer: xml2window
@@ -90,13 +90,13 @@ QvisCurvePlotWindow::~QvisCurvePlotWindow()
 // Modifications:
 //   Kathleen Bonnell, Tue Dec 23 13:27:22 PST 2003
 //   Added PointSize and ShowPoints.
-//   
-//   Kathleen Bonnell, Thu Oct 27 16:10:29 PDT 2005 
+//
+//   Kathleen Bonnell, Thu Oct 27 16:10:29 PDT 2005
 //   Added showLegend.
-//   
+//
 //   Kathleen Bonnell, Mon Oct 31 17:05:35 PST 2005
-//   Added curveColor. 
-// 
+//   Added curveColor.
+//
 //   Brad Whitlock, Mon Nov 20 13:34:15 PST 2006
 //   Added symbol rendering and changed the layout of the window.
 //
@@ -156,13 +156,15 @@ QvisCurvePlotWindow::CreateWindowContents()
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::CreateDataTab
 //
-// Purpose: 
+// Purpose:
 //   Populates the data tab.
 //
 // Programmer: Dave Pugmire
 // Creation:   Tue Dec 29 14:37:53 EST 2009
 //
 // Modifications:
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -183,7 +185,7 @@ QvisCurvePlotWindow::CreateDataTab(QWidget *pageData)
     QGridLayout *colorLayout = new QGridLayout(colorGroup);
     colorLayout->setMargin(5);
     colorLayout->setSpacing(10);
- 
+
     // Create the radio buttons for curve color source
     colorLayout->addWidget(new QLabel(tr("Curve color"), central), 0, 0);
 
@@ -226,7 +228,7 @@ QvisCurvePlotWindow::CreateDataTab(QWidget *pageData)
     fillMode->addItem(tr("Horizontal Gradient"));
     fillMode->addItem(tr("Vertical Gradient"));
     connect(fillMode, SIGNAL(activated(int)),
-            this, SLOT(fillModeChanged(int))); 
+            this, SLOT(fillModeChanged(int)));
     fillLayout->addWidget(fillMode, 0, 1, 1, 2);
 
     fillLabel1 = new QLabel(tr("Color 1"), central);
@@ -269,7 +271,7 @@ QvisCurvePlotWindow::CreateDataTab(QWidget *pageData)
     QGridLayout *miscLayout = new QGridLayout(miscGroup);
     miscLayout->setMargin(5);
     miscLayout->setSpacing(10);
- 
+
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Legend"), central);
     connect(legendToggle, SIGNAL(toggled(bool)),
@@ -281,16 +283,28 @@ QvisCurvePlotWindow::CreateDataTab(QWidget *pageData)
     connect(labelsToggle, SIGNAL(toggled(bool)),
             this, SLOT(labelsToggled(bool)));
     miscLayout->addWidget(labelsToggle, 0, 1);
+
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::CreateGeometryTab
 //
-// Purpose: 
+// Purpose:
 //   Creates the widgets for the geometry options tab.
 //
-// Programmer: Kathleen Biagas 
+// Programmer: Kathleen Biagas
 // Creation:   September 11, 2013
 //
 // Modifications:
@@ -344,7 +358,7 @@ QvisCurvePlotWindow::CreateGeometryTab(QWidget *pageGeometry)
     ++ROW;
 
 
-    // 
+    //
     // Create point related controls.
     //
 
@@ -419,7 +433,7 @@ QvisCurvePlotWindow::CreateGeometryTab(QWidget *pageGeometry)
     pointSizeLabel->setBuddy(pointSize);
 
     connect(pointSize, SIGNAL(returnPressed()),
-            this, SLOT(processPointSizeText())); 
+            this, SLOT(processPointSizeText()));
 
     pointLayout->addWidget(pointSizeLabel, ROW, 3, 1, 1);
     pointLayout->addWidget(pointSize, ROW, 4, 1, 1);
@@ -436,7 +450,7 @@ QvisCurvePlotWindow::CreateGeometryTab(QWidget *pageGeometry)
     fillModeGroup->addButton(staticButton, 0);
     pointLayout->addWidget(staticButton, ROW, 1, 1, 2);
 
-    // Create the point stride 
+    // Create the point stride
     pointStride = new QSpinBox(central);
     pointStride->setKeyboardTracking(false);
     pointStride->setMinimum(1);
@@ -445,7 +459,7 @@ QvisCurvePlotWindow::CreateGeometryTab(QWidget *pageGeometry)
     pointStrideLabel->setBuddy(pointStride);
 
     connect(pointStride, SIGNAL(valueChanged(int)),
-            this, SLOT(pointStrideChanged(int))); 
+            this, SLOT(pointStrideChanged(int)));
 
     pointLayout->addWidget(pointStrideLabel, ROW, 3, 1, 1);
     pointLayout->addWidget(pointStride, ROW, 4, 1, 1);
@@ -476,10 +490,10 @@ QvisCurvePlotWindow::CreateGeometryTab(QWidget *pageGeometry)
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::CreateExtrasTab
 //
-// Purpose: 
+// Purpose:
 //   Creates the widgets for the cue options tab.
 //
-// Programmer: Kathleen Biagas 
+// Programmer: Kathleen Biagas
 // Creation:   September 11, 2013
 //
 // ****************************************************************************
@@ -501,7 +515,7 @@ QvisCurvePlotWindow::CreateExtrasTab(QWidget *pageExtras)
     QGridLayout *timeCueLayout = new QGridLayout(timeCueGroup);
     timeCueLayout->setMargin(5);
     timeCueLayout->setSpacing(10);
- 
+
     doBallTimeCue = new QCheckBox(tr("Add Ball"), central);
     connect(doBallTimeCue, SIGNAL(toggled(bool)),
             this, SLOT(doBallTimeCueChanged(bool)));
@@ -576,7 +590,7 @@ QvisCurvePlotWindow::CreateExtrasTab(QWidget *pageExtras)
     polarOrderLabel->setBuddy(polarOrder);
     polarOrderLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     connect(polarOrder, SIGNAL(activated(int)),
-            this, SLOT(polarOrderChanged(int))); 
+            this, SLOT(polarOrderChanged(int)));
 
     coordSystemLayout->addWidget(polarOrderLabel, 1, 0, 1, 1);
     coordSystemLayout->addWidget(polarOrder, 1, 1, 1, 1);
@@ -590,7 +604,7 @@ QvisCurvePlotWindow::CreateExtrasTab(QWidget *pageExtras)
     angleUnitsLabel->setBuddy(angleUnits);
     angleUnitsLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     connect(angleUnits, SIGNAL(activated(int)),
-            this, SLOT(angleUnitsChanged(int))); 
+            this, SLOT(angleUnitsChanged(int)));
 
     coordSystemLayout->addWidget(angleUnitsLabel, 1, 2, 1, 1);
     coordSystemLayout->addWidget(angleUnits, 1, 3, 1, 1);
@@ -605,7 +619,7 @@ QvisCurvePlotWindow::CreateExtrasTab(QWidget *pageExtras)
 //     QGridLayout *blankLayout = new QGridLayout(blankGroup);
 //     blankLayout->setMargin(5);
 //     blankLayout->setSpacing(10);
- 
+
 //     blankLayout->addWidget(new QLabel(tr(""), central), 0,0);
 //     blankLayout->addWidget(new QLabel(tr(""), central), 1,0);
 //     blankLayout->addWidget(new QLabel(tr(""), central), 2,0);
@@ -616,7 +630,7 @@ QvisCurvePlotWindow::CreateExtrasTab(QWidget *pageExtras)
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   Updates the widgets in the window when the subject changes.
 //
 // Programmer: xml2window
@@ -624,15 +638,15 @@ QvisCurvePlotWindow::CreateExtrasTab(QWidget *pageExtras)
 //
 // Modifications:
 //   Kathleen Bonnell, Tue Dec 23 13:27:22 PST 2003
-//   Added pointSize and showPoints. 
+//   Added pointSize and showPoints.
 //
 //   Jeremy Meredith, Tue Nov 16 11:39:53 PST 2004
 //   Replaced simple QString::sprintf's with a setNum because there seems
 //   to be a bug causing numbers to be incremented by .00001.  See '5263.
 //
-//   Kathleen Bonnell, Thu Oct 27 16:10:29 PDT 2005 
+//   Kathleen Bonnell, Thu Oct 27 16:10:29 PDT 2005
 //   Added showLegend.
-//   
+//
 //   Kathleen Bonnell, Mon Oct 31 17:05:35 PST 2005
 //   Added curveColor, made the enabled state of color be dependent upon
 //   the value of curveColor.
@@ -661,6 +675,9 @@ QvisCurvePlotWindow::CreateExtrasTab(QWidget *pageExtras)
 //   Kathleen Biagas, Thu Apr 9 07:19:54 MST 2015
 //   Use helper function DoubleToQString for consistency in formatting across
 //   all windows.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -726,7 +743,7 @@ QvisCurvePlotWindow::UpdateWindow(bool doAll)
             bool StaticMode = (atts->GetPointFillMode() == CurveAttributes::Static);
             if (StaticMode)
                 fillModeGroup->button(0)->setChecked(true);
-            else 
+            else
                 fillModeGroup->button(1)->setChecked(true);
             pointStride->setEnabled(StaticMode && atts->GetShowPoints());
             pointStrideLabel->setEnabled(StaticMode && atts->GetShowPoints());
@@ -765,7 +782,22 @@ QvisCurvePlotWindow::UpdateWindow(bool doAll)
           case CurveAttributes::ID_showLegend:
             legendToggle->blockSignals(true);
             legendToggle->setChecked(atts->GetShowLegend());
+            customLegendTitleToggle->setEnabled(atts->GetShowLegend());
+            customLegendTitle->setEnabled(atts->GetShowLegend() &&
+                                    atts->GetCustomLegendTitleEnabled());
             legendToggle->blockSignals(false);
+            break;
+        case CurveAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(atts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(atts->GetShowLegend() &&
+                                    atts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+        case CurveAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(atts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
             break;
           case CurveAttributes::ID_showLabels:
             labelsToggle->blockSignals(true);
@@ -936,7 +968,7 @@ QvisCurvePlotWindow::UpdateWindow(bool doAll)
     bool shouldEnableWidget = atts->GetDoBallTimeCue() ||
                                atts->GetDoLineTimeCue() ||
                                atts->GetDoCropTimeCue();
-    
+
     timeForTimeCueLabel->setEnabled(shouldEnableWidget);
     timeForTimeCue->setEnabled(shouldEnableWidget);
 }
@@ -945,7 +977,7 @@ QvisCurvePlotWindow::UpdateWindow(bool doAll)
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets values from certain widgets and stores them in the subject.
 //
 // Programmer: xml2window
@@ -954,7 +986,7 @@ QvisCurvePlotWindow::UpdateWindow(bool doAll)
 // Modifications:
 //   Kathleen Bonnell, Tue Dec 23 13:27:22 PST 2003
 //   Added pointSize.  Removed do-nothing code.
-//   
+//
 //   Hank Childs, Sat Mar  3 10:33:59 PST 2007
 //   Do explicit checking for symbolDensity, since spin boxes don't call
 //   the "valueChanged" signal unless you press "Enter".
@@ -1032,14 +1064,14 @@ QvisCurvePlotWindow::GetCurrentValues(int which_widget)
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::Apply
 //
-// Purpose: 
+// Purpose:
 //   Called to apply changes in the subject.
 //
 // Programmer: xml2window
 // Creation:   Tue Jul 23 13:34:33 PST 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1065,14 +1097,14 @@ QvisCurvePlotWindow::Apply(bool ignore)
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::apply
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when apply button is clicked.
 //
 // Programmer: xml2window
 // Creation:   Tue Jul 23 13:34:33 PST 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1085,14 +1117,14 @@ QvisCurvePlotWindow::apply()
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::makeDefault
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when "Make default" button is clicked.
 //
 // Programmer: xml2window
 // Creation:   Tue Jul 23 13:34:33 PST 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1107,14 +1139,14 @@ QvisCurvePlotWindow::makeDefault()
 // ****************************************************************************
 // Method: QvisCurvePlotWindow::reset
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when reset button is clicked.
 //
 // Programmer: xml2window
 // Creation:   Tue Jul 23 13:34:33 PST 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1167,6 +1199,24 @@ QvisCurvePlotWindow::legendToggled(bool val)
 }
 
 void
+QvisCurvePlotWindow::customLegendTitleToggled(bool val)
+{
+    atts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+void
+QvisCurvePlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != atts->GetCustomLegendTitle())
+    {
+        atts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
+}
+
+void
 QvisCurvePlotWindow::showLinesChanged(bool val)
 {
     atts->SetShowLines(val);
@@ -1183,7 +1233,7 @@ QvisCurvePlotWindow::showPointsChanged(bool val)
 void
 QvisCurvePlotWindow::processPointSizeText()
 {
-    GetCurrentValues(CurveAttributes::ID_pointSize); 
+    GetCurrentValues(CurveAttributes::ID_pointSize);
     Apply();
 }
 

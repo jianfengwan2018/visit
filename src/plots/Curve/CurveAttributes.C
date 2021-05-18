@@ -258,6 +258,7 @@ void CurveAttributes::Init()
     symbolDensity = 50;
     curveColorSource = Cycle;
     showLegend = true;
+    customLegendTitleEnabled = false;
     showLabels = true;
     doBallTimeCue = false;
     timeCueBallSize = 0.01;
@@ -301,6 +302,8 @@ void CurveAttributes::Copy(const CurveAttributes &obj)
     curveColorSource = obj.curveColorSource;
     curveColor = obj.curveColor;
     showLegend = obj.showLegend;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     showLabels = obj.showLabels;
     designator = obj.designator;
     doBallTimeCue = obj.doBallTimeCue;
@@ -491,6 +494,8 @@ CurveAttributes::operator == (const CurveAttributes &obj) const
             (curveColorSource == obj.curveColorSource) &&
             (curveColor == obj.curveColor) &&
             (showLegend == obj.showLegend) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (showLabels == obj.showLabels) &&
             (designator == obj.designator) &&
             (doBallTimeCue == obj.doBallTimeCue) &&
@@ -640,33 +645,35 @@ CurveAttributes::NewInstance(bool copy) const
 void
 CurveAttributes::SelectAll()
 {
-    Select(ID_showLines,            (void *)&showLines);
-    Select(ID_lineWidth,            (void *)&lineWidth);
-    Select(ID_showPoints,           (void *)&showPoints);
-    Select(ID_symbol,               (void *)&symbol);
-    Select(ID_pointSize,            (void *)&pointSize);
-    Select(ID_pointFillMode,        (void *)&pointFillMode);
-    Select(ID_pointStride,          (void *)&pointStride);
-    Select(ID_symbolDensity,        (void *)&symbolDensity);
-    Select(ID_curveColorSource,     (void *)&curveColorSource);
-    Select(ID_curveColor,           (void *)&curveColor);
-    Select(ID_showLegend,           (void *)&showLegend);
-    Select(ID_showLabels,           (void *)&showLabels);
-    Select(ID_designator,           (void *)&designator);
-    Select(ID_doBallTimeCue,        (void *)&doBallTimeCue);
-    Select(ID_ballTimeCueColor,     (void *)&ballTimeCueColor);
-    Select(ID_timeCueBallSize,      (void *)&timeCueBallSize);
-    Select(ID_doLineTimeCue,        (void *)&doLineTimeCue);
-    Select(ID_lineTimeCueColor,     (void *)&lineTimeCueColor);
-    Select(ID_lineTimeCueWidth,     (void *)&lineTimeCueWidth);
-    Select(ID_doCropTimeCue,        (void *)&doCropTimeCue);
-    Select(ID_timeForTimeCue,       (void *)&timeForTimeCue);
-    Select(ID_fillMode,             (void *)&fillMode);
-    Select(ID_fillColor1,           (void *)&fillColor1);
-    Select(ID_fillColor2,           (void *)&fillColor2);
-    Select(ID_polarToCartesian,     (void *)&polarToCartesian);
-    Select(ID_polarCoordinateOrder, (void *)&polarCoordinateOrder);
-    Select(ID_angleUnits,           (void *)&angleUnits);
+    Select(ID_showLines,                (void *)&showLines);
+    Select(ID_lineWidth,                (void *)&lineWidth);
+    Select(ID_showPoints,               (void *)&showPoints);
+    Select(ID_symbol,                   (void *)&symbol);
+    Select(ID_pointSize,                (void *)&pointSize);
+    Select(ID_pointFillMode,            (void *)&pointFillMode);
+    Select(ID_pointStride,              (void *)&pointStride);
+    Select(ID_symbolDensity,            (void *)&symbolDensity);
+    Select(ID_curveColorSource,         (void *)&curveColorSource);
+    Select(ID_curveColor,               (void *)&curveColor);
+    Select(ID_showLegend,               (void *)&showLegend);
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,        (void *)&customLegendTitle);
+    Select(ID_showLabels,               (void *)&showLabels);
+    Select(ID_designator,               (void *)&designator);
+    Select(ID_doBallTimeCue,            (void *)&doBallTimeCue);
+    Select(ID_ballTimeCueColor,         (void *)&ballTimeCueColor);
+    Select(ID_timeCueBallSize,          (void *)&timeCueBallSize);
+    Select(ID_doLineTimeCue,            (void *)&doLineTimeCue);
+    Select(ID_lineTimeCueColor,         (void *)&lineTimeCueColor);
+    Select(ID_lineTimeCueWidth,         (void *)&lineTimeCueWidth);
+    Select(ID_doCropTimeCue,            (void *)&doCropTimeCue);
+    Select(ID_timeForTimeCue,           (void *)&timeForTimeCue);
+    Select(ID_fillMode,                 (void *)&fillMode);
+    Select(ID_fillColor1,               (void *)&fillColor1);
+    Select(ID_fillColor2,               (void *)&fillColor2);
+    Select(ID_polarToCartesian,         (void *)&polarToCartesian);
+    Select(ID_polarCoordinateOrder,     (void *)&polarCoordinateOrder);
+    Select(ID_angleUnits,               (void *)&angleUnits);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -765,6 +772,18 @@ CurveAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool forceA
     {
         addToParent = true;
         node->AddNode(new DataNode("showLegend", showLegend));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
     }
 
     if(completeSave || !FieldsEqual(ID_showLabels, &defaultObject))
@@ -971,6 +990,10 @@ CurveAttributes::SetFromNode(DataNode *parentNode)
         curveColor.SetFromNode(node);
     if((node = searchNode->GetNode("showLegend")) != 0)
         SetShowLegend(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("showLabels")) != 0)
         SetShowLabels(node->AsBool());
     if((node = searchNode->GetNode("designator")) != 0)
@@ -1126,6 +1149,20 @@ CurveAttributes::SetShowLegend(bool showLegend_)
 {
     showLegend = showLegend_;
     Select(ID_showLegend, (void *)&showLegend);
+}
+
+void
+CurveAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+CurveAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
 }
 
 void
@@ -1317,6 +1354,24 @@ CurveAttributes::GetShowLegend() const
 }
 
 bool
+CurveAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+CurveAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+CurveAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
+bool
 CurveAttributes::GetShowLabels() const
 {
     return showLabels;
@@ -1453,6 +1508,12 @@ CurveAttributes::SelectCurveColor()
 }
 
 void
+CurveAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 CurveAttributes::SelectDesignator()
 {
     Select(ID_designator, (void *)&designator);
@@ -1506,33 +1567,35 @@ CurveAttributes::GetFieldName(int index) const
 {
     switch (index)
     {
-    case ID_showLines:            return "showLines";
-    case ID_lineWidth:            return "lineWidth";
-    case ID_showPoints:           return "showPoints";
-    case ID_symbol:               return "symbol";
-    case ID_pointSize:            return "pointSize";
-    case ID_pointFillMode:        return "pointFillMode";
-    case ID_pointStride:          return "pointStride";
-    case ID_symbolDensity:        return "symbolDensity";
-    case ID_curveColorSource:     return "curveColorSource";
-    case ID_curveColor:           return "curveColor";
-    case ID_showLegend:           return "showLegend";
-    case ID_showLabels:           return "showLabels";
-    case ID_designator:           return "designator";
-    case ID_doBallTimeCue:        return "doBallTimeCue";
-    case ID_ballTimeCueColor:     return "ballTimeCueColor";
-    case ID_timeCueBallSize:      return "timeCueBallSize";
-    case ID_doLineTimeCue:        return "doLineTimeCue";
-    case ID_lineTimeCueColor:     return "lineTimeCueColor";
-    case ID_lineTimeCueWidth:     return "lineTimeCueWidth";
-    case ID_doCropTimeCue:        return "doCropTimeCue";
-    case ID_timeForTimeCue:       return "timeForTimeCue";
-    case ID_fillMode:             return "fillMode";
-    case ID_fillColor1:           return "fillColor1";
-    case ID_fillColor2:           return "fillColor2";
-    case ID_polarToCartesian:     return "polarToCartesian";
-    case ID_polarCoordinateOrder: return "polarCoordinateOrder";
-    case ID_angleUnits:           return "angleUnits";
+    case ID_showLines:                return "showLines";
+    case ID_lineWidth:                return "lineWidth";
+    case ID_showPoints:               return "showPoints";
+    case ID_symbol:                   return "symbol";
+    case ID_pointSize:                return "pointSize";
+    case ID_pointFillMode:            return "pointFillMode";
+    case ID_pointStride:              return "pointStride";
+    case ID_symbolDensity:            return "symbolDensity";
+    case ID_curveColorSource:         return "curveColorSource";
+    case ID_curveColor:               return "curveColor";
+    case ID_showLegend:               return "showLegend";
+    case ID_customLegendTitleEnabled: return "customLegendTitleEnabled";
+    case ID_customLegendTitle:        return "customLegendTitle";
+    case ID_showLabels:               return "showLabels";
+    case ID_designator:               return "designator";
+    case ID_doBallTimeCue:            return "doBallTimeCue";
+    case ID_ballTimeCueColor:         return "ballTimeCueColor";
+    case ID_timeCueBallSize:          return "timeCueBallSize";
+    case ID_doLineTimeCue:            return "doLineTimeCue";
+    case ID_lineTimeCueColor:         return "lineTimeCueColor";
+    case ID_lineTimeCueWidth:         return "lineTimeCueWidth";
+    case ID_doCropTimeCue:            return "doCropTimeCue";
+    case ID_timeForTimeCue:           return "timeForTimeCue";
+    case ID_fillMode:                 return "fillMode";
+    case ID_fillColor1:               return "fillColor1";
+    case ID_fillColor2:               return "fillColor2";
+    case ID_polarToCartesian:         return "polarToCartesian";
+    case ID_polarCoordinateOrder:     return "polarCoordinateOrder";
+    case ID_angleUnits:               return "angleUnits";
     default:  return "invalid index";
     }
 }
@@ -1557,33 +1620,35 @@ CurveAttributes::GetFieldType(int index) const
 {
     switch (index)
     {
-    case ID_showLines:            return FieldType_bool;
-    case ID_lineWidth:            return FieldType_linewidth;
-    case ID_showPoints:           return FieldType_bool;
-    case ID_symbol:               return FieldType_enum;
-    case ID_pointSize:            return FieldType_double;
-    case ID_pointFillMode:        return FieldType_enum;
-    case ID_pointStride:          return FieldType_int;
-    case ID_symbolDensity:        return FieldType_int;
-    case ID_curveColorSource:     return FieldType_enum;
-    case ID_curveColor:           return FieldType_color;
-    case ID_showLegend:           return FieldType_bool;
-    case ID_showLabels:           return FieldType_bool;
-    case ID_designator:           return FieldType_string;
-    case ID_doBallTimeCue:        return FieldType_bool;
-    case ID_ballTimeCueColor:     return FieldType_color;
-    case ID_timeCueBallSize:      return FieldType_double;
-    case ID_doLineTimeCue:        return FieldType_bool;
-    case ID_lineTimeCueColor:     return FieldType_color;
-    case ID_lineTimeCueWidth:     return FieldType_int;
-    case ID_doCropTimeCue:        return FieldType_bool;
-    case ID_timeForTimeCue:       return FieldType_double;
-    case ID_fillMode:             return FieldType_enum;
-    case ID_fillColor1:           return FieldType_color;
-    case ID_fillColor2:           return FieldType_color;
-    case ID_polarToCartesian:     return FieldType_bool;
-    case ID_polarCoordinateOrder: return FieldType_enum;
-    case ID_angleUnits:           return FieldType_enum;
+    case ID_showLines:                return FieldType_bool;
+    case ID_lineWidth:                return FieldType_linewidth;
+    case ID_showPoints:               return FieldType_bool;
+    case ID_symbol:                   return FieldType_enum;
+    case ID_pointSize:                return FieldType_double;
+    case ID_pointFillMode:            return FieldType_enum;
+    case ID_pointStride:              return FieldType_int;
+    case ID_symbolDensity:            return FieldType_int;
+    case ID_curveColorSource:         return FieldType_enum;
+    case ID_curveColor:               return FieldType_color;
+    case ID_showLegend:               return FieldType_bool;
+    case ID_customLegendTitleEnabled: return FieldType_bool;
+    case ID_customLegendTitle:        return FieldType_string;
+    case ID_showLabels:               return FieldType_bool;
+    case ID_designator:               return FieldType_string;
+    case ID_doBallTimeCue:            return FieldType_bool;
+    case ID_ballTimeCueColor:         return FieldType_color;
+    case ID_timeCueBallSize:          return FieldType_double;
+    case ID_doLineTimeCue:            return FieldType_bool;
+    case ID_lineTimeCueColor:         return FieldType_color;
+    case ID_lineTimeCueWidth:         return FieldType_int;
+    case ID_doCropTimeCue:            return FieldType_bool;
+    case ID_timeForTimeCue:           return FieldType_double;
+    case ID_fillMode:                 return FieldType_enum;
+    case ID_fillColor1:               return FieldType_color;
+    case ID_fillColor2:               return FieldType_color;
+    case ID_polarToCartesian:         return FieldType_bool;
+    case ID_polarCoordinateOrder:     return FieldType_enum;
+    case ID_angleUnits:               return FieldType_enum;
     default:  return FieldType_unknown;
     }
 }
@@ -1608,33 +1673,35 @@ CurveAttributes::GetFieldTypeName(int index) const
 {
     switch (index)
     {
-    case ID_showLines:            return "bool";
-    case ID_lineWidth:            return "linewidth";
-    case ID_showPoints:           return "bool";
-    case ID_symbol:               return "enum";
-    case ID_pointSize:            return "double";
-    case ID_pointFillMode:        return "enum";
-    case ID_pointStride:          return "int";
-    case ID_symbolDensity:        return "int";
-    case ID_curveColorSource:     return "enum";
-    case ID_curveColor:           return "color";
-    case ID_showLegend:           return "bool";
-    case ID_showLabels:           return "bool";
-    case ID_designator:           return "string";
-    case ID_doBallTimeCue:        return "bool";
-    case ID_ballTimeCueColor:     return "color";
-    case ID_timeCueBallSize:      return "double";
-    case ID_doLineTimeCue:        return "bool";
-    case ID_lineTimeCueColor:     return "color";
-    case ID_lineTimeCueWidth:     return "int";
-    case ID_doCropTimeCue:        return "bool";
-    case ID_timeForTimeCue:       return "double";
-    case ID_fillMode:             return "enum";
-    case ID_fillColor1:           return "color";
-    case ID_fillColor2:           return "color";
-    case ID_polarToCartesian:     return "bool";
-    case ID_polarCoordinateOrder: return "enum";
-    case ID_angleUnits:           return "enum";
+    case ID_showLines:                return "bool";
+    case ID_lineWidth:                return "linewidth";
+    case ID_showPoints:               return "bool";
+    case ID_symbol:                   return "enum";
+    case ID_pointSize:                return "double";
+    case ID_pointFillMode:            return "enum";
+    case ID_pointStride:              return "int";
+    case ID_symbolDensity:            return "int";
+    case ID_curveColorSource:         return "enum";
+    case ID_curveColor:               return "color";
+    case ID_showLegend:               return "bool";
+    case ID_customLegendTitleEnabled: return "bool";
+    case ID_customLegendTitle:        return "string";
+    case ID_showLabels:               return "bool";
+    case ID_designator:               return "string";
+    case ID_doBallTimeCue:            return "bool";
+    case ID_ballTimeCueColor:         return "color";
+    case ID_timeCueBallSize:          return "double";
+    case ID_doLineTimeCue:            return "bool";
+    case ID_lineTimeCueColor:         return "color";
+    case ID_lineTimeCueWidth:         return "int";
+    case ID_doCropTimeCue:            return "bool";
+    case ID_timeForTimeCue:           return "double";
+    case ID_fillMode:                 return "enum";
+    case ID_fillColor1:               return "color";
+    case ID_fillColor2:               return "color";
+    case ID_polarToCartesian:         return "bool";
+    case ID_polarCoordinateOrder:     return "enum";
+    case ID_angleUnits:               return "enum";
     default:  return "invalid index";
     }
 }
@@ -1714,6 +1781,16 @@ CurveAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_showLegend:
         {  // new scope
         retval = (showLegend == obj.showLegend);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_showLabels:

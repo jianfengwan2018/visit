@@ -23,7 +23,7 @@ class QvisOpacitySlider;
 // ****************************************************************************
 // Class: QvisCurvePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Defines QvisCurvePlotWindow class.
 //
 // Notes:      This class was automatically generated!
@@ -33,12 +33,12 @@ class QvisOpacitySlider;
 //
 // Modifications:
 //   Kathleen Bonnell, Tue Dec 23 13:27:22 PST 2003
-//   Added showPoints, pointSize and pointSizeLabel widgets. 
+//   Added showPoints, pointSize and pointSizeLabel widgets.
 //   Added showPointChanged and processPointSizeText slots.
 //
-//   Kathleen Bonnell, Thu Oct 27 15:35:11 PDT 2005 
+//   Kathleen Bonnell, Thu Oct 27 15:35:11 PDT 2005
 //   Added showLegend.
-//   
+//
 //   Kathleen Bonnell, Mon Oct 31 17:05:35 PST 2005
 //   Added cycleColors, colorLabel.
 //
@@ -56,6 +56,9 @@ class QvisOpacitySlider;
 //
 //   Kathleen Biagas, Wed Sep 11 17:17:42 PDT 2013
 //   Added polarToggle and useDegreesToggle, added widgets for saving tabs.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -82,12 +85,14 @@ class QvisCurvePlotWindow : public QvisPostableWindowObserver
     void UpdateWindow(bool doAll);
     void GetCurrentValues(int which_widget);
     void Apply(bool ignore = false);
- 
+
   private slots:
     void showLinesChanged(bool val);
     void lineWidthChanged(int style);
     void labelsToggled(bool val);
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
     void showPointsChanged(bool val);
     void processPointSizeText();
     void pointStrideChanged(int);
@@ -142,6 +147,8 @@ class QvisCurvePlotWindow : public QvisPostableWindowObserver
 
     QCheckBox           *labelsToggle;
     QCheckBox           *legendToggle;
+    QCheckBox           *customLegendTitleToggle;
+    QLineEdit           *customLegendTitle;
 
     QCheckBox           *showPoints;
 
@@ -153,7 +160,7 @@ class QvisCurvePlotWindow : public QvisPostableWindowObserver
 
     QButtonGroup        *fillModeGroup;
     QRadioButton        *staticButton;
-    QRadioButton        *dynamicButton;   
+    QRadioButton        *dynamicButton;
 
     QComboBox           *symbolType;
     QLabel              *symbolTypeLabel;

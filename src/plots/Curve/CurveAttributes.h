@@ -92,6 +92,7 @@ public:
     // Property selection methods
     virtual void SelectAll();
     void SelectCurveColor();
+    void SelectCustomLegendTitle();
     void SelectDesignator();
     void SelectBallTimeCueColor();
     void SelectLineTimeCueColor();
@@ -110,6 +111,8 @@ public:
     void SetCurveColorSource(CurveColor curveColorSource_);
     void SetCurveColor(const ColorAttribute &curveColor_);
     void SetShowLegend(bool showLegend_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
     void SetShowLabels(bool showLabels_);
     void SetDesignator(const std::string &designator_);
     void SetDoBallTimeCue(bool doBallTimeCue_);
@@ -140,6 +143,9 @@ public:
     const ColorAttribute &GetCurveColor() const;
           ColorAttribute &GetCurveColor();
     bool                 GetShowLegend() const;
+    bool                 GetCustomLegendTitleEnabled() const;
+    const std::string    &GetCustomLegendTitle() const;
+          std::string    &GetCustomLegendTitle();
     bool                 GetShowLabels() const;
     const std::string    &GetDesignator() const;
           std::string    &GetDesignator();
@@ -221,6 +227,8 @@ public:
         ID_curveColorSource,
         ID_curveColor,
         ID_showLegend,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID_showLabels,
         ID_designator,
         ID_doBallTimeCue,
@@ -252,6 +260,8 @@ private:
     int            curveColorSource;
     ColorAttribute curveColor;
     bool           showLegend;
+    bool           customLegendTitleEnabled;
+    std::string    customLegendTitle;
     bool           showLabels;
     std::string    designator;
     bool           doBallTimeCue;
@@ -273,6 +283,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define CURVEATTRIBUTES_TMFS "bibidiiiiabbsbadbaibdiaabii"
+#define CURVEATTRIBUTES_TMFS "bibidiiiiabbsbsbadbaibdiaabii"
 
 #endif

@@ -138,6 +138,13 @@ PyCurveAttributes_ToString(const CurveAttributes *atts, const char *prefix)
     else
         snprintf(tmpStr, 1000, "%sshowLegend = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     if(atts->GetShowLabels())
         snprintf(tmpStr, 1000, "%sshowLabels = 1\n", prefix);
     else
@@ -590,6 +597,54 @@ CurveAttributes_GetShowLegend(PyObject *self, PyObject *args)
 {
     CurveAttributesObject *obj = (CurveAttributesObject *)self;
     PyObject *retval = PyInt_FromLong(obj->data->GetShowLegend()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+CurveAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    CurveAttributesObject *obj = (CurveAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+CurveAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    CurveAttributesObject *obj = (CurveAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+CurveAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    CurveAttributesObject *obj = (CurveAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+CurveAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    CurveAttributesObject *obj = (CurveAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
     return retval;
 }
 
@@ -1242,6 +1297,10 @@ PyMethodDef PyCurveAttributes_methods[CURVEATTRIBUTES_NMETH] = {
     {"GetCurveColor", CurveAttributes_GetCurveColor, METH_VARARGS},
     {"SetShowLegend", CurveAttributes_SetShowLegend, METH_VARARGS},
     {"GetShowLegend", CurveAttributes_GetShowLegend, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", CurveAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", CurveAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", CurveAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", CurveAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetShowLabels", CurveAttributes_SetShowLabels, METH_VARARGS},
     {"GetShowLabels", CurveAttributes_GetShowLabels, METH_VARARGS},
     {"SetDesignator", CurveAttributes_SetDesignator, METH_VARARGS},
@@ -1342,6 +1401,10 @@ PyCurveAttributes_getattr(PyObject *self, char *name)
         return CurveAttributes_GetCurveColor(self, NULL);
     if(strcmp(name, "showLegend") == 0)
         return CurveAttributes_GetShowLegend(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return CurveAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return CurveAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "showLabels") == 0)
         return CurveAttributes_GetShowLabels(self, NULL);
     if(strcmp(name, "designator") == 0)
@@ -1478,6 +1541,10 @@ PyCurveAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = CurveAttributes_SetCurveColor(self, tuple);
     else if(strcmp(name, "showLegend") == 0)
         obj = CurveAttributes_SetShowLegend(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = CurveAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = CurveAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "showLabels") == 0)
         obj = CurveAttributes_SetShowLabels(self, tuple);
     else if(strcmp(name, "designator") == 0)

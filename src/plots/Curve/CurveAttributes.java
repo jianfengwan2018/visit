@@ -26,7 +26,7 @@ import llnl.visit.ColorAttribute;
 
 public class CurveAttributes extends AttributeSubject implements Plugin
 {
-    private static int CurveAttributes_numAdditionalAtts = 27;
+    private static int CurveAttributes_numAdditionalAtts = 29;
 
     // Enum values
     public final static int CURVECOLOR_CYCLE = 0;
@@ -70,6 +70,8 @@ public class CurveAttributes extends AttributeSubject implements Plugin
         curveColorSource = CURVECOLOR_CYCLE;
         curveColor = new ColorAttribute(0, 0, 0);
         showLegend = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         showLabels = true;
         designator = new String("");
         doBallTimeCue = false;
@@ -103,6 +105,8 @@ public class CurveAttributes extends AttributeSubject implements Plugin
         curveColorSource = CURVECOLOR_CYCLE;
         curveColor = new ColorAttribute(0, 0, 0);
         showLegend = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         showLabels = true;
         designator = new String("");
         doBallTimeCue = false;
@@ -136,6 +140,8 @@ public class CurveAttributes extends AttributeSubject implements Plugin
         curveColorSource = obj.curveColorSource;
         curveColor = new ColorAttribute(obj.curveColor);
         showLegend = obj.showLegend;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         showLabels = obj.showLabels;
         designator = new String(obj.designator);
         doBallTimeCue = obj.doBallTimeCue;
@@ -180,6 +186,8 @@ public class CurveAttributes extends AttributeSubject implements Plugin
                 (curveColorSource == obj.curveColorSource) &&
                 (curveColor == obj.curveColor) &&
                 (showLegend == obj.showLegend) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (showLabels == obj.showLabels) &&
                 (designator.equals(obj.designator)) &&
                 (doBallTimeCue == obj.doBallTimeCue) &&
@@ -268,100 +276,112 @@ public class CurveAttributes extends AttributeSubject implements Plugin
         Select(10);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(11);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(12);
+    }
+
     public void SetShowLabels(boolean showLabels_)
     {
         showLabels = showLabels_;
-        Select(11);
+        Select(13);
     }
 
     public void SetDesignator(String designator_)
     {
         designator = designator_;
-        Select(12);
+        Select(14);
     }
 
     public void SetDoBallTimeCue(boolean doBallTimeCue_)
     {
         doBallTimeCue = doBallTimeCue_;
-        Select(13);
+        Select(15);
     }
 
     public void SetBallTimeCueColor(ColorAttribute ballTimeCueColor_)
     {
         ballTimeCueColor = ballTimeCueColor_;
-        Select(14);
+        Select(16);
     }
 
     public void SetTimeCueBallSize(double timeCueBallSize_)
     {
         timeCueBallSize = timeCueBallSize_;
-        Select(15);
+        Select(17);
     }
 
     public void SetDoLineTimeCue(boolean doLineTimeCue_)
     {
         doLineTimeCue = doLineTimeCue_;
-        Select(16);
+        Select(18);
     }
 
     public void SetLineTimeCueColor(ColorAttribute lineTimeCueColor_)
     {
         lineTimeCueColor = lineTimeCueColor_;
-        Select(17);
+        Select(19);
     }
 
     public void SetLineTimeCueWidth(int lineTimeCueWidth_)
     {
         lineTimeCueWidth = lineTimeCueWidth_;
-        Select(18);
+        Select(20);
     }
 
     public void SetDoCropTimeCue(boolean doCropTimeCue_)
     {
         doCropTimeCue = doCropTimeCue_;
-        Select(19);
+        Select(21);
     }
 
     public void SetTimeForTimeCue(double timeForTimeCue_)
     {
         timeForTimeCue = timeForTimeCue_;
-        Select(20);
+        Select(22);
     }
 
     public void SetFillMode(int fillMode_)
     {
         fillMode = fillMode_;
-        Select(21);
+        Select(23);
     }
 
     public void SetFillColor1(ColorAttribute fillColor1_)
     {
         fillColor1 = fillColor1_;
-        Select(22);
+        Select(24);
     }
 
     public void SetFillColor2(ColorAttribute fillColor2_)
     {
         fillColor2 = fillColor2_;
-        Select(23);
+        Select(25);
     }
 
     public void SetPolarToCartesian(boolean polarToCartesian_)
     {
         polarToCartesian = polarToCartesian_;
-        Select(24);
+        Select(26);
     }
 
     public void SetPolarCoordinateOrder(int polarCoordinateOrder_)
     {
         polarCoordinateOrder = polarCoordinateOrder_;
-        Select(25);
+        Select(27);
     }
 
     public void SetAngleUnits(int angleUnits_)
     {
         angleUnits = angleUnits_;
-        Select(26);
+        Select(28);
     }
 
     // Property getting methods
@@ -376,6 +396,8 @@ public class CurveAttributes extends AttributeSubject implements Plugin
     public int            GetCurveColorSource() { return curveColorSource; }
     public ColorAttribute GetCurveColor() { return curveColor; }
     public boolean        GetShowLegend() { return showLegend; }
+    public boolean        GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String         GetCustomLegendTitle() { return customLegendTitle; }
     public boolean        GetShowLabels() { return showLabels; }
     public String         GetDesignator() { return designator; }
     public boolean        GetDoBallTimeCue() { return doBallTimeCue; }
@@ -419,36 +441,40 @@ public class CurveAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(10, buf))
             buf.WriteBool(showLegend);
         if(WriteSelect(11, buf))
-            buf.WriteBool(showLabels);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(12, buf))
-            buf.WriteString(designator);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(13, buf))
-            buf.WriteBool(doBallTimeCue);
+            buf.WriteBool(showLabels);
         if(WriteSelect(14, buf))
-            ballTimeCueColor.Write(buf);
+            buf.WriteString(designator);
         if(WriteSelect(15, buf))
-            buf.WriteDouble(timeCueBallSize);
+            buf.WriteBool(doBallTimeCue);
         if(WriteSelect(16, buf))
-            buf.WriteBool(doLineTimeCue);
+            ballTimeCueColor.Write(buf);
         if(WriteSelect(17, buf))
-            lineTimeCueColor.Write(buf);
+            buf.WriteDouble(timeCueBallSize);
         if(WriteSelect(18, buf))
-            buf.WriteInt(lineTimeCueWidth);
+            buf.WriteBool(doLineTimeCue);
         if(WriteSelect(19, buf))
-            buf.WriteBool(doCropTimeCue);
+            lineTimeCueColor.Write(buf);
         if(WriteSelect(20, buf))
-            buf.WriteDouble(timeForTimeCue);
+            buf.WriteInt(lineTimeCueWidth);
         if(WriteSelect(21, buf))
-            buf.WriteInt(fillMode);
+            buf.WriteBool(doCropTimeCue);
         if(WriteSelect(22, buf))
-            fillColor1.Write(buf);
+            buf.WriteDouble(timeForTimeCue);
         if(WriteSelect(23, buf))
-            fillColor2.Write(buf);
+            buf.WriteInt(fillMode);
         if(WriteSelect(24, buf))
-            buf.WriteBool(polarToCartesian);
+            fillColor1.Write(buf);
         if(WriteSelect(25, buf))
-            buf.WriteInt(polarCoordinateOrder);
+            fillColor2.Write(buf);
         if(WriteSelect(26, buf))
+            buf.WriteBool(polarToCartesian);
+        if(WriteSelect(27, buf))
+            buf.WriteInt(polarCoordinateOrder);
+        if(WriteSelect(28, buf))
             buf.WriteInt(angleUnits);
     }
 
@@ -491,55 +517,61 @@ public class CurveAttributes extends AttributeSubject implements Plugin
             SetShowLegend(buf.ReadBool());
             break;
         case 11:
-            SetShowLabels(buf.ReadBool());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 12:
-            SetDesignator(buf.ReadString());
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 13:
-            SetDoBallTimeCue(buf.ReadBool());
+            SetShowLabels(buf.ReadBool());
             break;
         case 14:
-            ballTimeCueColor.Read(buf);
-            Select(14);
+            SetDesignator(buf.ReadString());
             break;
         case 15:
-            SetTimeCueBallSize(buf.ReadDouble());
+            SetDoBallTimeCue(buf.ReadBool());
             break;
         case 16:
-            SetDoLineTimeCue(buf.ReadBool());
+            ballTimeCueColor.Read(buf);
+            Select(16);
             break;
         case 17:
-            lineTimeCueColor.Read(buf);
-            Select(17);
+            SetTimeCueBallSize(buf.ReadDouble());
             break;
         case 18:
-            SetLineTimeCueWidth(buf.ReadInt());
+            SetDoLineTimeCue(buf.ReadBool());
             break;
         case 19:
-            SetDoCropTimeCue(buf.ReadBool());
+            lineTimeCueColor.Read(buf);
+            Select(19);
             break;
         case 20:
-            SetTimeForTimeCue(buf.ReadDouble());
+            SetLineTimeCueWidth(buf.ReadInt());
             break;
         case 21:
-            SetFillMode(buf.ReadInt());
+            SetDoCropTimeCue(buf.ReadBool());
             break;
         case 22:
-            fillColor1.Read(buf);
-            Select(22);
+            SetTimeForTimeCue(buf.ReadDouble());
             break;
         case 23:
-            fillColor2.Read(buf);
-            Select(23);
+            SetFillMode(buf.ReadInt());
             break;
         case 24:
-            SetPolarToCartesian(buf.ReadBool());
+            fillColor1.Read(buf);
+            Select(24);
             break;
         case 25:
-            SetPolarCoordinateOrder(buf.ReadInt());
+            fillColor2.Read(buf);
+            Select(25);
             break;
         case 26:
+            SetPolarToCartesian(buf.ReadBool());
+            break;
+        case 27:
+            SetPolarCoordinateOrder(buf.ReadInt());
+            break;
+        case 28:
             SetAngleUnits(buf.ReadInt());
             break;
         }
@@ -584,6 +616,8 @@ public class CurveAttributes extends AttributeSubject implements Plugin
         str = str + "\n";
         str = str + indent + "curveColor = {" + curveColor.Red() + ", " + curveColor.Green() + ", " + curveColor.Blue() + ", " + curveColor.Alpha() + "}\n";
         str = str + boolToString("showLegend", showLegend, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + boolToString("showLabels", showLabels, indent) + "\n";
         str = str + stringToString("designator", designator, indent) + "\n";
         str = str + boolToString("doBallTimeCue", doBallTimeCue, indent) + "\n";
@@ -635,6 +669,8 @@ public class CurveAttributes extends AttributeSubject implements Plugin
     private int            curveColorSource;
     private ColorAttribute curveColor;
     private boolean        showLegend;
+    private boolean        customLegendTitleEnabled;
+    private String         customLegendTitle;
     private boolean        showLabels;
     private String         designator;
     private boolean        doBallTimeCue;

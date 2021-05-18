@@ -36,14 +36,14 @@
 //    Use a reference counted mapper to avoid problems when the plot has been
 //    deleted but the actor is still part of a network.
 //
-//    Kathleen Bonnell, Fri Jul 12 16:53:11 PDT 2002  
-//    Add a labeled curve mapper for decorations.  
-//    
-//    Kathleen Bonnell, Thu Oct 27 15:12:13 PDT 2005 
+//    Kathleen Bonnell, Fri Jul 12 16:53:11 PDT 2002
+//    Add a labeled curve mapper for decorations.
+//
+//    Kathleen Bonnell, Thu Oct 27 15:12:13 PDT 2005
 //    Added a legend.
-//    
-//    Kathleen Bonnell, Wed Jul 12 08:30:04 PDT 2006 
-//    Added warp filter. 
+//
+//    Kathleen Bonnell, Wed Jul 12 08:30:04 PDT 2006
+//    Added warp filter.
 //
 //    Brad Whitlock, Mon Nov 20 10:16:08 PDT 2006
 //    Changed to a curve renderer.
@@ -68,7 +68,7 @@ avtCurvePlot::avtCurvePlot()
     //
     // This is to allow the legend to reference counted so the behavior can
     // still access it after the plot is deleted.  The legend cannot be
-    // reference counted all of the time since we need to know that it is a 
+    // reference counted all of the time since we need to know that it is a
     // CurveLegend.
     //
     curveLegendRefPtr = curveLegend;
@@ -86,11 +86,11 @@ avtCurvePlot::avtCurvePlot()
 //    Hank Childs, Wed May 22 15:52:30 PDT 2002
 //    Do not delete the renderer since it is now reference counted.
 //
-//    Kathleen Bonnell, Fri Jul 12 16:53:11 PDT 2002  
-//    Delete the decorations mapper. 
-//    
-//    Kathleen Bonnell, Wed Jul 12 08:30:04 PDT 2006 
-//    Added warp filter. 
+//    Kathleen Bonnell, Fri Jul 12 16:53:11 PDT 2002
+//    Delete the decorations mapper.
+//
+//    Kathleen Bonnell, Wed Jul 12 08:30:04 PDT 2006
+//    Added warp filter.
 //
 //    Brad Whitlock, Mon Nov 20 10:16:25 PDT 2006
 //    Removed property.
@@ -173,12 +173,12 @@ avtCurvePlot::GetMapper(void)
 //
 //  Purpose:
 //      Gets a decorations mapper for this plot, in this case the
-//      labeled curve mapper. 
+//      labeled curve mapper.
 //
 //  Returns:    The labeled curve mapper typed as its base class mapper.
 //
-//  Programmer: Kathleen Bonnell 
-//  Creation:   July 12, 2002 
+//  Programmer: Kathleen Bonnell
+//  Creation:   July 12, 2002
 //
 // ****************************************************************************
 
@@ -192,7 +192,7 @@ avtCurvePlot::GetDecorationsMapper(void)
 //  Method: avtCurvePlot::ApplyOperators
 //
 //  Purpose:
-//      Applies the operators associated with a Curve plot.  
+//      Applies the operators associated with a Curve plot.
 //
 //  Arguments:
 //      input   The input data object.
@@ -221,21 +221,21 @@ avtCurvePlot::ApplyOperators(avtDataObject_p input)
 //  Method: avtCurvePlot::ApplyRenderingTransformation
 //
 //  Purpose:
-//      Applies the rendering transformation associated with a Curve plot.  
+//      Applies the rendering transformation associated with a Curve plot.
 //      Nothing for now.
 //
 //  Arguments:
 //      input   The input data object.
 //
-//  Returns:    The input data object. 
+//  Returns:    The input data object.
 //
-//  Programmer: Kathleen Bonnell 
-//  Creation:   October 22, 2002 
+//  Programmer: Kathleen Bonnell
+//  Creation:   October 22, 2002
 //
 //  Modifications:
-//    Kathleen Bonnell, Wed Jul 12 08:30:04 PDT 2006 
-//    Added warp filter. 
-//    
+//    Kathleen Bonnell, Wed Jul 12 08:30:04 PDT 2006
+//    Added warp filter.
+//
 //    Kathleen Biagas, Wed Sep 11 17:15:21 PDT 2013
 //    Use PolarFilter if user has requested the conversion.
 //
@@ -273,9 +273,9 @@ avtCurvePlot::ApplyRenderingTransformation(avtDataObject_p input)
 //    Eric Brugger, Wed Aug 20 10:23:51 PDT 2003
 //    I added code to set the window mode to curve.
 //
-//    Kathleen Bonnell, Thu Oct 27 15:12:13 PDT 2005 
+//    Kathleen Bonnell, Thu Oct 27 15:12:13 PDT 2005
 //    Set the legend.
-//    
+//
 //    Mark C. Miller, Thu Jun 21 00:12:28 PDT 2007
 //    Added support to overlay curve plots on 2D plots.
 //    Ensure that curve plots are plotted on top of 2D plots
@@ -328,16 +328,16 @@ avtCurvePlot::CustomizeBehavior(void)
 //  Creation:   Sat Apr 20 13:01:58 PST 2002
 //
 //  Modifications:
-//    Kathleen Bonnell, Fri Jul 12 18:42:11 PDT 2002 
+//    Kathleen Bonnell, Fri Jul 12 18:42:11 PDT 2002
 //    Set attributes for the decorations mapper.
 //
-//    Kathleen Bonnell, Tue Jul 23 14:12:47 PDT 2002       
-//    LabelSize no longer an attribute. 
+//    Kathleen Bonnell, Tue Jul 23 14:12:47 PDT 2002
+//    LabelSize no longer an attribute.
 //
-//    Kathleen Bonnell, Tue Dec 23 11:08:38 PST 2003 
-//    Added ShowPoints and PointSize. 
+//    Kathleen Bonnell, Tue Dec 23 11:08:38 PST 2003
+//    Added ShowPoints and PointSize.
 //
-//    Kathleen Bonnell, Thu Oct 27 15:12:13 PDT 2005 
+//    Kathleen Bonnell, Thu Oct 27 15:12:13 PDT 2005
 //    Set the legend's color.
 //
 //    Brad Whitlock, Mon Nov 20 10:17:14 PDT 2006
@@ -348,7 +348,10 @@ avtCurvePlot::CustomizeBehavior(void)
 //    to be known before plot executes.
 //
 //    Alister Maguire, Mon Jun 11 10:24:59 PDT 2018
-//    Set attributes for the time cue options. 
+//    Set attributes for the time cue options.
+//
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
 //
 // ****************************************************************************
 
@@ -382,7 +385,7 @@ avtCurvePlot::SetAtts(const AttributeGroup *a)
     atts.GetLineTimeCueColor().GetRgb(lineRgb);
     mapper->SetTimeCueLineColor(lineRgb);
     mapper->SetDoCropTimeCue(atts.GetDoCropTimeCue());
-   
+
     if (atts.GetShowLegend())
     {
         curveLegend->LegendOn();
@@ -398,6 +401,11 @@ avtCurvePlot::SetAtts(const AttributeGroup *a)
     decoMapper->SetLabelVisibility(atts.GetShowLabels());
 
     behavior->GetInfo().GetAttributes().SetWindowMode(WINMODE_CURVE);
+
+    if(atts.GetCustomLegendTitleEnabled())
+        curveLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        curveLegend->SetTitle("Curve");
 }
 
 // ****************************************************************************
@@ -407,17 +415,17 @@ avtCurvePlot::SetAtts(const AttributeGroup *a)
 //      Sets the line width.
 //
 //  Programmer: Kathleen Bonnell
-//  Creation:   April 24, 2002 
+//  Creation:   April 24, 2002
 //
 //  Modifications:
-//    Kathleen Bonnell, Thu Oct 27 15:12:13 PDT 2005 
+//    Kathleen Bonnell, Thu Oct 27 15:12:13 PDT 2005
 //    Set the legend's line width.
 //
 //    Brad Whitlock, Mon Nov 20 10:13:58 PDT 2006
 //    Removed property.
 //
 // ****************************************************************************
- 
+
 void
 avtCurvePlot::SetLineWidth(int lw)
 {
@@ -435,16 +443,16 @@ avtCurvePlot::SetLineWidth(int lw)
 //  Creation:   September 12, 2002
 //
 //  Modifications:
-//    Kathleen Bonnell, Wed Jul 12 08:30:04 PDT 2006 
-//    Added warp filter. 
-//    
+//    Kathleen Bonnell, Wed Jul 12 08:30:04 PDT 2006
+//    Added warp filter.
+//
 // ****************************************************************************
- 
+
 void
 avtCurvePlot::ReleaseData(void)
 {
     avtLineDataPlot::ReleaseData();
- 
+
     if (CurveFilter != NULL)
     {
         CurveFilter->ReleaseData();
