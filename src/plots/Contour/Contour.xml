@@ -35,6 +35,11 @@
       <Field name="legendFlag" label="legendFlag" type="bool">
         true
       </Field>
+      <Field name="customLegendTitleEnabled" label="customLegendTitleEnabled" type="bool" enabler="legendFlag:true">
+        false
+      </Field>
+      <Field name="customLegendTitle" label="customLegendTitle" type="string" enabler="customLegendTitleEnabled:true">
+      </Field>
       <Field name="lineWidth" label="lineWidth" type="linewidth">
         0
       </Field>

@@ -141,6 +141,7 @@ void ContourAttributes::Init()
     colorType = ColorByMultipleColors;
     invertColorTable = false;
     legendFlag = true;
+    customLegendTitleEnabled = false;
     lineWidth = 0;
     contourNLevels = 10;
     contourMethod = Level;
@@ -177,6 +178,8 @@ void ContourAttributes::Copy(const ContourAttributes &obj)
     colorTableName = obj.colorTableName;
     invertColorTable = obj.invertColorTable;
     legendFlag = obj.legendFlag;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     lineWidth = obj.lineWidth;
     singleColor = obj.singleColor;
     multiColor = obj.multiColor;
@@ -355,6 +358,8 @@ ContourAttributes::operator == (const ContourAttributes &obj) const
             (colorTableName == obj.colorTableName) &&
             (invertColorTable == obj.invertColorTable) &&
             (legendFlag == obj.legendFlag) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (lineWidth == obj.lineWidth) &&
             (singleColor == obj.singleColor) &&
             (multiColor == obj.multiColor) &&
@@ -511,25 +516,27 @@ ContourAttributes::NewInstance(bool copy) const
 void
 ContourAttributes::SelectAll()
 {
-    Select(ID_defaultPalette,   (void *)&defaultPalette);
-    Select(ID_changedColors,    (void *)&changedColors);
-    Select(ID_colorType,        (void *)&colorType);
-    Select(ID_colorTableName,   (void *)&colorTableName);
-    Select(ID_invertColorTable, (void *)&invertColorTable);
-    Select(ID_legendFlag,       (void *)&legendFlag);
-    Select(ID_lineWidth,        (void *)&lineWidth);
-    Select(ID_singleColor,      (void *)&singleColor);
-    Select(ID_multiColor,       (void *)&multiColor);
-    Select(ID_contourNLevels,   (void *)&contourNLevels);
-    Select(ID_contourValue,     (void *)&contourValue);
-    Select(ID_contourPercent,   (void *)&contourPercent);
-    Select(ID_contourMethod,    (void *)&contourMethod);
-    Select(ID_minFlag,          (void *)&minFlag);
-    Select(ID_maxFlag,          (void *)&maxFlag);
-    Select(ID_min,              (void *)&min);
-    Select(ID_max,              (void *)&max);
-    Select(ID_scaling,          (void *)&scaling);
-    Select(ID_wireframe,        (void *)&wireframe);
+    Select(ID_defaultPalette,           (void *)&defaultPalette);
+    Select(ID_changedColors,            (void *)&changedColors);
+    Select(ID_colorType,                (void *)&colorType);
+    Select(ID_colorTableName,           (void *)&colorTableName);
+    Select(ID_invertColorTable,         (void *)&invertColorTable);
+    Select(ID_legendFlag,               (void *)&legendFlag);
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,        (void *)&customLegendTitle);
+    Select(ID_lineWidth,                (void *)&lineWidth);
+    Select(ID_singleColor,              (void *)&singleColor);
+    Select(ID_multiColor,               (void *)&multiColor);
+    Select(ID_contourNLevels,           (void *)&contourNLevels);
+    Select(ID_contourValue,             (void *)&contourValue);
+    Select(ID_contourPercent,           (void *)&contourPercent);
+    Select(ID_contourMethod,            (void *)&contourMethod);
+    Select(ID_minFlag,                  (void *)&minFlag);
+    Select(ID_maxFlag,                  (void *)&maxFlag);
+    Select(ID_min,                      (void *)&min);
+    Select(ID_max,                      (void *)&max);
+    Select(ID_scaling,                  (void *)&scaling);
+    Select(ID_wireframe,                (void *)&wireframe);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -877,6 +884,20 @@ ContourAttributes::SetLegendFlag(bool legendFlag_)
 }
 
 void
+ContourAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+ContourAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 ContourAttributes::SetLineWidth(int lineWidth_)
 {
     lineWidth = lineWidth_;
@@ -1039,6 +1060,24 @@ ContourAttributes::GetLegendFlag() const
     return legendFlag;
 }
 
+bool
+ContourAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+ContourAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+ContourAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
 int
 ContourAttributes::GetLineWidth() const
 {
@@ -1164,6 +1203,12 @@ ContourAttributes::SelectColorTableName()
 }
 
 void
+ContourAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 ContourAttributes::SelectSingleColor()
 {
     Select(ID_singleColor, (void *)&singleColor);
@@ -1211,25 +1256,27 @@ ContourAttributes::GetFieldName(int index) const
 {
     switch (index)
     {
-    case ID_defaultPalette:   return "defaultPalette";
-    case ID_changedColors:    return "changedColors";
-    case ID_colorType:        return "colorType";
-    case ID_colorTableName:   return "colorTableName";
-    case ID_invertColorTable: return "invertColorTable";
-    case ID_legendFlag:       return "legendFlag";
-    case ID_lineWidth:        return "lineWidth";
-    case ID_singleColor:      return "singleColor";
-    case ID_multiColor:       return "multiColor";
-    case ID_contourNLevels:   return "contourNLevels";
-    case ID_contourValue:     return "contourValue";
-    case ID_contourPercent:   return "contourPercent";
-    case ID_contourMethod:    return "contourMethod";
-    case ID_minFlag:          return "minFlag";
-    case ID_maxFlag:          return "maxFlag";
-    case ID_min:              return "min";
-    case ID_max:              return "max";
-    case ID_scaling:          return "scaling";
-    case ID_wireframe:        return "wireframe";
+    case ID_defaultPalette:           return "defaultPalette";
+    case ID_changedColors:            return "changedColors";
+    case ID_colorType:                return "colorType";
+    case ID_colorTableName:           return "colorTableName";
+    case ID_invertColorTable:         return "invertColorTable";
+    case ID_legendFlag:               return "legendFlag";
+    case ID_customLegendTitleEnabled: return "customLegendTitleEnabled";
+    case ID_customLegendTitle:        return "customLegendTitle";
+    case ID_lineWidth:                return "lineWidth";
+    case ID_singleColor:              return "singleColor";
+    case ID_multiColor:               return "multiColor";
+    case ID_contourNLevels:           return "contourNLevels";
+    case ID_contourValue:             return "contourValue";
+    case ID_contourPercent:           return "contourPercent";
+    case ID_contourMethod:            return "contourMethod";
+    case ID_minFlag:                  return "minFlag";
+    case ID_maxFlag:                  return "maxFlag";
+    case ID_min:                      return "min";
+    case ID_max:                      return "max";
+    case ID_scaling:                  return "scaling";
+    case ID_wireframe:                return "wireframe";
     default:  return "invalid index";
     }
 }
@@ -1254,25 +1301,27 @@ ContourAttributes::GetFieldType(int index) const
 {
     switch (index)
     {
-    case ID_defaultPalette:   return FieldType_att;
-    case ID_changedColors:    return FieldType_ucharVector;
-    case ID_colorType:        return FieldType_enum;
-    case ID_colorTableName:   return FieldType_colortable;
-    case ID_invertColorTable: return FieldType_bool;
-    case ID_legendFlag:       return FieldType_bool;
-    case ID_lineWidth:        return FieldType_linewidth;
-    case ID_singleColor:      return FieldType_color;
-    case ID_multiColor:       return FieldType_att;
-    case ID_contourNLevels:   return FieldType_int;
-    case ID_contourValue:     return FieldType_doubleVector;
-    case ID_contourPercent:   return FieldType_doubleVector;
-    case ID_contourMethod:    return FieldType_enum;
-    case ID_minFlag:          return FieldType_bool;
-    case ID_maxFlag:          return FieldType_bool;
-    case ID_min:              return FieldType_double;
-    case ID_max:              return FieldType_double;
-    case ID_scaling:          return FieldType_enum;
-    case ID_wireframe:        return FieldType_bool;
+    case ID_defaultPalette:           return FieldType_att;
+    case ID_changedColors:            return FieldType_ucharVector;
+    case ID_colorType:                return FieldType_enum;
+    case ID_colorTableName:           return FieldType_colortable;
+    case ID_invertColorTable:         return FieldType_bool;
+    case ID_legendFlag:               return FieldType_bool;
+    case ID_customLegendTitleEnabled: return FieldType_bool;
+    case ID_customLegendTitle:        return FieldType_string;
+    case ID_lineWidth:                return FieldType_linewidth;
+    case ID_singleColor:              return FieldType_color;
+    case ID_multiColor:               return FieldType_att;
+    case ID_contourNLevels:           return FieldType_int;
+    case ID_contourValue:             return FieldType_doubleVector;
+    case ID_contourPercent:           return FieldType_doubleVector;
+    case ID_contourMethod:            return FieldType_enum;
+    case ID_minFlag:                  return FieldType_bool;
+    case ID_maxFlag:                  return FieldType_bool;
+    case ID_min:                      return FieldType_double;
+    case ID_max:                      return FieldType_double;
+    case ID_scaling:                  return FieldType_enum;
+    case ID_wireframe:                return FieldType_bool;
     default:  return FieldType_unknown;
     }
 }
@@ -1297,25 +1346,27 @@ ContourAttributes::GetFieldTypeName(int index) const
 {
     switch (index)
     {
-    case ID_defaultPalette:   return "att";
-    case ID_changedColors:    return "ucharVector";
-    case ID_colorType:        return "enum";
-    case ID_colorTableName:   return "colortable";
-    case ID_invertColorTable: return "bool";
-    case ID_legendFlag:       return "bool";
-    case ID_lineWidth:        return "linewidth";
-    case ID_singleColor:      return "color";
-    case ID_multiColor:       return "att";
-    case ID_contourNLevels:   return "int";
-    case ID_contourValue:     return "doubleVector";
-    case ID_contourPercent:   return "doubleVector";
-    case ID_contourMethod:    return "enum";
-    case ID_minFlag:          return "bool";
-    case ID_maxFlag:          return "bool";
-    case ID_min:              return "double";
-    case ID_max:              return "double";
-    case ID_scaling:          return "enum";
-    case ID_wireframe:        return "bool";
+    case ID_defaultPalette:           return "att";
+    case ID_changedColors:            return "ucharVector";
+    case ID_colorType:                return "enum";
+    case ID_colorTableName:           return "colortable";
+    case ID_invertColorTable:         return "bool";
+    case ID_legendFlag:               return "bool";
+    case ID_customLegendTitleEnabled: return "bool";
+    case ID_customLegendTitle:        return "string";
+    case ID_lineWidth:                return "linewidth";
+    case ID_singleColor:              return "color";
+    case ID_multiColor:               return "att";
+    case ID_contourNLevels:           return "int";
+    case ID_contourValue:             return "doubleVector";
+    case ID_contourPercent:           return "doubleVector";
+    case ID_contourMethod:            return "enum";
+    case ID_minFlag:                  return "bool";
+    case ID_maxFlag:                  return "bool";
+    case ID_min:                      return "double";
+    case ID_max:                      return "double";
+    case ID_scaling:                  return "enum";
+    case ID_wireframe:                return "bool";
     default:  return "invalid index";
     }
 }
@@ -1370,6 +1421,16 @@ ContourAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_legendFlag:
         {  // new scope
         retval = (legendFlag == obj.legendFlag);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_lineWidth:

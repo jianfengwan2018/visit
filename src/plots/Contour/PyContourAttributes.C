@@ -96,6 +96,13 @@ PyContourAttributes_ToString(const ContourAttributes *atts, const char *prefix)
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     snprintf(tmpStr, 1000, "%slineWidth = %d\n", prefix, atts->GetLineWidth());
     str += tmpStr;
     const unsigned char *singleColor = atts->GetSingleColor().GetColor();
@@ -425,6 +432,54 @@ ContourAttributes_GetLegendFlag(PyObject *self, PyObject *args)
 {
     ContourAttributesObject *obj = (ContourAttributesObject *)self;
     PyObject *retval = PyInt_FromLong(obj->data->GetLegendFlag()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+ContourAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    ContourAttributesObject *obj = (ContourAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+ContourAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    ContourAttributesObject *obj = (ContourAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+ContourAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    ContourAttributesObject *obj = (ContourAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+ContourAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    ContourAttributesObject *obj = (ContourAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
     return retval;
 }
 
@@ -1093,6 +1148,10 @@ PyMethodDef PyContourAttributes_methods[CONTOURATTRIBUTES_NMETH] = {
     {"GetInvertColorTable", ContourAttributes_GetInvertColorTable, METH_VARARGS},
     {"SetLegendFlag", ContourAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", ContourAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", ContourAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", ContourAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", ContourAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", ContourAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetLineWidth", ContourAttributes_SetLineWidth, METH_VARARGS},
     {"GetLineWidth", ContourAttributes_GetLineWidth, METH_VARARGS},
     {"SetSingleColor", ContourAttributes_SetSingleColor, METH_VARARGS},
@@ -1159,6 +1218,10 @@ PyContourAttributes_getattr(PyObject *self, char *name)
         return ContourAttributes_GetInvertColorTable(self, NULL);
     if(strcmp(name, "legendFlag") == 0)
         return ContourAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return ContourAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return ContourAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "lineWidth") == 0)
         return ContourAttributes_GetLineWidth(self, NULL);
     if(strcmp(name, "singleColor") == 0)
@@ -1254,6 +1317,10 @@ PyContourAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = ContourAttributes_SetInvertColorTable(self, tuple);
     else if(strcmp(name, "legendFlag") == 0)
         obj = ContourAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = ContourAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = ContourAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "lineWidth") == 0)
         obj = ContourAttributes_SetLineWidth(self, tuple);
     else if(strcmp(name, "singleColor") == 0)

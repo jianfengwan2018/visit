@@ -23,7 +23,7 @@ class QvisOpacitySlider;
 // ****************************************************************************
 // Class: QvisContourPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   This class is an observer window that watches material plot attributes
 //   and always represents their current state.
 //
@@ -35,7 +35,7 @@ class QvisOpacitySlider;
 // Modifications:
 //   Eric Brugger, Wed Mar 14 11:58:10 PST 2001
 //   I added a plot type to the constructor for use with the viewer proxy.
-//   
+//
 //   Jeremy Meredith, Wed Mar 13 10:20:32 PST 2002
 //   Added a toggle for wireframe mode.
 //
@@ -46,13 +46,16 @@ class QvisOpacitySlider;
 //   I added a color table coloring option.
 //
 //   Mark C. Miller, Wed Nov 16 10:46:36 PST 2005
-//   Moved StringToDoubleList to QvisWindowBase 
+//   Moved StringToDoubleList to QvisWindowBase
 //
 //   Allen Sanderson, Sun Mar  7 12:49:56 PST 2010
 //   Change layout of window for 2.0 interface changes.
 //
 //   Kathleen Bonnell, Mon Jan 17 17:59:09 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -100,6 +103,9 @@ private slots:
 
     void wireframeToggled(bool val);
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
+
 private:
     int                     plotType;
     ContourAttributes      *contourAtts;
@@ -123,6 +129,8 @@ private:
 
     QCheckBox              *wireframeToggle;
     QCheckBox              *legendToggle;
+    QCheckBox              *customLegendTitleToggle;
+    QLineEdit              *customLegendTitle;
 };
 
 #endif

@@ -28,7 +28,7 @@
 // ****************************************************************************
 // Method: QvisContourPlotWindow::QvisContourPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor for the QvisContourPlotWindow class.
 //
 // Programmer: Brad Whitlock
@@ -57,7 +57,7 @@ QvisContourPlotWindow::QvisContourPlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisContourPlotWindow::~QvisContourPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor for the QvisContourPlotWindow class.
 //
 // Programmer: Brad Whitlock
@@ -77,7 +77,7 @@ QvisContourPlotWindow::~QvisContourPlotWindow()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   This method creates the widgets that are in the window and sets
 //   up their signals/slots.
 //
@@ -118,6 +118,9 @@ QvisContourPlotWindow::~QvisContourPlotWindow()
 //   Kathleen Bonnell, Mon Jan 17 17:59:09 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
 //
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
+//
 // ****************************************************************************
 
 void
@@ -138,7 +141,7 @@ QvisContourPlotWindow::CreateWindowContents()
     // Create the scale radio buttons
     //
     dataLayout->addWidget( new QLabel(tr("Scale"), central), 0, 0);
-    
+
     // Create the radio buttons
     scalingButtons = new QButtonGroup(central);
 
@@ -171,7 +174,7 @@ QvisContourPlotWindow::CreateWindowContents()
             this, SLOT(minToggled(bool)));
     minLineEdit = new QLineEdit(central);
     connect(minLineEdit, SIGNAL(returnPressed()),
-            this, SLOT(processMinLimitText())); 
+            this, SLOT(processMinLimitText()));
     limitsLayout->addWidget(minLineEdit, 0, 1);
 
     // Create the max toggle and line edit
@@ -181,7 +184,7 @@ QvisContourPlotWindow::CreateWindowContents()
             this, SLOT(maxToggled(bool)));
     maxLineEdit = new QLineEdit(central);
     connect(maxLineEdit, SIGNAL(returnPressed()),
-            this, SLOT(processMaxLimitText())); 
+            this, SLOT(processMaxLimitText()));
     limitsLayout->addWidget(maxLineEdit, 0, 3);
 
 
@@ -277,7 +280,7 @@ QvisContourPlotWindow::CreateWindowContents()
     QGridLayout *styleLayout = new QGridLayout(styleGroup);
     styleLayout->setMargin(5);
     styleLayout->setSpacing(10);
- 
+
     // Create the lineWidth widget.
     styleLayout->addWidget(new QLabel(tr("Line width"), central), 1, 2);
 
@@ -296,7 +299,7 @@ QvisContourPlotWindow::CreateWindowContents()
     QGridLayout *miscLayout = new QGridLayout(miscGroup);
     miscLayout->setMargin(5);
     miscLayout->setSpacing(10);
- 
+
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Legend"), central);
     connect(legendToggle, SIGNAL(toggled(bool)),
@@ -308,12 +311,24 @@ QvisContourPlotWindow::CreateWindowContents()
     connect(wireframeToggle, SIGNAL(toggled(bool)),
             this, SLOT(wireframeToggled(bool)));
     miscLayout->addWidget(wireframeToggle, 0, 1);
+
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 // ****************************************************************************
 // Method: QvisContourPlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   This method is called when the window's subject is changed. The
 //   subject tells this window what attributes changed and we put the
 //   new values into those widgets.
@@ -322,9 +337,9 @@ QvisContourPlotWindow::CreateWindowContents()
 //   doAll : If this flag is true, update all the widgets regardless
 //           of whether or not they are selected.
 //
-// Returns:    
+// Returns:
 //
-// Note:       
+// Note:
 //
 // Programmer: Brad Whitlock
 // Creation:   Sat Feb 17 13:42:22 PST 2001
@@ -336,18 +351,18 @@ QvisContourPlotWindow::CreateWindowContents()
 //   in which line stippling is available.
 //
 //   Kathleen Bonnell, Thu Jun 21 16:33:54 PDT 2001
-//   Enable lineStyle and lineStyleLabel. 
+//   Enable lineStyle and lineStyleLabel.
 //
 //   Jeremy Meredith, Wed Mar 13 10:20:32 PST 2002
 //   Added a toggle for wireframe mode.
 //
 //   Brad Whitlock, Thu Aug 22 10:33:06 PDT 2002
-//   I added code to update the single color opacity slider and set the 
+//   I added code to update the single color opacity slider and set the
 //   enabled state for the single and multiple color widgets.
 //
-//   Kathleen Bonnell, Thu Oct  3 13:23:42 PDT 2002  
+//   Kathleen Bonnell, Thu Oct  3 13:23:42 PDT 2002
 //   I added code to disable min/max if contourMethod is "value", ensure
-//   it is enabled otherwise. 
+//   it is enabled otherwise.
 //
 //   Brad Whitlock, Fri Nov 22 12:07:38 PDT 2002
 //   I added new attributes to support color tables.
@@ -368,6 +383,9 @@ QvisContourPlotWindow::CreateWindowContents()
 //   Kathleen Biagas, Wed Apr  8 08:42:11 PDT 2015
 //   Use DoubleToQString helper function, for consistency in formatting across
 //   all windows.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -399,9 +417,9 @@ QvisContourPlotWindow::UpdateWindow(bool doAll)
             break;
         case ContourAttributes::ID_colorType:
             colorModeButtons->blockSignals(true);
-            if(contourAtts->GetColorType() == ContourAttributes::ColorByColorTable) 
+            if(contourAtts->GetColorType() == ContourAttributes::ColorByColorTable)
                 index = 0;
-            else if(contourAtts->GetColorType() == ContourAttributes::ColorBySingleColor) 
+            else if(contourAtts->GetColorType() == ContourAttributes::ColorBySingleColor)
                 index = 1;
             else
                 index = 2;
@@ -421,7 +439,22 @@ QvisContourPlotWindow::UpdateWindow(bool doAll)
         case ContourAttributes::ID_legendFlag:
             legendToggle->blockSignals(true);
             legendToggle->setChecked(contourAtts->GetLegendFlag());
+            customLegendTitleToggle->setEnabled(contourAtts->GetLegendFlag());
+            customLegendTitle->setEnabled(contourAtts->GetLegendFlag() &&
+                                    contourAtts->GetCustomLegendTitleEnabled());
             legendToggle->blockSignals(false);
+            break;
+        case ContourAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(contourAtts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(contourAtts->GetLegendFlag() &&
+                                    contourAtts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+        case ContourAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(contourAtts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
             break;
         case ContourAttributes::ID_lineWidth:
             lineWidth->blockSignals(true);
@@ -550,7 +583,7 @@ QvisContourPlotWindow::UpdateWindow(bool doAll)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::UpdateMultipleAreaColors
 //
-// Purpose: 
+// Purpose:
 //   This method updates the multipleColors widget with the list of contour
 //   colors.
 //
@@ -643,7 +676,7 @@ QvisContourPlotWindow::UpdateMultipleAreaColors()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::LevelString
 //
-// Purpose: 
+// Purpose:
 //   Returns a string version of the data value that we want.
 //
 // Arguments:
@@ -687,7 +720,7 @@ QvisContourPlotWindow::LevelString(int i)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::UpdateMultipleAreaNames
 //
-// Purpose: 
+// Purpose:
 //   This method updates the multipleColors widget with the list of contour
 //   names.
 //
@@ -761,7 +794,7 @@ QvisContourPlotWindow::UpdateMultipleAreaNames()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::UpdateSelectByText
 //
-// Purpose: 
+// Purpose:
 //   This method updates the selectBy line edit when the value, percent, or
 //   NLevels change.
 //
@@ -808,7 +841,7 @@ QvisContourPlotWindow::UpdateSelectByText()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets the current values from the text fields and puts the values in the
 //   contourAtts.
 //
@@ -870,7 +903,7 @@ QvisContourPlotWindow::GetCurrentValues(int which_widget)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::ProcessSelectByText
 //
-// Purpose: 
+// Purpose:
 //   Processes the string in the selectByLineEdit and sets the results into
 //   the contour attributes.
 //
@@ -882,7 +915,7 @@ QvisContourPlotWindow::GetCurrentValues(int which_widget)
 //   Added a code to prevent more than MAX_CONTOURS contours.
 //
 //   Mark C. Miller, Wed Nov 16 10:46:36 PST 2005
-//   Added MAX_CONTOURS args to calls to StringToDoubleList 
+//   Added MAX_CONTOURS args to calls to StringToDoubleList
 //
 //   Brad Whitlock, Tue Apr 22 16:30:36 PDT 2008
 //   Support for internationalization.
@@ -944,7 +977,7 @@ QvisContourPlotWindow::ProcessSelectByText()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::Apply
 //
-// Purpose: 
+// Purpose:
 //   This method applies the contour plot attributes and optionally
 //   tells the viewer to apply them.
 //
@@ -964,7 +997,7 @@ QvisContourPlotWindow::ProcessSelectByText()
 //   I modified the routine to pass to the viewer proxy the plot
 //   type stored within the class instead of the one hardwired from
 //   an include file.
-//   
+//
 //   Kathleen Bonnell, Tue Mar 27 15:27:50 PST 2001
 //   Removed range checking for log plots, as varMin, varMax no longer
 //   members of ContourAttributes.  Range checking will now be done
@@ -996,7 +1029,7 @@ QvisContourPlotWindow::Apply(bool ignore)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::apply
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the window's Apply
 //   button is clicked.
 //
@@ -1004,7 +1037,7 @@ QvisContourPlotWindow::Apply(bool ignore)
 // Creation:   Sat Feb 17 13:42:22 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1016,7 +1049,7 @@ QvisContourPlotWindow::apply()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::makeDefault
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the window's
 //   "Make default" button is clicked.
 //
@@ -1028,7 +1061,7 @@ QvisContourPlotWindow::apply()
 //   I modified the routine to pass to the viewer proxy the plot
 //   type stored within the class instead of the one hardwired from
 //   an include file.
-//   
+//
 // ****************************************************************************
 
 void
@@ -1043,7 +1076,7 @@ QvisContourPlotWindow::makeDefault()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::reset
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the window's
 //   Reset button is clicked.
 //
@@ -1051,7 +1084,7 @@ QvisContourPlotWindow::makeDefault()
 // Creation:   Sat Feb 17 13:42:22 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1066,7 +1099,7 @@ QvisContourPlotWindow::reset()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::lineWidthChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the window's
 //   line width widget is changed.
 //
@@ -1077,7 +1110,7 @@ QvisContourPlotWindow::reset()
 // Creation:   Sat Feb 17 13:42:22 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1090,7 +1123,7 @@ QvisContourPlotWindow::lineWidthChanged(int newWidth)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::legendToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the window's
 //   legend toggle button is clicked.
 //
@@ -1101,7 +1134,7 @@ QvisContourPlotWindow::lineWidthChanged(int newWidth)
 // Creation:   Sat Feb 17 13:42:22 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1112,9 +1145,58 @@ QvisContourPlotWindow::legendToggled(bool val)
 }
 
 // ****************************************************************************
+// Method: QvisContourPlotWindow::customLegendTitleToggled
+//
+// Purpose:
+//   This is a Qt slot function that is called when the window's
+//   custom legend toggle button is clicked.
+//
+// Arguments:
+//   val : The new toggle value.
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+QvisContourPlotWindow::customLegendTitleToggled(bool val)
+{
+    contourAtts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+// ****************************************************************************
+// Method: QvisContourPlotWindow::customLegendTitleProcessText
+//
+// Purpose:
+//   This is a Qt slot function that is called when the window's
+//   custom legend title is changed
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+QvisContourPlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != contourAtts->GetCustomLegendTitle())
+    {
+        contourAtts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
+}
+
+// ****************************************************************************
 // Method: QvisContourPlotWindow::wireframeToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the window's
 //   wireframe toggle button is clicked.
 //
@@ -1125,7 +1207,7 @@ QvisContourPlotWindow::legendToggled(bool val)
 // Creation:   March 13, 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1138,7 +1220,7 @@ QvisContourPlotWindow::wireframeToggled(bool val)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::colorModeChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the single/multiple color
 //   radio buttons are clicked.
 //
@@ -1171,7 +1253,7 @@ QvisContourPlotWindow::colorModeChanged(int index)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::singleColorChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the single color button's
 //   color changes.
 //
@@ -1199,7 +1281,7 @@ QvisContourPlotWindow::singleColorChanged(const QColor &color)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::singleColorOpacityChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the opacity component of the
 //   single color.
 //
@@ -1210,7 +1292,7 @@ QvisContourPlotWindow::singleColorChanged(const QColor &color)
 // Creation:   Thu Aug 22 10:46:22 PDT 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1224,14 +1306,14 @@ QvisContourPlotWindow::singleColorOpacityChanged(int opacity)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::multipleColorChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when a new color is selected
 //   for one of the color buttons in the multiple colors area.
 //
 // Arguments:
 //   color : The new color for the button.
 //   index : The index of the color that changed.
-// 
+//
 // Programmer: Brad Whitlock
 // Creation:   Sat Feb 17 13:42:22 PST 2001
 //
@@ -1262,7 +1344,7 @@ QvisContourPlotWindow::multipleColorChanged(const QColor &color, int index)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::opacityChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the opacity changes for one
 //   of the contours in the multiple colors area.
 //
@@ -1299,7 +1381,7 @@ QvisContourPlotWindow::opacityChanged(int opacity, int index)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::selectByChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the contour method changes.
 //
 // Arguments:
@@ -1330,7 +1412,7 @@ QvisContourPlotWindow::selectByChanged(int mode)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::processSelectByText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called then the selectbyLineEdit
 //   changes values.
 //
@@ -1338,7 +1420,7 @@ QvisContourPlotWindow::selectByChanged(int mode)
 // Creation:   Sat Feb 17 10:04:18 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1351,7 +1433,7 @@ QvisContourPlotWindow::processSelectByText()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::minToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the min toggle is clicked.
 //
 // Arguments:
@@ -1361,7 +1443,7 @@ QvisContourPlotWindow::processSelectByText()
 // Creation:   Sat Feb 17 10:05:28 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1374,14 +1456,14 @@ QvisContourPlotWindow::minToggled(bool val)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::scaleClicked
 //
-// Purpose: 
-//   This is a Qt slot function that is called when a scale button is clicked. 
+// Purpose:
+//   This is a Qt slot function that is called when a scale button is clicked.
 //
 // Arguments:
-//   button  :  Which scaling button was selected. 
+//   button  :  Which scaling button was selected.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   February 27, 2001 
+// Programmer: Kathleen Bonnell
+// Creation:   February 27, 2001
 //
 // Modifications:
 //   Brad Whitlock, Fri Nov 22 14:28:55 PST 2002
@@ -1404,7 +1486,7 @@ QvisContourPlotWindow::scaleClicked(int button)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::processMinLimitText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the min limit changes.
 //
 // Programmer: Brad Whitlock
@@ -1426,7 +1508,7 @@ QvisContourPlotWindow::processMinLimitText()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::maxToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the max toggle is clicked.
 //
 // Arguments:
@@ -1436,7 +1518,7 @@ QvisContourPlotWindow::processMinLimitText()
 // Creation:   Sat Feb 17 10:05:28 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1449,7 +1531,7 @@ QvisContourPlotWindow::maxToggled(bool val)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::processMaxLimitText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the max limit changes.
 //
 // Programmer: Brad Whitlock
@@ -1471,7 +1553,7 @@ QvisContourPlotWindow::processMaxLimitText()
 // ****************************************************************************
 // Method: QvisContourPlotWindow::colorTableClicked
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the desired color table into the
 //   contour plot attributes.
 //
@@ -1483,7 +1565,7 @@ QvisContourPlotWindow::processMaxLimitText()
 // Creation:   Mon Nov 25 17:53:36 PST 2002
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1496,7 +1578,7 @@ QvisContourPlotWindow::colorTableClicked(bool, const QString &ctName)
 // ****************************************************************************
 // Method: QvisContourPlotWindow::invertColorTableToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the invert color table flag into the
 //   contour plot attributes.
 //
@@ -1507,7 +1589,7 @@ QvisContourPlotWindow::colorTableClicked(bool, const QString &ctName)
 // Creation:   January  17, 2011
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
