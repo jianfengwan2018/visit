@@ -26,7 +26,7 @@ import llnl.visit.ColorAttribute;
 
 public class MoleculeAttributes extends AttributeSubject implements Plugin
 {
-    private static int MoleculeAttributes_numAdditionalAtts = 21;
+    private static int MoleculeAttributes_numAdditionalAtts = 23;
 
     // Enum values
     public final static int ATOMRENDERINGMODE_NOATOMS = 0;
@@ -72,6 +72,8 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
         residueSequenceColorTable = new String("Default");
         continuousColorTable = new String("Default");
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         minFlag = false;
         scalarMin = 0f;
         maxFlag = false;
@@ -99,6 +101,8 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
         residueSequenceColorTable = new String("Default");
         continuousColorTable = new String("Default");
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         minFlag = false;
         scalarMin = 0f;
         maxFlag = false;
@@ -126,6 +130,8 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
         residueSequenceColorTable = new String(obj.residueSequenceColorTable);
         continuousColorTable = new String(obj.continuousColorTable);
         legendFlag = obj.legendFlag;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         minFlag = obj.minFlag;
         scalarMin = obj.scalarMin;
         maxFlag = obj.maxFlag;
@@ -164,6 +170,8 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
                 (residueSequenceColorTable.equals(obj.residueSequenceColorTable)) &&
                 (continuousColorTable.equals(obj.continuousColorTable)) &&
                 (legendFlag == obj.legendFlag) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (minFlag == obj.minFlag) &&
                 (scalarMin == obj.scalarMin) &&
                 (maxFlag == obj.maxFlag) &&
@@ -276,28 +284,40 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
         Select(16);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(17);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(18);
+    }
+
     public void SetMinFlag(boolean minFlag_)
     {
         minFlag = minFlag_;
-        Select(17);
+        Select(19);
     }
 
     public void SetScalarMin(float scalarMin_)
     {
         scalarMin = scalarMin_;
-        Select(18);
+        Select(20);
     }
 
     public void SetMaxFlag(boolean maxFlag_)
     {
         maxFlag = maxFlag_;
-        Select(19);
+        Select(21);
     }
 
     public void SetScalarMax(float scalarMax_)
     {
         scalarMax = scalarMax_;
-        Select(20);
+        Select(22);
     }
 
     // Property getting methods
@@ -318,6 +338,8 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
     public String         GetResidueSequenceColorTable() { return residueSequenceColorTable; }
     public String         GetContinuousColorTable() { return continuousColorTable; }
     public boolean        GetLegendFlag() { return legendFlag; }
+    public boolean        GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String         GetCustomLegendTitle() { return customLegendTitle; }
     public boolean        GetMinFlag() { return minFlag; }
     public float          GetScalarMin() { return scalarMin; }
     public boolean        GetMaxFlag() { return maxFlag; }
@@ -361,12 +383,16 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(16, buf))
             buf.WriteBool(legendFlag);
         if(WriteSelect(17, buf))
-            buf.WriteBool(minFlag);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(18, buf))
-            buf.WriteFloat(scalarMin);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(19, buf))
-            buf.WriteBool(maxFlag);
+            buf.WriteBool(minFlag);
         if(WriteSelect(20, buf))
+            buf.WriteFloat(scalarMin);
+        if(WriteSelect(21, buf))
+            buf.WriteBool(maxFlag);
+        if(WriteSelect(22, buf))
             buf.WriteFloat(scalarMax);
     }
 
@@ -427,15 +453,21 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
             SetLegendFlag(buf.ReadBool());
             break;
         case 17:
-            SetMinFlag(buf.ReadBool());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 18:
-            SetScalarMin(buf.ReadFloat());
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 19:
-            SetMaxFlag(buf.ReadBool());
+            SetMinFlag(buf.ReadBool());
             break;
         case 20:
+            SetScalarMin(buf.ReadFloat());
+            break;
+        case 21:
+            SetMaxFlag(buf.ReadBool());
+            break;
+        case 22:
             SetScalarMax(buf.ReadFloat());
             break;
         }
@@ -507,6 +539,8 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
         str = str + stringToString("residueSequenceColorTable", residueSequenceColorTable, indent) + "\n";
         str = str + stringToString("continuousColorTable", continuousColorTable, indent) + "\n";
         str = str + boolToString("legendFlag", legendFlag, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + boolToString("minFlag", minFlag, indent) + "\n";
         str = str + floatToString("scalarMin", scalarMin, indent) + "\n";
         str = str + boolToString("maxFlag", maxFlag, indent) + "\n";
@@ -533,6 +567,8 @@ public class MoleculeAttributes extends AttributeSubject implements Plugin
     private String         residueSequenceColorTable;
     private String         continuousColorTable;
     private boolean        legendFlag;
+    private boolean        customLegendTitleEnabled;
+    private String         customLegendTitle;
     private boolean        minFlag;
     private float          scalarMin;
     private boolean        maxFlag;

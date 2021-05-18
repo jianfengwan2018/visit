@@ -190,6 +190,13 @@ PyMoleculeAttributes_ToString(const MoleculeAttributes *atts, const char *prefix
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     if(atts->GetMinFlag())
         snprintf(tmpStr, 1000, "%sminFlag = 1\n", prefix);
     else
@@ -732,6 +739,54 @@ MoleculeAttributes_GetLegendFlag(PyObject *self, PyObject *args)
 }
 
 /*static*/ PyObject *
+MoleculeAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    MoleculeAttributesObject *obj = (MoleculeAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+MoleculeAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    MoleculeAttributesObject *obj = (MoleculeAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+MoleculeAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    MoleculeAttributesObject *obj = (MoleculeAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+MoleculeAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    MoleculeAttributesObject *obj = (MoleculeAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
+    return retval;
+}
+
+/*static*/ PyObject *
 MoleculeAttributes_SetMinFlag(PyObject *self, PyObject *args)
 {
     MoleculeAttributesObject *obj = (MoleculeAttributesObject *)self;
@@ -865,6 +920,10 @@ PyMethodDef PyMoleculeAttributes_methods[MOLECULEATTRIBUTES_NMETH] = {
     {"GetContinuousColorTable", MoleculeAttributes_GetContinuousColorTable, METH_VARARGS},
     {"SetLegendFlag", MoleculeAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", MoleculeAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", MoleculeAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", MoleculeAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", MoleculeAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", MoleculeAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetMinFlag", MoleculeAttributes_SetMinFlag, METH_VARARGS},
     {"GetMinFlag", MoleculeAttributes_GetMinFlag, METH_VARARGS},
     {"SetScalarMin", MoleculeAttributes_SetScalarMin, METH_VARARGS},
@@ -974,6 +1033,10 @@ PyMoleculeAttributes_getattr(PyObject *self, char *name)
         return MoleculeAttributes_GetContinuousColorTable(self, NULL);
     if(strcmp(name, "legendFlag") == 0)
         return MoleculeAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return MoleculeAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return MoleculeAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "minFlag") == 0)
         return MoleculeAttributes_GetMinFlag(self, NULL);
     if(strcmp(name, "scalarMin") == 0)
@@ -1061,6 +1124,10 @@ PyMoleculeAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = MoleculeAttributes_SetContinuousColorTable(self, tuple);
     else if(strcmp(name, "legendFlag") == 0)
         obj = MoleculeAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = MoleculeAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = MoleculeAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "minFlag") == 0)
         obj = MoleculeAttributes_SetMinFlag(self, tuple);
     else if(strcmp(name, "scalarMin") == 0)

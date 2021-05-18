@@ -151,6 +151,9 @@ avtMoleculePlot::Create()
 //     Carson Brownlee, July 27, 2012
 //     Fixing manta updates for molecule plot
 //
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
+//
 // ****************************************************************************
 
 void
@@ -166,6 +169,11 @@ avtMoleculePlot::SetAtts(const AttributeGroup *a)
     SetLegend(atts.GetLegendFlag());
 
     SetLegendRange();
+
+    if(atts.GetCustomLegendTitleEnabled())
+        levelsLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        levelsLegend->SetTitle("Molecule");
 }
 
 // ****************************************************************************

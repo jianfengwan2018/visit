@@ -222,6 +222,7 @@ void MoleculeAttributes::Init()
     bondRadius = 0.12;
     bondLineWidth = 0;
     legendFlag = true;
+    customLegendTitleEnabled = false;
     minFlag = false;
     scalarMin = 0;
     maxFlag = false;
@@ -264,6 +265,8 @@ void MoleculeAttributes::Copy(const MoleculeAttributes &obj)
     residueSequenceColorTable = obj.residueSequenceColorTable;
     continuousColorTable = obj.continuousColorTable;
     legendFlag = obj.legendFlag;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     minFlag = obj.minFlag;
     scalarMin = obj.scalarMin;
     maxFlag = obj.maxFlag;
@@ -448,6 +451,8 @@ MoleculeAttributes::operator == (const MoleculeAttributes &obj) const
             (residueSequenceColorTable == obj.residueSequenceColorTable) &&
             (continuousColorTable == obj.continuousColorTable) &&
             (legendFlag == obj.legendFlag) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (minFlag == obj.minFlag) &&
             (scalarMin == obj.scalarMin) &&
             (maxFlag == obj.maxFlag) &&
@@ -612,6 +617,8 @@ MoleculeAttributes::SelectAll()
     Select(ID_residueSequenceColorTable, (void *)&residueSequenceColorTable);
     Select(ID_continuousColorTable,      (void *)&continuousColorTable);
     Select(ID_legendFlag,                (void *)&legendFlag);
+    Select(ID_customLegendTitleEnabled,  (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,         (void *)&customLegendTitle);
     Select(ID_minFlag,                   (void *)&minFlag);
     Select(ID_scalarMin,                 (void *)&scalarMin);
     Select(ID_maxFlag,                   (void *)&maxFlag);
@@ -750,6 +757,18 @@ MoleculeAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool for
     {
         addToParent = true;
         node->AddNode(new DataNode("legendFlag", legendFlag));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
     }
 
     if(completeSave || !FieldsEqual(ID_minFlag, &defaultObject))
@@ -930,6 +949,10 @@ MoleculeAttributes::SetFromNode(DataNode *parentNode)
         SetContinuousColorTable(node->AsString());
     if((node = searchNode->GetNode("legendFlag")) != 0)
         SetLegendFlag(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("minFlag")) != 0)
         SetMinFlag(node->AsBool());
     if((node = searchNode->GetNode("scalarMin")) != 0)
@@ -1061,6 +1084,20 @@ MoleculeAttributes::SetLegendFlag(bool legendFlag_)
 {
     legendFlag = legendFlag_;
     Select(ID_legendFlag, (void *)&legendFlag);
+}
+
+void
+MoleculeAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+MoleculeAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
 }
 
 void
@@ -1234,6 +1271,24 @@ MoleculeAttributes::GetLegendFlag() const
 }
 
 bool
+MoleculeAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+MoleculeAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+MoleculeAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
+bool
 MoleculeAttributes::GetMinFlag() const
 {
     return minFlag;
@@ -1297,6 +1352,12 @@ MoleculeAttributes::SelectContinuousColorTable()
     Select(ID_continuousColorTable, (void *)&continuousColorTable);
 }
 
+void
+MoleculeAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Keyframing methods
 ///////////////////////////////////////////////////////////////////////////////
@@ -1338,6 +1399,8 @@ MoleculeAttributes::GetFieldName(int index) const
     case ID_residueSequenceColorTable: return "residueSequenceColorTable";
     case ID_continuousColorTable:      return "continuousColorTable";
     case ID_legendFlag:                return "legendFlag";
+    case ID_customLegendTitleEnabled:  return "customLegendTitleEnabled";
+    case ID_customLegendTitle:         return "customLegendTitle";
     case ID_minFlag:                   return "minFlag";
     case ID_scalarMin:                 return "scalarMin";
     case ID_maxFlag:                   return "maxFlag";
@@ -1383,6 +1446,8 @@ MoleculeAttributes::GetFieldType(int index) const
     case ID_residueSequenceColorTable: return FieldType_colortable;
     case ID_continuousColorTable:      return FieldType_colortable;
     case ID_legendFlag:                return FieldType_bool;
+    case ID_customLegendTitleEnabled:  return FieldType_bool;
+    case ID_customLegendTitle:         return FieldType_string;
     case ID_minFlag:                   return FieldType_bool;
     case ID_scalarMin:                 return FieldType_float;
     case ID_maxFlag:                   return FieldType_bool;
@@ -1428,6 +1493,8 @@ MoleculeAttributes::GetFieldTypeName(int index) const
     case ID_residueSequenceColorTable: return "colortable";
     case ID_continuousColorTable:      return "colortable";
     case ID_legendFlag:                return "bool";
+    case ID_customLegendTitleEnabled:  return "bool";
+    case ID_customLegendTitle:         return "string";
     case ID_minFlag:                   return "bool";
     case ID_scalarMin:                 return "float";
     case ID_maxFlag:                   return "bool";
@@ -1541,6 +1608,16 @@ MoleculeAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_legendFlag:
         {  // new scope
         retval = (legendFlag == obj.legendFlag);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_minFlag:

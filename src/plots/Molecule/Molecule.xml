@@ -103,6 +103,11 @@
       <Field name="legendFlag" label="Legend" type="bool">
         true
       </Field>
+      <Field name="customLegendTitleEnabled" label="customLegendTitleEnabled" type="bool" enabler="legendFlag:true">
+        false
+      </Field>
+      <Field name="customLegendTitle" label="customLegendTitle" type="string" enabler="customLegendTitleEnabled:true">
+      </Field>
       <Field name="minFlag" label="Use min" type="bool">
         false
       </Field>

@@ -26,14 +26,14 @@
 // ****************************************************************************
 // Method: QvisMoleculePlotWindow::QvisMoleculePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor
 //
 // Programmer: xml2window
 // Creation:   Wed Mar 22 16:56:07 PST 2006
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 QvisMoleculePlotWindow::QvisMoleculePlotWindow(const int type,
@@ -51,14 +51,14 @@ QvisMoleculePlotWindow::QvisMoleculePlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisMoleculePlotWindow::~QvisMoleculePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor
 //
 // Programmer: xml2window
 // Creation:   Wed Mar 22 16:56:07 PST 2006
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 QvisMoleculePlotWindow::~QvisMoleculePlotWindow()
@@ -69,7 +69,7 @@ QvisMoleculePlotWindow::~QvisMoleculePlotWindow()
 // ****************************************************************************
 // Method: QvisMoleculePlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   Creates the widgets for the window.
 //
 // Programmer: Jeremy Meredith
@@ -87,6 +87,9 @@ QvisMoleculePlotWindow::~QvisMoleculePlotWindow()
 //
 //   Allen Sanderson, Sun Mar  7 12:49:56 PST 2010
 //   Change layout of window for 2.0 interface changes.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -116,7 +119,7 @@ QvisMoleculePlotWindow::CreateWindowContents()
     connect(drawAtomsAs, SIGNAL(activated(int)),
             this, SLOT(drawAtomsAsChanged(int)));
     atomsLayout->addWidget(drawAtomsAs, 0,2);
-    
+
 
     atomSphereQualityLabel = new QLabel(tr("Atom sphere quality"), atomsGroup);
     atomsLayout->addWidget(atomSphereQualityLabel,1,0, 1,2);
@@ -215,21 +218,21 @@ QvisMoleculePlotWindow::CreateWindowContents()
 
     colorBondsLabel = new QLabel(tr("Color bonds by"), bondsGroup);
     bondsLayout->addWidget(colorBondsLabel, row,0, 1,2);
- 
+
     colorBondsWidget = new QWidget(bondsGroup);
     colorBondsGroup = new QButtonGroup(colorBondsWidget);
-    
+
     QGridLayout *colorBondsLayout = new QGridLayout(colorBondsWidget);
     colorBondsLayout->setMargin(0);
-    
+
     QRadioButton *colorBondsBondColoringModeColorByAtom = new QRadioButton(tr("Adjacent atom color"),
                                                                            colorBondsWidget);
-    QRadioButton *colorBondsBondColoringModeSingleColor = new QRadioButton(tr("Single color"), 
+    QRadioButton *colorBondsBondColoringModeSingleColor = new QRadioButton(tr("Single color"),
                                                                            colorBondsWidget);
-    
+
     colorBondsLayout->addWidget(colorBondsBondColoringModeColorByAtom, 0,0, 1,2);
     colorBondsLayout->addWidget(colorBondsBondColoringModeSingleColor, 1,0);
-    
+
     colorBondsGroup->addButton(colorBondsBondColoringModeColorByAtom, 0);
     colorBondsGroup->addButton(colorBondsBondColoringModeSingleColor, 1);
     connect(colorBondsGroup, SIGNAL(buttonClicked(int)),
@@ -253,17 +256,17 @@ QvisMoleculePlotWindow::CreateWindowContents()
     topTab->addTab(colorsGroup, tr("Colors"));
 
     QVBoxLayout *colorsLayout = new QVBoxLayout(colorsGroup);
-    
+
 
     QGroupBox *discreteGroup = new QGroupBox(colorsGroup);
     discreteGroup->setTitle(tr("Discrete colors"));
     colorsLayout->addWidget(discreteGroup);
-    
+
     QGridLayout *discreteLayout = new QGridLayout(discreteGroup);
 
     QLabel *discreteColorTableLabel = new QLabel(tr("Color table for:"), discreteGroup);
     discreteLayout->addWidget(discreteColorTableLabel,0,0,1,2);
-    
+
     elementColorTableLabel = new QLabel(tr("Element types"), discreteGroup);
     discreteLayout->addWidget(elementColorTableLabel, 1,0);
     elementColorTable = new QvisColorTableButton(discreteGroup);
@@ -334,19 +337,31 @@ QvisMoleculePlotWindow::CreateWindowContents()
     QGridLayout *miscLayout = new QGridLayout(miscGroup);
     miscLayout->setMargin(5);
     miscLayout->setSpacing(10);
- 
+
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Legend"), central);
     connect(legendToggle, SIGNAL(toggled(bool)),
             this, SLOT(legendToggled(bool)));
     miscLayout->addWidget(legendToggle, 0, 0);
+
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 
 // ****************************************************************************
 // Method: QvisMoleculePlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   Updates the widgets in the window when the subject changes.
 //
 // Programmer: Jeremy Meredith
@@ -362,6 +377,9 @@ QvisMoleculePlotWindow::CreateWindowContents()
 //   Kathleen Biagas, Thu Apr 9 07:19:54 MST 2015
 //   Use helper function FloatToQString for consistency in formatting across
 //   all windows.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -561,7 +579,22 @@ QvisMoleculePlotWindow::UpdateWindow(bool doAll)
           case MoleculeAttributes::ID_legendFlag:
             legendToggle->blockSignals(true);
             legendToggle->setChecked(atts->GetLegendFlag());
+            customLegendTitleToggle->setEnabled(atts->GetLegendFlag());
+            customLegendTitle->setEnabled(atts->GetLegendFlag() &&
+                                    atts->GetCustomLegendTitleEnabled());
             legendToggle->blockSignals(false);
+            break;
+          case MoleculeAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(atts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(atts->GetLegendFlag() &&
+                                    atts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+          case MoleculeAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(atts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
             break;
           case MoleculeAttributes::ID_minFlag:
             if (atts->GetMinFlag() == true)
@@ -603,7 +636,7 @@ QvisMoleculePlotWindow::UpdateWindow(bool doAll)
 // ****************************************************************************
 // Method: QvisMoleculePlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets values from certain widgets and stores them in the subject.
 //
 // Programmer: xml2window
@@ -660,7 +693,7 @@ QvisMoleculePlotWindow::GetCurrentValues(int which_widget)
             atts->SetBondRadius(val);
         else
         {
-            ResettingError(tr("bond radius"), 
+            ResettingError(tr("bond radius"),
                 FloatToQString(atts->GetBondRadius()));
             atts->SetBondRadius(atts->GetBondRadius());
         }
@@ -699,14 +732,14 @@ QvisMoleculePlotWindow::GetCurrentValues(int which_widget)
 // ****************************************************************************
 // Method: QvisMoleculePlotWindow::Apply
 //
-// Purpose: 
+// Purpose:
 //   Called to apply changes in the subject.
 //
 // Programmer: xml2window
 // Creation:   Wed Mar 22 16:56:08 PST 2006
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -732,14 +765,14 @@ QvisMoleculePlotWindow::Apply(bool ignore)
 // ****************************************************************************
 // Method: QvisMoleculePlotWindow::apply
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when apply button is clicked.
 //
 // Programmer: xml2window
 // Creation:   Wed Mar 22 16:56:08 PST 2006
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -752,14 +785,14 @@ QvisMoleculePlotWindow::apply()
 // ****************************************************************************
 // Method: QvisMoleculePlotWindow::makeDefault
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when "Make default" button is clicked.
 //
 // Programmer: xml2window
 // Creation:   Wed Mar 22 16:56:08 PST 2006
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -774,14 +807,14 @@ QvisMoleculePlotWindow::makeDefault()
 // ****************************************************************************
 // Method: QvisMoleculePlotWindow::reset
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when reset button is clicked.
 //
 // Programmer: xml2window
 // Creation:   Wed Mar 22 16:56:08 PST 2006
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -944,6 +977,24 @@ QvisMoleculePlotWindow::legendToggled(bool val)
 {
     atts->SetLegendFlag(val);
     Apply();
+}
+
+void
+QvisMoleculePlotWindow::customLegendTitleToggled(bool val)
+{
+    atts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+void
+QvisMoleculePlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != atts->GetCustomLegendTitle())
+    {
+        atts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
 }
 
 

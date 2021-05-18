@@ -90,6 +90,7 @@ public:
     void SelectResidueTypeColorTable();
     void SelectResidueSequenceColorTable();
     void SelectContinuousColorTable();
+    void SelectCustomLegendTitle();
 
     // Property setting methods
     void SetDrawAtomsAs(AtomRenderingMode drawAtomsAs_);
@@ -109,6 +110,8 @@ public:
     void SetResidueSequenceColorTable(const std::string &residueSequenceColorTable_);
     void SetContinuousColorTable(const std::string &continuousColorTable_);
     void SetLegendFlag(bool legendFlag_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
     void SetMinFlag(bool minFlag_);
     void SetScalarMin(float scalarMin_);
     void SetMaxFlag(bool maxFlag_);
@@ -138,6 +141,9 @@ public:
     const std::string    &GetContinuousColorTable() const;
           std::string    &GetContinuousColorTable();
     bool                 GetLegendFlag() const;
+    bool                 GetCustomLegendTitleEnabled() const;
+    const std::string    &GetCustomLegendTitle() const;
+          std::string    &GetCustomLegendTitle();
     bool                 GetMinFlag() const;
     float                GetScalarMin() const;
     bool                 GetMaxFlag() const;
@@ -203,6 +209,8 @@ public:
         ID_residueSequenceColorTable,
         ID_continuousColorTable,
         ID_legendFlag,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID_minFlag,
         ID_scalarMin,
         ID_maxFlag,
@@ -228,6 +236,8 @@ private:
     std::string    residueSequenceColorTable;
     std::string    continuousColorTable;
     bool           legendFlag;
+    bool           customLegendTitleEnabled;
+    std::string    customLegendTitle;
     bool           minFlag;
     float          scalarMin;
     bool           maxFlag;
@@ -237,6 +247,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define MOLECULEATTRIBUTES_TMFS "iiiiasffiifissssbbfbf"
+#define MOLECULEATTRIBUTES_TMFS "iiiiasffiifissssbbsbfbf"
 
 #endif

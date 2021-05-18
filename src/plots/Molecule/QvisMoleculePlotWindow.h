@@ -22,7 +22,7 @@ class QvisVariableButton;
 // ****************************************************************************
 // Class: QvisMoleculePlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Defines QvisMoleculePlotWindow class.
 //
 // Notes:      This class was automatically generated!
@@ -36,6 +36,9 @@ class QvisVariableButton;
 //
 //   Allen Sanderson, Sun Mar  7 12:49:56 PST 2010
 //   Change layout of window for 2.0 interface changes.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -76,10 +79,13 @@ class QvisMoleculePlotWindow : public QvisPostableWindowObserver
     void residueSequenceColorTableChanged(bool useDefault, const QString &ctName);
     void continuousColorTableChanged(bool useDefault, const QString &ctName);
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
     void minFlagChanged(bool val);
     void scalarMinProcessText();
     void maxFlagChanged(bool val);
     void scalarMaxProcessText();
+
   private:
     int                   plotType;
     QComboBox            *drawAtomsAs;
@@ -100,6 +106,8 @@ class QvisMoleculePlotWindow : public QvisPostableWindowObserver
     QvisColorTableButton *residueSequenceColorTable;
     QvisColorTableButton *continuousColorTable;
     QCheckBox            *legendToggle;
+    QCheckBox            *customLegendTitleToggle;
+    QLineEdit            *customLegendTitle;
     QCheckBox            *minFlag;
     QLineEdit            *scalarMin;
     QCheckBox            *maxFlag;
