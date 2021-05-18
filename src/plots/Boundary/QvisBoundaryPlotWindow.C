@@ -10,6 +10,7 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
+#include <QLineEdit>
 #include <QListWidget>
 #include <QRadioButton>
 #include <QSlider>
@@ -296,7 +297,7 @@ QvisBoundaryPlotWindow::CreateWindowContents()
     miscLayout->addWidget(legendToggle, 0, 0);
 
     // Create the legend title toggle
-    customLegendTitleToggle = new QCheckBox(tr("Legend title"), central);
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
     connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
             this, SLOT(customLegendTitleToggled(bool)));
     miscLayout->addWidget(customLegendTitleToggle, 1, 0);
