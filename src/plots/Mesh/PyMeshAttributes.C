@@ -49,6 +49,13 @@ PyMeshAttributes_ToString(const MeshAttributes *atts, const char *prefix)
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     snprintf(tmpStr, 1000, "%slineWidth = %d\n", prefix, atts->GetLineWidth());
     str += tmpStr;
     const unsigned char *meshColor = atts->GetMeshColor().GetColor();
@@ -224,6 +231,54 @@ MeshAttributes_GetLegendFlag(PyObject *self, PyObject *args)
 {
     MeshAttributesObject *obj = (MeshAttributesObject *)self;
     PyObject *retval = PyInt_FromLong(obj->data->GetLegendFlag()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+MeshAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    MeshAttributesObject *obj = (MeshAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+MeshAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    MeshAttributesObject *obj = (MeshAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+MeshAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    MeshAttributesObject *obj = (MeshAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+MeshAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    MeshAttributesObject *obj = (MeshAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
     return retval;
 }
 
@@ -722,6 +777,10 @@ PyMethodDef PyMeshAttributes_methods[MESHATTRIBUTES_NMETH] = {
     {"Notify", MeshAttributes_Notify, METH_VARARGS},
     {"SetLegendFlag", MeshAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", MeshAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", MeshAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", MeshAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", MeshAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", MeshAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetLineWidth", MeshAttributes_SetLineWidth, METH_VARARGS},
     {"GetLineWidth", MeshAttributes_GetLineWidth, METH_VARARGS},
     {"SetMeshColor", MeshAttributes_SetMeshColor, METH_VARARGS},
@@ -773,6 +832,10 @@ PyMeshAttributes_getattr(PyObject *self, char *name)
 {
     if(strcmp(name, "legendFlag") == 0)
         return MeshAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return MeshAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return MeshAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "lineWidth") == 0)
         return MeshAttributes_GetLineWidth(self, NULL);
     if(strcmp(name, "meshColor") == 0)
@@ -907,6 +970,10 @@ PyMeshAttributes_setattr(PyObject *self, char *name, PyObject *args)
 
     if(strcmp(name, "legendFlag") == 0)
         obj = MeshAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = MeshAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = MeshAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "lineWidth") == 0)
         obj = MeshAttributes_SetLineWidth(self, tuple);
     else if(strcmp(name, "meshColor") == 0)

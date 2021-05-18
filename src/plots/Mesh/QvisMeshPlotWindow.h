@@ -10,6 +10,7 @@ class MeshAttributes;
 class QCheckBox;
 class QButtonGroup;
 class QLabel;
+class QLineEdit;
 class QvisLineWidthWidget;
 class QvisColorButton;
 class QvisPointControl;
@@ -22,7 +23,7 @@ class QvisOpacitySlider;
 //   This class is a postable window that watches mesh plot attributes and
 //   always represents their current state.
 //
-// Notes:      
+// Notes:
 //
 // Programmer: Brad Whitlock
 // Creation:   Fri Mar 9 16:31:31 PST 2001
@@ -30,10 +31,10 @@ class QvisOpacitySlider;
 // Modifications:
 //   Kathleen Bonnell, Wed Sep  5 16:20:52 PDT 2001
 //   Added color choice for opaque mode.
-//   
-//   Kathleen Bonnell, Wed Sep 26 10:06:05 PDT 2001 
-//   Added checkboxes for foreground and background. 
-//   
+//
+//   Kathleen Bonnell, Wed Sep 26 10:06:05 PDT 2001
+//   Added checkboxes for foreground and background.
+//
 //   Jeremy Meredith, Tue Dec 10 10:22:40 PST 2002
 //   Added smoothing level.
 //
@@ -43,22 +44,22 @@ class QvisOpacitySlider;
 //   Hank Childs, Thu Aug 21 23:14:39 PDT 2003
 //   Added support for different types of point glyphs.
 //
-//   Kathleen Bonnell, Thu Sep  4 11:15:30 PDT 2003 
+//   Kathleen Bonnell, Thu Sep  4 11:15:30 PDT 2003
 //   Changed opaqueToggle check box to opaqueMode button group.
 //   Renamed signal opaqueToggled to opaqueModeChanged.
 //
-//   Kathleen Bonnell, Thu Feb  5 11:51:39 PST 2004 
+//   Kathleen Bonnell, Thu Feb  5 11:51:39 PST 2004
 //   Added showInternalToggle, signal showInternalToggled.
 //
-//   Kathleen Bonnell, Fri Nov 12 10:51:59 PST 2004 
-//   Replaced point-related control widgets (and associated slots) 
-//   with QvisPointControl. 
+//   Kathleen Bonnell, Fri Nov 12 10:51:59 PST 2004
+//   Replaced point-related control widgets (and associated slots)
+//   with QvisPointControl.
 //
 //   Brad Whitlock, Wed Jul 20 14:23:58 PST 2005
 //   Added a new slot to handle a new signal from QvisPointControl.
 //
 //   Cyrus Harrison, Fri Jul 18 14:44:51 PDT 2008
-//   Initial Qt4 Port. 
+//   Initial Qt4 Port.
 //
 //   Jeremy Meredith, Fri Feb 20 17:28:17 EST 2009
 //   Added per-plot alpha (opacity) support.
@@ -68,7 +69,10 @@ class QvisOpacitySlider;
 //
 //   Kathleen Biagas, Thu Apr 23 13:12:22 PDT 2015
 //   Removed never-implemented outlineOnly and errorTolerance widgets.
-// 
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
+//
 // ****************************************************************************
 
 class QvisMeshPlotWindow : public QvisPostableWindowObserver
@@ -92,6 +96,8 @@ protected:
 private slots:
     void lineWidthChanged(int newWidth);
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
     void showInternalToggled(bool val);
     void meshColorChanged(const QColor &color);
     void opaqueModeChanged(int val);
@@ -114,6 +120,8 @@ private:
     QvisLineWidthWidget    *lineWidth;
     QButtonGroup           *opaqueModeGroup;
     QCheckBox              *legendToggle;
+    QCheckBox              *customLegendTitleToggle;
+    QLineEdit              *customLegendTitle;
     QCheckBox              *showInternalToggle;
     QButtonGroup           *meshColorButtons;
     QvisColorButton        *meshColor;
@@ -122,8 +130,8 @@ private:
     QvisColorButton        *opaqueColor;
     QButtonGroup           *smoothingLevelButtons;
     QvisPointControl       *pointControl;
-    QLabel                *opacityLabel;
-    QvisOpacitySlider     *opacitySlider;
+    QLabel                 *opacityLabel;
+    QvisOpacitySlider      *opacitySlider;
 };
 
 #endif

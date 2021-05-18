@@ -358,6 +358,9 @@ avtMeshPlot::SetCellCountMultiplierForSRThreshold(const avtDataObject_p dob)
 //    Kathleen Biagas, Wed Jun 10 13:00:59 PDT 2020
 //    Remove glyphMapper.
 //
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
+//
 // ****************************************************************************
 
 void
@@ -420,6 +423,11 @@ avtMeshPlot::SetAtts(const AttributeGroup *a)
     behavior->SetRenderOrder((atts.GetOpacity() < 1.0) ?
                              ABSOLUTELY_LAST : DOES_NOT_MATTER);
     behavior->SetAntialiasedRenderOrder(ABSOLUTELY_LAST);
+
+    if(atts.GetCustomLegendTitleEnabled())
+        varLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        varLegend->SetTitle("Mesh");
 }
 
 

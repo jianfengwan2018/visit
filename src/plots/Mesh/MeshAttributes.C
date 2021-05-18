@@ -176,6 +176,7 @@ MeshAttributes::OpaqueMode_FromString(const std::string &s, MeshAttributes::Opaq
 void MeshAttributes::Init()
 {
     legendFlag = true;
+    customLegendTitleEnabled = false;
     lineWidth = 0;
     meshColorSource = Foreground;
     opaqueColorSource = Background;
@@ -210,6 +211,8 @@ void MeshAttributes::Init()
 void MeshAttributes::Copy(const MeshAttributes &obj)
 {
     legendFlag = obj.legendFlag;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     lineWidth = obj.lineWidth;
     meshColor = obj.meshColor;
     meshColorSource = obj.meshColorSource;
@@ -387,6 +390,8 @@ MeshAttributes::operator == (const MeshAttributes &obj) const
 {
     // Create the return value
     return ((legendFlag == obj.legendFlag) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (lineWidth == obj.lineWidth) &&
             (meshColor == obj.meshColor) &&
             (meshColorSource == obj.meshColorSource) &&
@@ -556,22 +561,24 @@ MeshAttributes::NewInstance(bool copy) const
 void
 MeshAttributes::SelectAll()
 {
-    Select(ID_legendFlag,              (void *)&legendFlag);
-    Select(ID_lineWidth,               (void *)&lineWidth);
-    Select(ID_meshColor,               (void *)&meshColor);
-    Select(ID_meshColorSource,         (void *)&meshColorSource);
-    Select(ID_opaqueColorSource,       (void *)&opaqueColorSource);
-    Select(ID_opaqueMode,              (void *)&opaqueMode);
-    Select(ID_pointSize,               (void *)&pointSize);
-    Select(ID_opaqueColor,             (void *)&opaqueColor);
-    Select(ID_smoothingLevel,          (void *)&smoothingLevel);
-    Select(ID_pointSizeVarEnabled,     (void *)&pointSizeVarEnabled);
-    Select(ID_pointSizeVar,            (void *)&pointSizeVar);
-    Select(ID_pointType,               (void *)&pointType);
-    Select(ID_opaqueMeshIsAppropriate, (void *)&opaqueMeshIsAppropriate);
-    Select(ID_showInternal,            (void *)&showInternal);
-    Select(ID_pointSizePixels,         (void *)&pointSizePixels);
-    Select(ID_opacity,                 (void *)&opacity);
+    Select(ID_legendFlag,               (void *)&legendFlag);
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,        (void *)&customLegendTitle);
+    Select(ID_lineWidth,                (void *)&lineWidth);
+    Select(ID_meshColor,                (void *)&meshColor);
+    Select(ID_meshColorSource,          (void *)&meshColorSource);
+    Select(ID_opaqueColorSource,        (void *)&opaqueColorSource);
+    Select(ID_opaqueMode,               (void *)&opaqueMode);
+    Select(ID_pointSize,                (void *)&pointSize);
+    Select(ID_opaqueColor,              (void *)&opaqueColor);
+    Select(ID_smoothingLevel,           (void *)&smoothingLevel);
+    Select(ID_pointSizeVarEnabled,      (void *)&pointSizeVarEnabled);
+    Select(ID_pointSizeVar,             (void *)&pointSizeVar);
+    Select(ID_pointType,                (void *)&pointType);
+    Select(ID_opaqueMeshIsAppropriate,  (void *)&opaqueMeshIsAppropriate);
+    Select(ID_showInternal,             (void *)&showInternal);
+    Select(ID_pointSizePixels,          (void *)&pointSizePixels);
+    Select(ID_opacity,                  (void *)&opacity);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -608,6 +615,18 @@ MeshAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool forceAd
     {
         addToParent = true;
         node->AddNode(new DataNode("legendFlag", legendFlag));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
     }
 
     if(completeSave || !FieldsEqual(ID_lineWidth, &defaultObject))
@@ -742,6 +761,10 @@ MeshAttributes::SetFromNode(DataNode *parentNode)
     DataNode *node;
     if((node = searchNode->GetNode("legendFlag")) != 0)
         SetLegendFlag(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("lineWidth")) != 0)
         SetLineWidth(node->AsInt());
     if((node = searchNode->GetNode("meshColor")) != 0)
@@ -853,6 +876,20 @@ MeshAttributes::SetLegendFlag(bool legendFlag_)
 {
     legendFlag = legendFlag_;
     Select(ID_legendFlag, (void *)&legendFlag);
+}
+
+void
+MeshAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+MeshAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
 }
 
 void
@@ -970,6 +1007,24 @@ MeshAttributes::GetLegendFlag() const
     return legendFlag;
 }
 
+bool
+MeshAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+MeshAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+MeshAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
 int
 MeshAttributes::GetLineWidth() const
 {
@@ -1083,6 +1138,12 @@ MeshAttributes::GetOpacity() const
 ///////////////////////////////////////////////////////////////////////////////
 
 void
+MeshAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 MeshAttributes::SelectMeshColor()
 {
     Select(ID_meshColor, (void *)&meshColor);
@@ -1124,22 +1185,24 @@ MeshAttributes::GetFieldName(int index) const
 {
     switch (index)
     {
-    case ID_legendFlag:              return "legendFlag";
-    case ID_lineWidth:               return "lineWidth";
-    case ID_meshColor:               return "meshColor";
-    case ID_meshColorSource:         return "meshColorSource";
-    case ID_opaqueColorSource:       return "opaqueColorSource";
-    case ID_opaqueMode:              return "opaqueMode";
-    case ID_pointSize:               return "pointSize";
-    case ID_opaqueColor:             return "opaqueColor";
-    case ID_smoothingLevel:          return "smoothingLevel";
-    case ID_pointSizeVarEnabled:     return "pointSizeVarEnabled";
-    case ID_pointSizeVar:            return "pointSizeVar";
-    case ID_pointType:               return "pointType";
-    case ID_opaqueMeshIsAppropriate: return "opaqueMeshIsAppropriate";
-    case ID_showInternal:            return "showInternal";
-    case ID_pointSizePixels:         return "pointSizePixels";
-    case ID_opacity:                 return "opacity";
+    case ID_legendFlag:               return "legendFlag";
+    case ID_customLegendTitleEnabled: return "customLegendTitleEnabled";
+    case ID_customLegendTitle:        return "customLegendTitle";
+    case ID_lineWidth:                return "lineWidth";
+    case ID_meshColor:                return "meshColor";
+    case ID_meshColorSource:          return "meshColorSource";
+    case ID_opaqueColorSource:        return "opaqueColorSource";
+    case ID_opaqueMode:               return "opaqueMode";
+    case ID_pointSize:                return "pointSize";
+    case ID_opaqueColor:              return "opaqueColor";
+    case ID_smoothingLevel:           return "smoothingLevel";
+    case ID_pointSizeVarEnabled:      return "pointSizeVarEnabled";
+    case ID_pointSizeVar:             return "pointSizeVar";
+    case ID_pointType:                return "pointType";
+    case ID_opaqueMeshIsAppropriate:  return "opaqueMeshIsAppropriate";
+    case ID_showInternal:             return "showInternal";
+    case ID_pointSizePixels:          return "pointSizePixels";
+    case ID_opacity:                  return "opacity";
     default:  return "invalid index";
     }
 }
@@ -1164,22 +1227,24 @@ MeshAttributes::GetFieldType(int index) const
 {
     switch (index)
     {
-    case ID_legendFlag:              return FieldType_bool;
-    case ID_lineWidth:               return FieldType_linewidth;
-    case ID_meshColor:               return FieldType_color;
-    case ID_meshColorSource:         return FieldType_enum;
-    case ID_opaqueColorSource:       return FieldType_enum;
-    case ID_opaqueMode:              return FieldType_enum;
-    case ID_pointSize:               return FieldType_double;
-    case ID_opaqueColor:             return FieldType_color;
-    case ID_smoothingLevel:          return FieldType_enum;
-    case ID_pointSizeVarEnabled:     return FieldType_bool;
-    case ID_pointSizeVar:            return FieldType_variablename;
-    case ID_pointType:               return FieldType_glyphtype;
-    case ID_opaqueMeshIsAppropriate: return FieldType_bool;
-    case ID_showInternal:            return FieldType_bool;
-    case ID_pointSizePixels:         return FieldType_int;
-    case ID_opacity:                 return FieldType_opacity;
+    case ID_legendFlag:               return FieldType_bool;
+    case ID_customLegendTitleEnabled: return FieldType_bool;
+    case ID_customLegendTitle:        return FieldType_string;
+    case ID_lineWidth:                return FieldType_linewidth;
+    case ID_meshColor:                return FieldType_color;
+    case ID_meshColorSource:          return FieldType_enum;
+    case ID_opaqueColorSource:        return FieldType_enum;
+    case ID_opaqueMode:               return FieldType_enum;
+    case ID_pointSize:                return FieldType_double;
+    case ID_opaqueColor:              return FieldType_color;
+    case ID_smoothingLevel:           return FieldType_enum;
+    case ID_pointSizeVarEnabled:      return FieldType_bool;
+    case ID_pointSizeVar:             return FieldType_variablename;
+    case ID_pointType:                return FieldType_glyphtype;
+    case ID_opaqueMeshIsAppropriate:  return FieldType_bool;
+    case ID_showInternal:             return FieldType_bool;
+    case ID_pointSizePixels:          return FieldType_int;
+    case ID_opacity:                  return FieldType_opacity;
     default:  return FieldType_unknown;
     }
 }
@@ -1204,22 +1269,24 @@ MeshAttributes::GetFieldTypeName(int index) const
 {
     switch (index)
     {
-    case ID_legendFlag:              return "bool";
-    case ID_lineWidth:               return "linewidth";
-    case ID_meshColor:               return "color";
-    case ID_meshColorSource:         return "enum";
-    case ID_opaqueColorSource:       return "enum";
-    case ID_opaqueMode:              return "enum";
-    case ID_pointSize:               return "double";
-    case ID_opaqueColor:             return "color";
-    case ID_smoothingLevel:          return "enum";
-    case ID_pointSizeVarEnabled:     return "bool";
-    case ID_pointSizeVar:            return "variablename";
-    case ID_pointType:               return "glyphtype";
-    case ID_opaqueMeshIsAppropriate: return "bool";
-    case ID_showInternal:            return "bool";
-    case ID_pointSizePixels:         return "int";
-    case ID_opacity:                 return "opacity";
+    case ID_legendFlag:               return "bool";
+    case ID_customLegendTitleEnabled: return "bool";
+    case ID_customLegendTitle:        return "string";
+    case ID_lineWidth:                return "linewidth";
+    case ID_meshColor:                return "color";
+    case ID_meshColorSource:          return "enum";
+    case ID_opaqueColorSource:        return "enum";
+    case ID_opaqueMode:               return "enum";
+    case ID_pointSize:                return "double";
+    case ID_opaqueColor:              return "color";
+    case ID_smoothingLevel:           return "enum";
+    case ID_pointSizeVarEnabled:      return "bool";
+    case ID_pointSizeVar:             return "variablename";
+    case ID_pointType:                return "glyphtype";
+    case ID_opaqueMeshIsAppropriate:  return "bool";
+    case ID_showInternal:             return "bool";
+    case ID_pointSizePixels:          return "int";
+    case ID_opacity:                  return "opacity";
     default:  return "invalid index";
     }
 }
@@ -1249,6 +1316,16 @@ MeshAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_legendFlag:
         {  // new scope
         retval = (legendFlag == obj.legendFlag);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_lineWidth:

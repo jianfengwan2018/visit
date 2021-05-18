@@ -4,10 +4,11 @@
 
 #include <QvisMeshPlotWindow.h>
 
-#include <QWidget> 
-#include <QLayout> 
-#include <QGroupBox> 
+#include <QWidget>
+#include <QLayout>
+#include <QGroupBox>
 #include <QLabel>
+#include <QLineEdit>
 #include <QCheckBox>
 #include <QButtonGroup>
 #include <QRadioButton>
@@ -24,7 +25,7 @@
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::QvisMeshPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor for the QvisMeshPlotWindow class.
 //
 // Arguments:
@@ -52,14 +53,14 @@ QvisMeshPlotWindow::QvisMeshPlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::~QvisMeshPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor for the QvisMeshPlotWindow class.
 //
 // Programmer: Brad Whitlock
 // Creation:   Fri Mar 9 16:43:05 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 QvisMeshPlotWindow::~QvisMeshPlotWindow()
@@ -70,7 +71,7 @@ QvisMeshPlotWindow::~QvisMeshPlotWindow()
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   This method creates the widgets that are in the window and sets
 //   up their signals/slots.
 //
@@ -78,10 +79,10 @@ QvisMeshPlotWindow::~QvisMeshPlotWindow()
 // Creation:   Fri Mar 9 16:43:05 PST 2001
 //
 // Modifications:
-//   
+//
 //   Kathleen Bonnell, Wed Sep  5 17:16:17 PDT 2001
 //   Added support for opaqueColor.
-//   
+//
 //   Kathleen Bonnell, Wed Sep 26 15:19:31 PDT 2001
 //   Added foregroundToggle, backgroundToggle.
 //
@@ -94,19 +95,19 @@ QvisMeshPlotWindow::~QvisMeshPlotWindow()
 //   Hank Childs, Thu Aug 21 23:09:59 PDT 2003
 //   Added support for more types of point glyphs.
 //
-//   Kathleen Bonnell, Thu Sep  4 11:15:30 PDT 2003 
+//   Kathleen Bonnell, Thu Sep  4 11:15:30 PDT 2003
 //   Changed opaqueToggle checkbox to opaqueMode radio button group,
 //   to support 'Auto', 'On' and 'Off' modes.  Moved outlineOnly
-//   to same line of layout as errorTolerance. 
+//   to same line of layout as errorTolerance.
 //
-//   Kathleen Bonnell, Thu Feb  5 11:48:48 PST 2004 
-//   Added showInternalToggle. 
-// 
+//   Kathleen Bonnell, Thu Feb  5 11:48:48 PST 2004
+//   Added showInternalToggle.
+//
 //   Jeremy Meredith, Tue May  4 13:23:10 PDT 2004
 //   Added support for a new (Point) type of glyphing for point meshes.
 //
-//   Kathleen Bonnell, Fri Nov 12 10:51:59 PST 2004 
-//   Replaced point-related control widgets with QvisPointControl. 
+//   Kathleen Bonnell, Fri Nov 12 10:51:59 PST 2004
+//   Replaced point-related control widgets with QvisPointControl.
 //
 //   Brad Whitlock, Wed Jul 20 14:27:00 PST 2005
 //   Added pointSizePixelsChanged slot.
@@ -115,7 +116,7 @@ QvisMeshPlotWindow::~QvisMeshPlotWindow()
 //   Added tr()'s
 //
 //   Cyrus Harrison, Fri Jul 18 14:44:51 PDT 2008
-//   Initial Qt4 Port. 
+//   Initial Qt4 Port.
 //
 //   Jeremy Meredith, Fri Feb 20 17:28:17 EST 2009
 //   Added per-plot alpha (opacity) support.
@@ -128,6 +129,9 @@ QvisMeshPlotWindow::~QvisMeshPlotWindow()
 //
 //   Kathleen Biagas, Thu Apr 23 13:13:16 PDT 2015
 //   Removed never used outlineOnly and errorTolerance widgets.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -144,7 +148,7 @@ QvisMeshPlotWindow::CreateWindowContents()
     QGridLayout *zoneLayout = new QGridLayout(zoneGroup);
     zoneLayout->setMargin(5);
     zoneLayout->setSpacing(10);
- 
+
     // Create the showInternal toggle
     showInternalToggle = new QCheckBox(tr("Show internal zones"), central);
     connect(showInternalToggle, SIGNAL(toggled(bool)),
@@ -160,8 +164,8 @@ QvisMeshPlotWindow::CreateWindowContents()
 
     QGridLayout *colorLayout = new QGridLayout(colorGroup);
     colorLayout->setMargin(5);
-    colorLayout->setSpacing(10); 
-    
+    colorLayout->setSpacing(10);
+
     // Create the radio buttons for mesh color source
     colorLayout->addWidget(new QLabel(tr("Mesh color"), central), 0, 0);
 
@@ -224,19 +228,19 @@ QvisMeshPlotWindow::CreateWindowContents()
     QHBoxLayout *opaqueModeLayout = new QHBoxLayout();
     opaqueModeLayout->setMargin(0);
     opaqueModeLayout->setSpacing(10);
-   
+
     rb = new QRadioButton(tr("Auto"), central);
     opaqueModeGroup->addButton(rb,0);
     opaqueModeLayout->addWidget(rb);
-    
+
     rb = new QRadioButton(tr("On"), central);
     opaqueModeGroup->addButton(rb,1);
     opaqueModeLayout->addWidget(rb);
-    
+
     rb = new QRadioButton(tr("Off"), central);
     opaqueModeGroup->addButton(rb,2);
     opaqueModeLayout->addWidget(rb);
-    
+
     colorLayout->addLayout(opaqueModeLayout, 2, 1, 1, 3);
 
     //
@@ -265,7 +269,7 @@ QvisMeshPlotWindow::CreateWindowContents()
     QGridLayout *styleLayout = new QGridLayout(styleGroup);
     styleLayout->setMargin(5);
     styleLayout->setSpacing(10);
- 
+
     // Create the point control
     pointControl = new QvisPointControl(central);
     connect(pointControl, SIGNAL(pointSizeChanged(double)),
@@ -299,7 +303,7 @@ QvisMeshPlotWindow::CreateWindowContents()
     QGridLayout *smoothingLayout = new QGridLayout(smoothingGroup);
     smoothingLayout->setMargin(5);
     smoothingLayout->setSpacing(10);
-    
+
     smoothingLayout->addWidget(new QLabel(tr("Smoothing"), central), 0,0);
 
     // Create the smoothing level buttons
@@ -328,7 +332,7 @@ QvisMeshPlotWindow::CreateWindowContents()
     QGridLayout *miscLayout = new QGridLayout(miscGroup);
     miscLayout->setMargin(5);
     miscLayout->setSpacing(10);
- 
+
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Legend"), central);
     connect(legendToggle, SIGNAL(toggled(bool)),
@@ -341,12 +345,23 @@ QvisMeshPlotWindow::CreateWindowContents()
 //             this, SLOT(lightingToggled(bool)));
 //     miscLayout->addWidget(lightingToggle, 0, 1);
 
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   This method is called when the window's subject is changed. The
 //   subject tells this window what attributes changed and we put the
 //   new values into those widgets.
@@ -355,9 +370,9 @@ QvisMeshPlotWindow::CreateWindowContents()
 //   doAll : If this flag is true, update all the widgets regardless
 //           of whether or not they are selected.
 //
-// Returns:    
+// Returns:
 //
-// Note:       
+// Note:
 //
 // Programmer: Brad Whitlock
 // Creation:   Fri Mar 9 17:10:54 PST 2001
@@ -366,13 +381,13 @@ QvisMeshPlotWindow::CreateWindowContents()
 //
 //   Kathleen Bonnell, Thu Jun 21 16:33:54 PDT 2001
 //   Enable lineStyle, lineStyle label.
-//   
-//   Kathleen Bonnell, Fri Jun 29 14:37:18 PDT 2001 
+//
+//   Kathleen Bonnell, Fri Jun 29 14:37:18 PDT 2001
 //   Enable opaqueToggle.
-//   
+//
 //   Kathleen Bonnell, Wed Sep  5 17:16:17 PDT 2001
 //   Added support for opaqueColor.
-//   
+//
 //   Kathleen Bonnell, Wed Sep 26 15:19:31 PDT 2001
 //   Added foregroundToggle, backgroundToggle.
 //
@@ -385,21 +400,21 @@ QvisMeshPlotWindow::CreateWindowContents()
 //   Hank Childs, Thu Aug 21 23:17:17 PDT 2003
 //   Added support for point type.
 //
-//   Kathleen Bonnell, Wed Sep  3 08:46:25 PDT 2003 
-//   Added support for opaqueMeshIsAppropriate. 
+//   Kathleen Bonnell, Wed Sep  3 08:46:25 PDT 2003
+//   Added support for opaqueMeshIsAppropriate.
 //
-//   Kathleen Bonnell, Thu Sep  4 11:15:30 PDT 2003 
-//   MeshAtts' 'opaqueFlag' bool is now an 'opaqueMode' enum, support it. 
+//   Kathleen Bonnell, Thu Sep  4 11:15:30 PDT 2003
+//   MeshAtts' 'opaqueFlag' bool is now an 'opaqueMode' enum, support it.
 //
-//   Kathleen Bonnell, Thu Feb  5 11:48:48 PST 2004 
-//   Added 'showInternalToggle'. 
+//   Kathleen Bonnell, Thu Feb  5 11:48:48 PST 2004
+//   Added 'showInternalToggle'.
 //
 //   Jeremy Meredith, Tue May  4 13:23:10 PDT 2004
 //   Added support for a new (Point) type of glyphing for point meshes.
 //   When doing GL_POINT, we ignore point size, so also disable it.
 //
-//   Kathleen Bonnell, Fri Nov 12 10:51:59 PST 2004 
-//   Replaced point-related widgets with  pointControl. 
+//   Kathleen Bonnell, Fri Nov 12 10:51:59 PST 2004
+//   Replaced point-related widgets with  pointControl.
 //
 //   Jeremy Meredith, Tue Nov 16 11:39:53 PST 2004
 //   Replaced simple QString::sprintf's with a setNum because there seems
@@ -412,7 +427,7 @@ QvisMeshPlotWindow::CreateWindowContents()
 //   Added pointSizePixels.
 //
 //   Cyrus Harrison, Fri Jul 18 14:44:51 PDT 2008
-//   Initial Qt4 Port. 
+//   Initial Qt4 Port.
 //
 //   Jeremy Meredith, Fri Feb 20 17:28:17 EST 2009
 //   Added per-plot alpha (opacity) support.
@@ -422,6 +437,9 @@ QvisMeshPlotWindow::CreateWindowContents()
 //
 //   Kathleen Biagas, Thu Apr 23 13:13:16 PDT 2015
 //   Removed never used outlineOnly and errorTolerance widgets.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -444,7 +462,22 @@ QvisMeshPlotWindow::UpdateWindow(bool doAll)
         case MeshAttributes::ID_legendFlag:
             legendToggle->blockSignals(true);
             legendToggle->setChecked(meshAtts->GetLegendFlag());
+            customLegendTitleToggle->setEnabled(meshAtts->GetLegendFlag());
+            customLegendTitle->setEnabled(meshAtts->GetLegendFlag() &&
+                                    meshAtts->GetCustomLegendTitleEnabled());
             legendToggle->blockSignals(false);
+            break;
+        case MeshAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(meshAtts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(meshAtts->GetLegendFlag() &&
+                                    meshAtts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+        case MeshAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(meshAtts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
             break;
         case MeshAttributes::ID_lineWidth:
             lineWidth->blockSignals(true);
@@ -464,7 +497,7 @@ QvisMeshPlotWindow::UpdateWindow(bool doAll)
             opaqueModeGroup->blockSignals(true);
             opaqueModeGroup->button((int)meshAtts->GetOpaqueMode())->setChecked(true);
 
-            switch(meshAtts->GetOpaqueMode())   
+            switch(meshAtts->GetOpaqueMode())
             {
                  case MeshAttributes::Auto:
                      if (meshAtts->GetOpaqueMeshIsAppropriate())
@@ -475,7 +508,7 @@ QvisMeshPlotWindow::UpdateWindow(bool doAll)
 
                          opaqueColor->setEnabled(meshAtts->GetOpaqueColorSource() == MeshAttributes::OpaqueCustom);
                      }
-                     else 
+                     else
                      {
                          opaqueColorLabel->setEnabled(false);
                          opaqueColorButtons->button(0)->setEnabled(false);
@@ -554,7 +587,7 @@ QvisMeshPlotWindow::UpdateWindow(bool doAll)
             pointControl->blockSignals(false);
             break;
         case MeshAttributes::ID_opaqueMeshIsAppropriate:
-            // If in AUTO mode:  if OpaqueMesh is appropriate, handle 
+            // If in AUTO mode:  if OpaqueMesh is appropriate, handle
             // opaqueColor and backgroundToggle according to the
             // appropriate values in meshAtts, otherwise disable them.
             if (meshAtts->GetOpaqueMode() == MeshAttributes::Auto)
@@ -567,7 +600,7 @@ QvisMeshPlotWindow::UpdateWindow(bool doAll)
                     opaqueColorButtons->button(1)->setEnabled(true);
                     opaqueColor->setEnabled(meshAtts->GetOpaqueColorSource() == MeshAttributes::OpaqueCustom);
                 }
-                else 
+                else
                 {
                     opaqueColorLabel->setEnabled(false);
                     opaqueColorButtons->button(0)->setEnabled(false);
@@ -600,7 +633,7 @@ QvisMeshPlotWindow::UpdateWindow(bool doAll)
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets the current values for one or all of the lineEdit widgets.
 //
 // Arguments:
@@ -614,9 +647,9 @@ QvisMeshPlotWindow::UpdateWindow(bool doAll)
 //   Jeremy Meredith, Fri Dec 20 11:36:03 PST 2002
 //   Added scaling of point variables by a scalar field.
 //
-//   Kathleen Bonnell, Fri Nov 12 10:58:37 PST 2004 
+//   Kathleen Bonnell, Fri Nov 12 10:58:37 PST 2004
 //   Replace separate pointSize and pointSizeVar widgets with single
-//   pointControl. 
+//   pointControl.
 //
 //   Brad Whitlock, Wed Apr 23 10:00:10 PDT 2008
 //   Support for internationalization.
@@ -645,7 +678,7 @@ QvisMeshPlotWindow::GetCurrentValues(int which_widget)
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::Apply
 //
-// Purpose: 
+// Purpose:
 //   This method applies the pc attributes and optionally tells
 //   the viewer to apply them.
 //
@@ -658,7 +691,7 @@ QvisMeshPlotWindow::GetCurrentValues(int which_widget)
 // Creation:   Mon Sep 25 15:22:16 PST 2000
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -685,7 +718,7 @@ QvisMeshPlotWindow::Apply(bool ignore)
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::apply
 //
-// Purpose: 
+// Purpose:
 //   This a Qt slot function that is called when the window's Apply button is
 //   clicked.
 //
@@ -693,7 +726,7 @@ QvisMeshPlotWindow::Apply(bool ignore)
 // Creation:   Fri Mar 9 17:29:03 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -705,7 +738,7 @@ QvisMeshPlotWindow::apply()
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::makeDefault
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the window's "Make default"
 //   button is clicked.
 //
@@ -713,7 +746,7 @@ QvisMeshPlotWindow::apply()
 // Creation:   Fri Mar 9 17:29:32 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -728,7 +761,7 @@ QvisMeshPlotWindow::makeDefault()
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::reset
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the window's "reset"
 //   button is clicked.
 //
@@ -736,7 +769,7 @@ QvisMeshPlotWindow::makeDefault()
 // Creation:   Fri Mar 9 17:30:07 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -751,7 +784,7 @@ QvisMeshPlotWindow::reset()
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::lineWidthChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the line width changes.
 //
 // Arguments:
@@ -761,7 +794,7 @@ QvisMeshPlotWindow::reset()
 // Creation:   Fri Mar 9 17:31:14 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -775,7 +808,7 @@ QvisMeshPlotWindow::lineWidthChanged(int newWidth)
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::legendToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the legend toggle is
 //   toggled.
 //
@@ -786,7 +819,7 @@ QvisMeshPlotWindow::lineWidthChanged(int newWidth)
 // Creation:   Fri Mar 9 17:31:32 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -799,20 +832,71 @@ QvisMeshPlotWindow::legendToggled(bool val)
 
 
 // ****************************************************************************
+// Method: QvisMeshPlotWindow::customLegendTitleToggled
+//
+// Purpose:
+//   This is a Qt slot function that is called when the custom legend title
+//   toggle is clicked.
+//
+// Arguments:
+//   val : The new state of the toggle.
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+QvisMeshPlotWindow::customLegendTitleToggled(bool val)
+{
+    meshAtts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+
+// ****************************************************************************
+// Method: QvisMeshPlotWindow::customLegendTitleProcessText
+//
+// Purpose:
+//   This is a Qt slot function that is called when the custom legend title
+//   text is changed.
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+QvisMeshPlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != meshAtts->GetCustomLegendTitle())
+    {
+        meshAtts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
+}
+
+
+// ****************************************************************************
 // Method: QvisMeshPlotWindow::showInternalToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the showInternal toggle is
 //   toggled.
 //
 // Arguments:
 //   val : The new showInternal toggle state.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   February 5, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   February 5, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -827,7 +911,7 @@ QvisMeshPlotWindow::showInternalToggled(bool val)
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::meshColorChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the mesh color changes.
 //
 // Arguments:
@@ -837,7 +921,7 @@ QvisMeshPlotWindow::showInternalToggled(bool val)
 // Creation:   Fri Mar 9 17:32:39 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -853,14 +937,14 @@ QvisMeshPlotWindow::meshColorChanged(const QColor &color)
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::opaqueColorChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the opaque color changes.
 //
 // Arguments:
 //   color      The new opaque color.
 //
-// Programmer:  Kathleen Bonnell 
-// Creation:    Wed Sep  5 16:20:52 PDT 2001 
+// Programmer:  Kathleen Bonnell
+// Creation:    Wed Sep  5 16:20:52 PDT 2001
 //
 // ****************************************************************************
 
@@ -889,8 +973,8 @@ QvisMeshPlotWindow::opaqueColorChanged(const QColor &color)
 //
 // Modifications:
 //   Kathleen Bonnell, Thu Sep  4 11:15:30 PDT 2003
-//   Modified to support radio buttons instead of check box. 
-//   
+//   Modified to support radio buttons instead of check box.
+//
 // ****************************************************************************
 
 void
@@ -904,15 +988,15 @@ QvisMeshPlotWindow::opaqueModeChanged(int val)
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::opaqueColorClicked
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the background toggle
 //   button is toggled.
 //
 // Arguments:
 //   val : The new state of the background toggle.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   September 26, 2001 
+// Programmer: Kathleen Bonnell
+// Creation:   September 26, 2001
 //
 // Modifications:
 //
@@ -937,16 +1021,16 @@ QvisMeshPlotWindow::opaqueColorClicked(int  val)
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::meshColorClicked
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the foreground toggle
 //   button is toggled.
 //
 // Arguments:
 //   val : The new state of the foreground toggle.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   September 26, 2001 
-//   
+// Programmer: Kathleen Bonnell
+// Creation:   September 26, 2001
+//
 // Modifications:
 //
 //   Allen Sanderson, Sun Mar  7 12:49:56 PST 2010
@@ -1011,8 +1095,8 @@ QvisMeshPlotWindow::smoothingLevelChanged(int level)
 //   Added support for a new (Point) type of glyphing for point meshes.
 //   When doing GL_POINT, we ignore point size, so also disable it.
 //
-//   Kathleen Bonnell, Fri Nov 12 11:04:56 PST 2004 
-//   Setting enabled state of pointSizeLineEdit handled by QvisPointControl. 
+//   Kathleen Bonnell, Fri Nov 12 11:04:56 PST 2004
+//   Setting enabled state of pointSizeLineEdit handled by QvisPointControl.
 //
 // ****************************************************************************
 
@@ -1035,8 +1119,8 @@ QvisMeshPlotWindow::pointTypeChanged(int type)
 //  Arguments:
 //    size       The new point size
 //
-//  Programmer:  Kathleen Bonnell 
-//  Creation:    November 12, 2004 
+//  Programmer:  Kathleen Bonnell
+//  Creation:    November 12, 2004
 //
 //  Modifications:
 //
@@ -1045,14 +1129,14 @@ QvisMeshPlotWindow::pointTypeChanged(int type)
 void
 QvisMeshPlotWindow::pointSizeChanged(double size)
 {
-    meshAtts->SetPointSize(size); 
+    meshAtts->SetPointSize(size);
     Apply();
 }
 
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::pointSizePixelsChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   point size text and presses the Enter key.
 //
@@ -1060,19 +1144,19 @@ QvisMeshPlotWindow::pointSizeChanged(double size)
 // Creation:   Wed Jul 20 14:25:58 PST 2005
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisMeshPlotWindow::pointSizePixelsChanged(int size)
 {
-    meshAtts->SetPointSizePixels(size); 
+    meshAtts->SetPointSizePixels(size);
     Apply();
 }
 
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::pointSizeVarToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the pointSizeVar toggle
 //   button is toggled.
 //
@@ -1081,7 +1165,7 @@ QvisMeshPlotWindow::pointSizePixelsChanged(int size)
 //
 // Programmer: Jeremy Meredith
 // Creation:   December 19, 2002
-//   
+//
 // ****************************************************************************
 
 void
@@ -1095,21 +1179,21 @@ QvisMeshPlotWindow::pointSizeVarToggled(bool val)
 // ****************************************************************************
 // Method: QvisMeshPlotWindow::pointSizeVarChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   point size variable text and presses the Enter key.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   November 12, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   November 12, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
 QvisMeshPlotWindow::pointSizeVarChanged(const QString &var)
 {
-    meshAtts->SetPointSizeVar(var.toStdString()); 
+    meshAtts->SetPointSizeVar(var.toStdString());
     Apply();
 }
 
@@ -1132,4 +1216,3 @@ QvisMeshPlotWindow::changedOpacity(int opacity, const void*)
     meshAtts->SetOpacity((float)opacity/255.);
     Apply();
 }
-

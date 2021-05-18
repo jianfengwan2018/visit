@@ -78,12 +78,15 @@ public:
 
     // Property selection methods
     virtual void SelectAll();
+    void SelectCustomLegendTitle();
     void SelectMeshColor();
     void SelectOpaqueColor();
     void SelectPointSizeVar();
 
     // Property setting methods
     void SetLegendFlag(bool legendFlag_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
     void SetLineWidth(int lineWidth_);
     void SetMeshColor(const ColorAttribute &meshColor_);
     void SetMeshColorSource(MeshColor meshColorSource_);
@@ -102,6 +105,9 @@ public:
 
     // Property getting methods
     bool                 GetLegendFlag() const;
+    bool                 GetCustomLegendTitleEnabled() const;
+    const std::string    &GetCustomLegendTitle() const;
+          std::string    &GetCustomLegendTitle();
     int                  GetLineWidth() const;
     const ColorAttribute &GetMeshColor() const;
           ColorAttribute &GetMeshColor();
@@ -160,6 +166,8 @@ public:
     // IDs that can be used to identify fields in case statements
     enum {
         ID_legendFlag = 0,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID_lineWidth,
         ID_meshColor,
         ID_meshColorSource,
@@ -180,6 +188,8 @@ public:
 
 private:
     bool           legendFlag;
+    bool           customLegendTitleEnabled;
+    std::string    customLegendTitle;
     int            lineWidth;
     ColorAttribute meshColor;
     int            meshColorSource;
@@ -200,6 +210,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define MESHATTRIBUTES_TMFS "biaiiidaibsibbid"
+#define MESHATTRIBUTES_TMFS "bbsiaiiidaibsibbid"
 
 #endif
