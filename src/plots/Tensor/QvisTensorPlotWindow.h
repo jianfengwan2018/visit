@@ -27,7 +27,7 @@ class TensorAttributes;
 //   This class is a postable window that watches tensor plot attributes and
 //   always represents their current state.
 //
-// Notes:      
+// Notes:
 //
 // Programmer: Hank Childs
 // Creation:   September 23, 2003
@@ -41,6 +41,9 @@ class TensorAttributes;
 //
 //   Kathleen Bonnell, Mon Jan 17 18:17:26 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -86,7 +89,10 @@ private slots:
     void colorModeChanged(int);
     void colorTableClicked(bool useDefault, const QString &ctName);
     void invertColorTableToggled(bool val);
+
     void legendToggled(bool);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
 
     void processScaleText();
     void scaleByMagnitudeToggled(bool);
@@ -111,9 +117,12 @@ private:
     QLineEdit            *minLineEdit;
 
     QvisColorButton      *tensorColor;
-    QButtonGroup         *colorButtonGroup; 
+    QButtonGroup         *colorButtonGroup;
     QvisColorTableWidget *colorTableWidget;
+
     QCheckBox            *legendToggle;
+    QCheckBox            *customLegendTitleToggle;
+    QLineEdit            *customLegendTitle;
 
     QLineEdit            *scaleLineEdit;
     QCheckBox            *scaleByMagnitudeToggle;

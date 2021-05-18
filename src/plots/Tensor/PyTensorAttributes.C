@@ -120,6 +120,13 @@ PyTensorAttributes_ToString(const TensorAttributes *atts, const char *prefix)
     else
         snprintf(tmpStr, 1000, "%suseLegend = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     snprintf(tmpStr, 1000, "%sscale = %g\n", prefix, atts->GetScale());
     str += tmpStr;
     if(atts->GetScaleByMagnitude())
@@ -578,6 +585,54 @@ TensorAttributes_GetUseLegend(PyObject *self, PyObject *args)
 }
 
 /*static*/ PyObject *
+TensorAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    TensorAttributesObject *obj = (TensorAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+TensorAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    TensorAttributesObject *obj = (TensorAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+TensorAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    TensorAttributesObject *obj = (TensorAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+TensorAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    TensorAttributesObject *obj = (TensorAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
+    return retval;
+}
+
+/*static*/ PyObject *
 TensorAttributes_SetScale(PyObject *self, PyObject *args)
 {
     TensorAttributesObject *obj = (TensorAttributesObject *)self;
@@ -707,6 +762,10 @@ PyMethodDef PyTensorAttributes_methods[TENSORATTRIBUTES_NMETH] = {
     {"GetTensorColor", TensorAttributes_GetTensorColor, METH_VARARGS},
     {"SetUseLegend", TensorAttributes_SetUseLegend, METH_VARARGS},
     {"GetUseLegend", TensorAttributes_GetUseLegend, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", TensorAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", TensorAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", TensorAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", TensorAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetScale", TensorAttributes_SetScale, METH_VARARGS},
     {"GetScale", TensorAttributes_GetScale, METH_VARARGS},
     {"SetScaleByMagnitude", TensorAttributes_SetScaleByMagnitude, METH_VARARGS},
@@ -776,6 +835,10 @@ PyTensorAttributes_getattr(PyObject *self, char *name)
         return TensorAttributes_GetTensorColor(self, NULL);
     if(strcmp(name, "useLegend") == 0)
         return TensorAttributes_GetUseLegend(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return TensorAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return TensorAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "scale") == 0)
         return TensorAttributes_GetScale(self, NULL);
     if(strcmp(name, "scaleByMagnitude") == 0)
@@ -828,6 +891,10 @@ PyTensorAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = TensorAttributes_SetTensorColor(self, tuple);
     else if(strcmp(name, "useLegend") == 0)
         obj = TensorAttributes_SetUseLegend(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = TensorAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = TensorAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "scale") == 0)
         obj = TensorAttributes_SetScale(self, tuple);
     else if(strcmp(name, "scaleByMagnitude") == 0)

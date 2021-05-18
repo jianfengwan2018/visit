@@ -3,7 +3,7 @@
 // details.  No copyright assignment is required to contribute to VisIt.
 
 #include <QvisTensorPlotWindow.h>
-#include <QLayout> 
+#include <QLayout>
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
@@ -23,7 +23,7 @@
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::QvisTensorPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor for the QvisTensorPlotWindow class.
 //
 // Arguments:
@@ -54,7 +54,7 @@ QvisTensorPlotWindow::QvisTensorPlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::~QvisTensorPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor for the QvisTensorPlotWindow class.
 //
 // Programmer: Hank Childs
@@ -75,7 +75,7 @@ QvisTensorPlotWindow::~QvisTensorPlotWindow()
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   This method creates the widgets that are in the window and sets
 //   up their signals/slots.
 //
@@ -131,7 +131,7 @@ QvisTensorPlotWindow::CreateWindowContents()
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::CreateSamplingTab
 //
-// Purpose: 
+// Purpose:
 //   Populates the sampling tab.
 //
 // Programmer: Allen Sanderson
@@ -218,13 +218,15 @@ QvisTensorPlotWindow::CreateSamplingTab(QWidget *pageTensor)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::CreateDataTab
 //
-// Purpose: 
+// Purpose:
 //   Populates the data tab.
 //
 // Programmer: Allen Sanderson
 // Creation:   September 20 2013
 //
 // Modifications:
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -252,7 +254,7 @@ QvisTensorPlotWindow::CreateDataTab(QWidget *pageTensor)
     limitsSelect->addItem(tr("Use Original Data"));
     limitsSelect->addItem(tr("Use Current Plot"));
     connect(limitsSelect, SIGNAL(activated(int)),
-            this, SLOT(limitsSelectChanged(int))); 
+            this, SLOT(limitsSelectChanged(int)));
     limitsLayout->addWidget(limitsSelect, 0, 1, 1, 2, Qt::AlignLeft);
 
     // Create the min toggle and line edit
@@ -262,7 +264,7 @@ QvisTensorPlotWindow::CreateDataTab(QWidget *pageTensor)
             this, SLOT(minToggled(bool)));
     minLineEdit = new QLineEdit(central);
     connect(minLineEdit, SIGNAL(returnPressed()),
-            this, SLOT(processMinLimitText())); 
+            this, SLOT(processMinLimitText()));
     limitsLayout->addWidget(minLineEdit, 1, 1);
 
     // Create the max toggle and line edit
@@ -272,7 +274,7 @@ QvisTensorPlotWindow::CreateDataTab(QWidget *pageTensor)
             this, SLOT(maxToggled(bool)));
     maxLineEdit = new QLineEdit(central);
     connect(maxLineEdit, SIGNAL(returnPressed()),
-            this, SLOT(processMaxLimitText())); 
+            this, SLOT(processMaxLimitText()));
     limitsLayout->addWidget(maxLineEdit, 2, 1);
 
     //
@@ -326,19 +328,31 @@ QvisTensorPlotWindow::CreateDataTab(QWidget *pageTensor)
     QGridLayout *miscLayout = new QGridLayout(miscGroup);
     miscLayout->setMargin(5);
     miscLayout->setSpacing(10);
- 
+
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Legend"), central);
     connect(legendToggle, SIGNAL(toggled(bool)),
             this, SLOT(legendToggled(bool)));
     miscLayout->addWidget(legendToggle, 0, 0);
+
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::CreateGeometryTab
 //
-// Purpose: 
+// Purpose:
 //   Populates the geometry tab.
 //
 // Programmer: Allen Sanderson
@@ -378,7 +392,7 @@ QvisTensorPlotWindow::CreateGeometryTab(QWidget *pageGlyphs)
 
     // Add the scale by magnitude toggle button.
     scaleByMagnitudeToggle = new QCheckBox(tr("Scale by magnitude"), scaleGroupBox);
-    connect(scaleByMagnitudeToggle, SIGNAL(clicked(bool)), 
+    connect(scaleByMagnitudeToggle, SIGNAL(clicked(bool)),
             this, SLOT(scaleByMagnitudeToggled(bool)));
     sgLayout->addWidget(scaleByMagnitudeToggle, 0, 2);
 
@@ -393,7 +407,7 @@ QvisTensorPlotWindow::CreateGeometryTab(QWidget *pageGlyphs)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   This method is called when the window's subject is changed. The
 //   subject tells this window what attributes changed and we put the
 //   new values into those widgets.
@@ -402,9 +416,9 @@ QvisTensorPlotWindow::CreateGeometryTab(QWidget *pageGlyphs)
 //   doAll : If this flag is true, update all the widgets regardless
 //           of whether or not they are selected.
 //
-// Returns:    
+// Returns:
 //
-// Note:       
+// Note:
 //
 // Programmer: Hank Childs
 // Creation:   September 23, 2003
@@ -427,6 +441,9 @@ QvisTensorPlotWindow::CreateGeometryTab(QWidget *pageGlyphs)
 //   Use helper function DoubleToQString for consistency in formatting across
 //   all windows.
 //
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
+//
 // ****************************************************************************
 
 void
@@ -442,7 +459,7 @@ QvisTensorPlotWindow::UpdateWindow(bool doAll)
             if(!tensorAtts->IsSelected(i))
                 continue;
         }
-        
+
         switch(i)
         {
           case TensorAttributes::ID_glyphLocation:
@@ -527,9 +544,23 @@ QvisTensorPlotWindow::UpdateWindow(bool doAll)
           case TensorAttributes::ID_useLegend:
             legendToggle->blockSignals(true);
             legendToggle->setChecked(tensorAtts->GetUseLegend());
+            customLegendTitleToggle->setEnabled(tensorAtts->GetUseLegend());
+            customLegendTitle->setEnabled(tensorAtts->GetUseLegend() &&
+                                    tensorAtts->GetCustomLegendTitleEnabled());
             legendToggle->blockSignals(false);
             break;
-
+          case TensorAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(tensorAtts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(tensorAtts->GetUseLegend() &&
+                                    tensorAtts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+          case TensorAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(tensorAtts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
+            break;
           case TensorAttributes::ID_scale:
             scaleLineEdit->setText(DoubleToQString(tensorAtts->GetScale()));
             break;
@@ -551,7 +582,7 @@ QvisTensorPlotWindow::UpdateWindow(bool doAll)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets the current values for one or all of the lineEdit widgets.
 //
 // Arguments:
@@ -604,7 +635,7 @@ QvisTensorPlotWindow::GetCurrentValues(int which_widget)
             tensorAtts->SetStride(val);
         else
         {
-            ResettingError(tr("stride"), 
+            ResettingError(tr("stride"),
                 IntToQString(tensorAtts->GetStride()));
             tensorAtts->SetStride(tensorAtts->GetStride());
         }
@@ -657,7 +688,7 @@ QvisTensorPlotWindow::GetCurrentValues(int which_widget)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::Apply
 //
-// Purpose: 
+// Purpose:
 //   This method applies the tensor attributes and optionally tells the viewer
 //   to apply them to the plot.
 //
@@ -670,7 +701,7 @@ QvisTensorPlotWindow::GetCurrentValues(int which_widget)
 // Creation:   Thu Mar 22 23:52:51 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -721,7 +752,7 @@ QvisTensorPlotWindow::reset()
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::tensorColorChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   tensor color.
 //
@@ -749,7 +780,7 @@ QvisTensorPlotWindow::tensorColorChanged(const QColor &color)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::processScaleText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   scale line edit.
 //
@@ -757,7 +788,7 @@ QvisTensorPlotWindow::tensorColorChanged(const QColor &color)
 // Creation:   Fri Mar 23 12:22:33 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -770,7 +801,7 @@ QvisTensorPlotWindow::processScaleText()
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::scaleByMagnitudeToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's scale by magnitude toggle button.
 //
@@ -778,7 +809,7 @@ QvisTensorPlotWindow::processScaleText()
 // Creation:   Tue Nov 23 10:18:29 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -791,7 +822,7 @@ QvisTensorPlotWindow::scaleByMagnitudeToggled(bool)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::autoScaleToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's auto scale toggle button.
 //
@@ -799,7 +830,7 @@ QvisTensorPlotWindow::scaleByMagnitudeToggled(bool)
 // Creation:   Tue Nov 23 10:18:29 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -812,7 +843,7 @@ QvisTensorPlotWindow::autoScaleToggled(bool)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::reduceMethodChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   method used to reduce the number of tensors.
 //
@@ -823,20 +854,20 @@ QvisTensorPlotWindow::autoScaleToggled(bool)
 // Creation:   Fri Mar 23 12:24:08 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
 QvisTensorPlotWindow::reduceMethodChanged(int index)
 {
     tensorAtts->SetUseStride(index != 0);
-    Apply();   
+    Apply();
 }
 
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::locationMethodChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   method used to place the tensors.
 //
@@ -847,24 +878,24 @@ QvisTensorPlotWindow::reduceMethodChanged(int index)
 // Creation:   August 24, 2010
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
 QvisTensorPlotWindow::locationMethodChanged(int index)
 {
-    tensorAtts->SetGlyphLocation(index == 0 
+    tensorAtts->SetGlyphLocation(index == 0
                                    ? TensorAttributes::AdaptsToMeshResolution
                                    : TensorAttributes::UniformInSpace);
     if (tensorAtts->GetGlyphLocation() == TensorAttributes::UniformInSpace)
         tensorAtts->SetUseStride(false);
-    Apply();   
+    Apply();
 }
 
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::processNTensorsText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   N tensors line edit.
 //
@@ -872,7 +903,7 @@ QvisTensorPlotWindow::locationMethodChanged(int index)
 // Creation:   Fri Mar 23 12:22:33 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -885,7 +916,7 @@ QvisTensorPlotWindow::processNTensorsText()
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::processStrideText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
 //   stride line edit.
 //
@@ -893,7 +924,7 @@ QvisTensorPlotWindow::processNTensorsText()
 // Creation:   Fri Mar 23 12:22:33 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -906,7 +937,7 @@ QvisTensorPlotWindow::processStrideText()
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::limitToOrigToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's limit to original node/cell toggle button.
 //
@@ -914,7 +945,7 @@ QvisTensorPlotWindow::processStrideText()
 // Creation:   July  8, 2008
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisTensorPlotWindow::limitToOrigToggled(bool val)
@@ -926,7 +957,7 @@ QvisTensorPlotWindow::limitToOrigToggled(bool val)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::legendToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's legend toggle button.
 //
@@ -934,7 +965,7 @@ QvisTensorPlotWindow::limitToOrigToggled(bool val)
 // Creation:   Fri Mar 23 12:24:55 PDT 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -945,9 +976,55 @@ QvisTensorPlotWindow::legendToggled(bool)
 }
 
 // ****************************************************************************
+// Method: QvisTensorPlotWindow::customLegendTitleToggled
+//
+// Purpose:
+//   This is a Qt slot function that is called when the user toggles the
+//   window's custom legend title toggle button.
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+QvisTensorPlotWindow::customLegendTitleToggled(bool val)
+{
+    tensorAtts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+// ****************************************************************************
+// Method: QvisTensorPlotWindow::customLegendTitleProcessTextj
+//
+// Purpose:
+//   This is a Qt slot function that is called when the user changes the
+//   window's custom legend title text.
+//
+// Programmer: Kathleen Biagas
+// Creation:   Tuesday May 18, 2021
+//
+// Modifications:
+//
+// ****************************************************************************
+
+void
+QvisTensorPlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != tensorAtts->GetCustomLegendTitle())
+    {
+        tensorAtts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
+}
+
+// ****************************************************************************
 // Method: QvisTensorPlotWindow::colorByMagnitudeToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's "color by magnitude" toggle button.
 //
@@ -957,7 +1034,7 @@ QvisTensorPlotWindow::legendToggled(bool)
 // Modifications:
 //   Kathleen Bonnell, Wed Dec 22 16:42:35 PST 2004
 //   Set the enabled state for the limitsGroup based on ColorByMag.
-//   
+//
 // ****************************************************************************
 
 void
@@ -971,7 +1048,7 @@ QvisTensorPlotWindow::colorModeChanged(int index)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::colorTableClicked
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the desired color table name into
 //   the tensor plot attributes.
 //
@@ -984,7 +1061,7 @@ QvisTensorPlotWindow::colorModeChanged(int index)
 // Creation:   Sat Jun 16 18:30:51 PST 2001
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -999,7 +1076,7 @@ QvisTensorPlotWindow::colorTableClicked(bool useDefault,
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::invertColorTableToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the invert color table flag into the
 //   tensor plot attributes.
 //
@@ -1010,7 +1087,7 @@ QvisTensorPlotWindow::colorTableClicked(bool useDefault,
 // Creation:   January  17, 2011
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1023,15 +1100,15 @@ QvisTensorPlotWindow::invertColorTableToggled(bool val)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::limitsSelectChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
-//   window's limits selection combo box. 
+//   window's limits selection combo box.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisTensorPlotWindow::limitsSelectChanged(int mode)
@@ -1047,15 +1124,15 @@ QvisTensorPlotWindow::limitsSelectChanged(int mode)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::processMinLimitText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
-//   window's min line edit text. 
+//   window's min line edit text.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisTensorPlotWindow::processMinLimitText()
@@ -1067,15 +1144,15 @@ QvisTensorPlotWindow::processMinLimitText()
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::processMaxLimitText
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user changes the
-//   window's max line edit text. 
+//   window's max line edit text.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisTensorPlotWindow::processMaxLimitText()
@@ -1087,15 +1164,15 @@ QvisTensorPlotWindow::processMaxLimitText()
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::minToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's min toggle button.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisTensorPlotWindow::minToggled(bool val)
@@ -1107,15 +1184,15 @@ QvisTensorPlotWindow::minToggled(bool val)
 // ****************************************************************************
 // Method: QvisTensorPlotWindow::maxToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the user toggles the
 //   window's max toggle button.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   December 22, 2004 
+// Programmer: Kathleen Bonnell
+// Creation:   December 22, 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 void
 QvisTensorPlotWindow::maxToggled(bool val)

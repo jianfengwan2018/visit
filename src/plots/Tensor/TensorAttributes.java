@@ -26,7 +26,7 @@ import llnl.visit.ColorAttribute;
 
 public class TensorAttributes extends AttributeSubject implements Plugin
 {
-    private static int TensorAttributes_numAdditionalAtts = 19;
+    private static int TensorAttributes_numAdditionalAtts = 21;
 
     // Enum values
     public final static int LIMITSMODE_ORIGINALDATA = 0;
@@ -55,6 +55,8 @@ public class TensorAttributes extends AttributeSubject implements Plugin
         invertColorTable = false;
         tensorColor = new ColorAttribute(0, 0, 0);
         useLegend = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         scale = 0.25;
         scaleByMagnitude = true;
         autoScale = true;
@@ -80,6 +82,8 @@ public class TensorAttributes extends AttributeSubject implements Plugin
         invertColorTable = false;
         tensorColor = new ColorAttribute(0, 0, 0);
         useLegend = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         scale = 0.25;
         scaleByMagnitude = true;
         autoScale = true;
@@ -105,6 +109,8 @@ public class TensorAttributes extends AttributeSubject implements Plugin
         invertColorTable = obj.invertColorTable;
         tensorColor = new ColorAttribute(obj.tensorColor);
         useLegend = obj.useLegend;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         scale = obj.scale;
         scaleByMagnitude = obj.scaleByMagnitude;
         autoScale = obj.autoScale;
@@ -141,6 +147,8 @@ public class TensorAttributes extends AttributeSubject implements Plugin
                 (invertColorTable == obj.invertColorTable) &&
                 (tensorColor == obj.tensorColor) &&
                 (useLegend == obj.useLegend) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (scale == obj.scale) &&
                 (scaleByMagnitude == obj.scaleByMagnitude) &&
                 (autoScale == obj.autoScale) &&
@@ -241,28 +249,40 @@ public class TensorAttributes extends AttributeSubject implements Plugin
         Select(14);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(15);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(16);
+    }
+
     public void SetScale(double scale_)
     {
         scale = scale_;
-        Select(15);
+        Select(17);
     }
 
     public void SetScaleByMagnitude(boolean scaleByMagnitude_)
     {
         scaleByMagnitude = scaleByMagnitude_;
-        Select(16);
+        Select(18);
     }
 
     public void SetAutoScale(boolean autoScale_)
     {
         autoScale = autoScale_;
-        Select(17);
+        Select(19);
     }
 
     public void SetAnimationStep(int animationStep_)
     {
         animationStep = animationStep_;
-        Select(18);
+        Select(20);
     }
 
     // Property getting methods
@@ -281,6 +301,8 @@ public class TensorAttributes extends AttributeSubject implements Plugin
     public boolean        GetInvertColorTable() { return invertColorTable; }
     public ColorAttribute GetTensorColor() { return tensorColor; }
     public boolean        GetUseLegend() { return useLegend; }
+    public boolean        GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String         GetCustomLegendTitle() { return customLegendTitle; }
     public double         GetScale() { return scale; }
     public boolean        GetScaleByMagnitude() { return scaleByMagnitude; }
     public boolean        GetAutoScale() { return autoScale; }
@@ -320,12 +342,16 @@ public class TensorAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(14, buf))
             buf.WriteBool(useLegend);
         if(WriteSelect(15, buf))
-            buf.WriteDouble(scale);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(16, buf))
-            buf.WriteBool(scaleByMagnitude);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(17, buf))
-            buf.WriteBool(autoScale);
+            buf.WriteDouble(scale);
         if(WriteSelect(18, buf))
+            buf.WriteBool(scaleByMagnitude);
+        if(WriteSelect(19, buf))
+            buf.WriteBool(autoScale);
+        if(WriteSelect(20, buf))
             buf.WriteInt(animationStep);
     }
 
@@ -380,15 +406,21 @@ public class TensorAttributes extends AttributeSubject implements Plugin
             SetUseLegend(buf.ReadBool());
             break;
         case 15:
-            SetScale(buf.ReadDouble());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 16:
-            SetScaleByMagnitude(buf.ReadBool());
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 17:
-            SetAutoScale(buf.ReadBool());
+            SetScale(buf.ReadDouble());
             break;
         case 18:
+            SetScaleByMagnitude(buf.ReadBool());
+            break;
+        case 19:
+            SetAutoScale(buf.ReadBool());
+            break;
+        case 20:
             SetAnimationStep(buf.ReadInt());
             break;
         }
@@ -422,6 +454,8 @@ public class TensorAttributes extends AttributeSubject implements Plugin
         str = str + boolToString("invertColorTable", invertColorTable, indent) + "\n";
         str = str + indent + "tensorColor = {" + tensorColor.Red() + ", " + tensorColor.Green() + ", " + tensorColor.Blue() + ", " + tensorColor.Alpha() + "}\n";
         str = str + boolToString("useLegend", useLegend, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + doubleToString("scale", scale, indent) + "\n";
         str = str + boolToString("scaleByMagnitude", scaleByMagnitude, indent) + "\n";
         str = str + boolToString("autoScale", autoScale, indent) + "\n";
@@ -446,6 +480,8 @@ public class TensorAttributes extends AttributeSubject implements Plugin
     private boolean        invertColorTable;
     private ColorAttribute tensorColor;
     private boolean        useLegend;
+    private boolean        customLegendTitleEnabled;
+    private String         customLegendTitle;
     private double         scale;
     private boolean        scaleByMagnitude;
     private boolean        autoScale;

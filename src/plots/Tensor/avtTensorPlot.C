@@ -126,8 +126,8 @@ avtTensorPlot::Create()
 //  Purpose: Sets the number of polygons each point in the plot's output will
 //  be glyphed into.
 //
-//  Programmer:  Mark C. Miller 
-//  Creation:    August 11, 2004 
+//  Programmer:  Mark C. Miller
+//  Creation:    August 11, 2004
 //
 //  Modifications:
 //    Jeremy Meredith, Thu Aug 12 14:15:55 PDT 2004
@@ -167,7 +167,7 @@ avtTensorPlot::GetMapper(void)
 //  Method: avtTensorPlot::ApplyOperators
 //
 //  Purpose:
-//      Applies the operators associated with a Tensor plot.  
+//      Applies the operators associated with a Tensor plot.
 //      The output from this method is a query-able object.
 //
 //  Arguments:
@@ -196,7 +196,7 @@ avtTensorPlot::ApplyOperators(avtDataObject_p input)
 //  Method: avtTensorPlot::ApplyRenderingTransformation
 //
 //  Purpose:
-//      Applies the rendering transformation associated with a Tensor plot.  
+//      Applies the rendering transformation associated with a Tensor plot.
 //
 //  Arguments:
 //      input   The input data object.
@@ -237,7 +237,7 @@ avtTensorPlot::ApplyRenderingTransformation(avtDataObject_p input)
             dob = resampleFilter->GetOutput();
         }
     }
-    
+
     TensorFilter->SetInput(dob);
 
     return TensorFilter->GetOutput();
@@ -269,7 +269,7 @@ avtTensorPlot::CustomizeBehavior(void)
 //
 //  Purpose:
 //      A hook from the base class that allows the plot to change its mapper
-//      based on the dataset input. 
+//      based on the dataset input.
 //
 //  Arguments:
 //      doi     The data object information.
@@ -314,6 +314,9 @@ avtTensorPlot::CustomizeMapper(avtDataObjectInformation &doi)
 //
 //    Kathleen Bonnell, Mon Jan 17 18:20:03 MST 2011
 //    Consider invertColorTable flag when setting updateColors.
+//
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
 //
 // ****************************************************************************
 
@@ -381,6 +384,11 @@ avtTensorPlot::SetAtts(const AttributeGroup *a)
     // Update the legend.
     //
     SetLegend(atts.GetUseLegend());
+
+    if(atts.GetCustomLegendTitleEnabled())
+        varLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        varLegend->SetTitle("Tensor");
 }
 
 // ****************************************************************************
@@ -531,10 +539,10 @@ avtTensorPlot::ReleaseData(void)
 //  Method: avtTensorPlot::SetMapperColors
 //
 //  Purpose:
-//    Tells the tensorMapper how to color the data. 
+//    Tells the tensorMapper how to color the data.
 //
-//  Programmer: Kathleen Bonnell 
-//  Creation:   August 12, 2004 
+//  Programmer: Kathleen Bonnell
+//  Creation:   August 12, 2004
 //
 // ****************************************************************************
 
@@ -562,7 +570,7 @@ avtTensorPlot::SetMapperColors()
 //    limitsMode  Specifies which type of limits.
 //
 //  Programmer:   Kathleen Bonnell
-//  Creation:     December 22, 2004 
+//  Creation:     December 22, 2004
 //
 //  Modifications:
 //
@@ -579,7 +587,7 @@ avtTensorPlot::SetLimitsMode(int limitsMode)
 
     float userMin = atts.GetMinFlag() ? atts.GetMin() : min;
     float userMax = atts.GetMaxFlag() ? atts.GetMax() : max;
-      
+
     if (dataExtents.size() == 2)
     {
         tensorMapper->SetMin(dataExtents[0]);
@@ -589,14 +597,14 @@ avtTensorPlot::SetLimitsMode(int limitsMode)
     {
         if (userMin >= userMax)
         {
-            EXCEPTION1(InvalidLimitsException, false); 
+            EXCEPTION1(InvalidLimitsException, false);
         }
         else
         {
             tensorMapper->SetMin(userMin);
             tensorMapper->SetMax(userMax);
         }
-    } 
+    }
     else if (atts.GetMinFlag())
     {
         tensorMapper->SetMin(userMin);

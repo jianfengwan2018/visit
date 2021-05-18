@@ -65,6 +65,7 @@ public:
     virtual void SelectAll();
     void SelectColorTableName();
     void SelectTensorColor();
+    void SelectCustomLegendTitle();
 
     // Property setting methods
     void SetGlyphLocation(GlyphLocation glyphLocation_);
@@ -82,6 +83,8 @@ public:
     void SetInvertColorTable(bool invertColorTable_);
     void SetTensorColor(const ColorAttribute &tensorColor_);
     void SetUseLegend(bool useLegend_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
     void SetScale(double scale_);
     void SetScaleByMagnitude(bool scaleByMagnitude_);
     void SetAutoScale(bool autoScale_);
@@ -105,6 +108,9 @@ public:
     const ColorAttribute &GetTensorColor() const;
           ColorAttribute &GetTensorColor();
     bool                 GetUseLegend() const;
+    bool                 GetCustomLegendTitleEnabled() const;
+    const std::string    &GetCustomLegendTitle() const;
+          std::string    &GetCustomLegendTitle();
     double               GetScale() const;
     bool                 GetScaleByMagnitude() const;
     bool                 GetAutoScale() const;
@@ -153,6 +159,8 @@ public:
         ID_invertColorTable,
         ID_tensorColor,
         ID_useLegend,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID_scale,
         ID_scaleByMagnitude,
         ID_autoScale,
@@ -176,6 +184,8 @@ private:
     bool           invertColorTable;
     ColorAttribute tensorColor;
     bool           useLegend;
+    bool           customLegendTitleEnabled;
+    std::string    customLegendTitle;
     double         scale;
     bool           scaleByMagnitude;
     bool           autoScale;
@@ -185,6 +195,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define TENSORATTRIBUTES_TMFS "ibiibibdbdbsbabdbbi"
+#define TENSORATTRIBUTES_TMFS "ibiibibdbdbsbabbsdbbi"
 
 #endif

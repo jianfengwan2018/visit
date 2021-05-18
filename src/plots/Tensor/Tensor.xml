@@ -57,6 +57,11 @@
       <Field name="useLegend" label="Legend" type="bool">
         true
       </Field>
+      <Field name="customLegendTitleEnabled" label="customLegendTitleEnabled" type="bool" enabler="useLegend:true">
+        false
+      </Field>
+      <Field name="customLegendTitle" label="customLegendTitle" type="string" enabler="customLegendTitleEnabled:true">
+      </Field>
       <Field name="scale" label="Scale" type="double">
         0.250000
       </Field>
