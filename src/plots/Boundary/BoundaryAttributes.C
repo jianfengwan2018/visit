@@ -63,6 +63,7 @@ void BoundaryAttributes::Init()
     colorType = ColorByMultipleColors;
     invertColorTable = false;
     legendFlag = true;
+    customLegendTitleEnabled = false;
     lineWidth = 0;
     opacity = 1;
     wireframe = false;
@@ -92,6 +93,8 @@ void BoundaryAttributes::Copy(const BoundaryAttributes &obj)
     colorTableName = obj.colorTableName;
     invertColorTable = obj.invertColorTable;
     legendFlag = obj.legendFlag;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     lineWidth = obj.lineWidth;
     singleColor = obj.singleColor;
     multiColor = obj.multiColor;
@@ -262,6 +265,8 @@ BoundaryAttributes::operator == (const BoundaryAttributes &obj) const
             (colorTableName == obj.colorTableName) &&
             (invertColorTable == obj.invertColorTable) &&
             (legendFlag == obj.legendFlag) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (lineWidth == obj.lineWidth) &&
             (singleColor == obj.singleColor) &&
             (multiColor == obj.multiColor) &&
@@ -412,17 +417,19 @@ BoundaryAttributes::NewInstance(bool copy) const
 void
 BoundaryAttributes::SelectAll()
 {
-    Select(ID_colorType,        (void *)&colorType);
-    Select(ID_colorTableName,   (void *)&colorTableName);
-    Select(ID_invertColorTable, (void *)&invertColorTable);
-    Select(ID_legendFlag,       (void *)&legendFlag);
-    Select(ID_lineWidth,        (void *)&lineWidth);
-    Select(ID_singleColor,      (void *)&singleColor);
-    Select(ID_multiColor,       (void *)&multiColor);
-    Select(ID_boundaryNames,    (void *)&boundaryNames);
-    Select(ID_opacity,          (void *)&opacity);
-    Select(ID_wireframe,        (void *)&wireframe);
-    Select(ID_smoothingLevel,   (void *)&smoothingLevel);
+    Select(ID_colorType,                (void *)&colorType);
+    Select(ID_colorTableName,           (void *)&colorTableName);
+    Select(ID_invertColorTable,         (void *)&invertColorTable);
+    Select(ID_legendFlag,               (void *)&legendFlag);
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,        (void *)&customLegendTitle);
+    Select(ID_lineWidth,                (void *)&lineWidth);
+    Select(ID_singleColor,              (void *)&singleColor);
+    Select(ID_multiColor,               (void *)&multiColor);
+    Select(ID_boundaryNames,            (void *)&boundaryNames);
+    Select(ID_opacity,                  (void *)&opacity);
+    Select(ID_wireframe,                (void *)&wireframe);
+    Select(ID_smoothingLevel,           (void *)&smoothingLevel);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -477,6 +484,18 @@ BoundaryAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool for
     {
         addToParent = true;
         node->AddNode(new DataNode("legendFlag", legendFlag));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
     }
 
     if(completeSave || !FieldsEqual(ID_lineWidth, &defaultObject))
@@ -587,6 +606,10 @@ BoundaryAttributes::SetFromNode(DataNode *parentNode)
         SetInvertColorTable(node->AsBool());
     if((node = searchNode->GetNode("legendFlag")) != 0)
         SetLegendFlag(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("lineWidth")) != 0)
         SetLineWidth(node->AsInt());
     if((node = searchNode->GetNode("singleColor")) != 0)
@@ -633,6 +656,20 @@ BoundaryAttributes::SetLegendFlag(bool legendFlag_)
 {
     legendFlag = legendFlag_;
     Select(ID_legendFlag, (void *)&legendFlag);
+}
+
+void
+BoundaryAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+BoundaryAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
 }
 
 void
@@ -718,6 +755,24 @@ BoundaryAttributes::GetLegendFlag() const
     return legendFlag;
 }
 
+bool
+BoundaryAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+BoundaryAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+BoundaryAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
 int
 BoundaryAttributes::GetLineWidth() const
 {
@@ -789,6 +844,12 @@ BoundaryAttributes::SelectColorTableName()
 }
 
 void
+BoundaryAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 BoundaryAttributes::SelectSingleColor()
 {
     Select(ID_singleColor, (void *)&singleColor);
@@ -830,17 +891,19 @@ BoundaryAttributes::GetFieldName(int index) const
 {
     switch (index)
     {
-    case ID_colorType:        return "colorType";
-    case ID_colorTableName:   return "colorTableName";
-    case ID_invertColorTable: return "invertColorTable";
-    case ID_legendFlag:       return "legendFlag";
-    case ID_lineWidth:        return "lineWidth";
-    case ID_singleColor:      return "singleColor";
-    case ID_multiColor:       return "multiColor";
-    case ID_boundaryNames:    return "boundaryNames";
-    case ID_opacity:          return "opacity";
-    case ID_wireframe:        return "wireframe";
-    case ID_smoothingLevel:   return "smoothingLevel";
+    case ID_colorType:                return "colorType";
+    case ID_colorTableName:           return "colorTableName";
+    case ID_invertColorTable:         return "invertColorTable";
+    case ID_legendFlag:               return "legendFlag";
+    case ID_customLegendTitleEnabled: return "customLegendTitleEnabled";
+    case ID_customLegendTitle:        return "customLegendTitle";
+    case ID_lineWidth:                return "lineWidth";
+    case ID_singleColor:              return "singleColor";
+    case ID_multiColor:               return "multiColor";
+    case ID_boundaryNames:            return "boundaryNames";
+    case ID_opacity:                  return "opacity";
+    case ID_wireframe:                return "wireframe";
+    case ID_smoothingLevel:           return "smoothingLevel";
     default:  return "invalid index";
     }
 }
@@ -865,17 +928,19 @@ BoundaryAttributes::GetFieldType(int index) const
 {
     switch (index)
     {
-    case ID_colorType:        return FieldType_enum;
-    case ID_colorTableName:   return FieldType_colortable;
-    case ID_invertColorTable: return FieldType_bool;
-    case ID_legendFlag:       return FieldType_bool;
-    case ID_lineWidth:        return FieldType_linewidth;
-    case ID_singleColor:      return FieldType_color;
-    case ID_multiColor:       return FieldType_att;
-    case ID_boundaryNames:    return FieldType_stringVector;
-    case ID_opacity:          return FieldType_opacity;
-    case ID_wireframe:        return FieldType_bool;
-    case ID_smoothingLevel:   return FieldType_int;
+    case ID_colorType:                return FieldType_enum;
+    case ID_colorTableName:           return FieldType_colortable;
+    case ID_invertColorTable:         return FieldType_bool;
+    case ID_legendFlag:               return FieldType_bool;
+    case ID_customLegendTitleEnabled: return FieldType_bool;
+    case ID_customLegendTitle:        return FieldType_string;
+    case ID_lineWidth:                return FieldType_linewidth;
+    case ID_singleColor:              return FieldType_color;
+    case ID_multiColor:               return FieldType_att;
+    case ID_boundaryNames:            return FieldType_stringVector;
+    case ID_opacity:                  return FieldType_opacity;
+    case ID_wireframe:                return FieldType_bool;
+    case ID_smoothingLevel:           return FieldType_int;
     default:  return FieldType_unknown;
     }
 }
@@ -900,17 +965,19 @@ BoundaryAttributes::GetFieldTypeName(int index) const
 {
     switch (index)
     {
-    case ID_colorType:        return "enum";
-    case ID_colorTableName:   return "colortable";
-    case ID_invertColorTable: return "bool";
-    case ID_legendFlag:       return "bool";
-    case ID_lineWidth:        return "linewidth";
-    case ID_singleColor:      return "color";
-    case ID_multiColor:       return "att";
-    case ID_boundaryNames:    return "stringVector";
-    case ID_opacity:          return "opacity";
-    case ID_wireframe:        return "bool";
-    case ID_smoothingLevel:   return "int";
+    case ID_colorType:                return "enum";
+    case ID_colorTableName:           return "colortable";
+    case ID_invertColorTable:         return "bool";
+    case ID_legendFlag:               return "bool";
+    case ID_customLegendTitleEnabled: return "bool";
+    case ID_customLegendTitle:        return "string";
+    case ID_lineWidth:                return "linewidth";
+    case ID_singleColor:              return "color";
+    case ID_multiColor:               return "att";
+    case ID_boundaryNames:            return "stringVector";
+    case ID_opacity:                  return "opacity";
+    case ID_wireframe:                return "bool";
+    case ID_smoothingLevel:           return "int";
     default:  return "invalid index";
     }
 }
@@ -955,6 +1022,16 @@ BoundaryAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_legendFlag:
         {  // new scope
         retval = (legendFlag == obj.legendFlag);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_lineWidth:

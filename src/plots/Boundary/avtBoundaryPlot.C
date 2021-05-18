@@ -47,7 +47,7 @@ using std::vector;
 //    Eric Brugger, Wed Jul 16 10:19:00 PDT 2003
 //    Modified to work with the new way legends are managed.
 //
-//    Kathleen Bonnell, Fri Nov 12 10:23:09 PST 2004 
+//    Kathleen Bonnell, Fri Nov 12 10:23:09 PST 2004
 //    Changed mapper type to avtLevelsPointGlyphMapper.
 //
 //    Kathleen Biagas, Tue Aug 23 11:16:20 PDT 2016
@@ -129,9 +129,9 @@ avtBoundaryPlot::~avtBoundaryPlot()
         delete smooth;
         smooth = NULL;
     }
- 
+
     //
-    // Do not delete the levelsLegend since it is being held by levLegendRefPtr.    
+    // Do not delete the levelsLegend since it is being held by levLegendRefPtr.
     //
 }
 
@@ -174,10 +174,10 @@ avtBoundaryPlot::Create()
 //    Kathleen Bonnell, Mon Sep 29 13:15:20 PDT 2003
 //    Set AntialisedRenderOrder dependent upon wireframe mode.
 //
-//    Kathleen Bonnell, Thu Sep  2 11:44:09 PDT 2004 
-//    Ensure that specular properties aren't used in wireframe mode. 
+//    Kathleen Bonnell, Thu Sep  2 11:44:09 PDT 2004
+//    Ensure that specular properties aren't used in wireframe mode.
 //
-//    Kathleen Bonnell, Fri Nov 12 10:23:09 PST 2004 
+//    Kathleen Bonnell, Fri Nov 12 10:23:09 PST 2004
 //    Incorporate point controls (pointSize, pointType, pointSizeVar).
 //
 //    Brad Whitlock, Wed Jul 20 13:26:13 PST 2005
@@ -189,6 +189,9 @@ avtBoundaryPlot::Create()
 //
 //    Kathleen Biagas, Tue Dec 20 14:13:23 PST 2016
 //    Removed point controls.
+//
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
 //
 // ****************************************************************************
 
@@ -208,18 +211,23 @@ avtBoundaryPlot::SetAtts(const AttributeGroup *a)
         behavior->SetAntialiasedRenderOrder(DOES_NOT_MATTER);
         levelsMapper->SetSpecularIsInappropriate(false);
     }
-    else 
+    else
     {
         behavior->SetAntialiasedRenderOrder(ABSOLUTELY_LAST);
         levelsMapper->SetSpecularIsInappropriate(true);
     }
+
+    if(atts.GetCustomLegendTitleEnabled())
+        levelsLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        levelsLegend->SetTitle("Boundary");
 }
 
 
 // ****************************************************************************
 // Method: avtBoundaryPlot::SetColorTable
 //
-// Purpose: 
+// Purpose:
 //   Sets the plot's color table if the color table is the same as that of
 //   the plot or we are using the default color table for the plot.
 //
@@ -234,7 +242,7 @@ avtBoundaryPlot::SetAtts(const AttributeGroup *a)
 //  Note:  taken almost verbatim from the Subset plot
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 bool
@@ -380,7 +388,7 @@ avtBoundaryPlot::ApplyOperators(avtDataObject_p input)
 {
     // Set the amount of smoothing required
     smooth->SetSmoothingLevel(atts.GetSmoothingLevel());
-    
+
     if (atts.GetSmoothingLevel() > 0)
     {
         smooth->SetInput(input);
@@ -398,7 +406,7 @@ avtBoundaryPlot::ApplyOperators(avtDataObject_p input)
 //
 //  Purpose:
 //      Does the rendering transformation for a boundary plot, namely, the
-//      boundary, ghost-zone and facelist filters. 
+//      boundary, ghost-zone and facelist filters.
 //
 //  Arguments:
 //      input   The input data object.
@@ -436,7 +444,7 @@ avtBoundaryPlot::ApplyRenderingTransformation(avtDataObject_p input)
 //  Method: avtBoundaryPlot::CustomizeBehavior
 //
 //  Purpose:
-//      Customizes the behavior of the output.  Since we do not yet have a 
+//      Customizes the behavior of the output.  Since we do not yet have a
 //      levels mapper, this is only satisfying the requirement that the hook
 //      must be defined so the type can be concrete.
 //
@@ -506,11 +514,11 @@ avtBoundaryPlot::CustomizeBehavior(void)
 //
 // ****************************************************************************
 
-void 
+void
 avtBoundaryPlot::SetColors()
 {
     vector < string > allLabels = atts.GetBoundaryNames();
-    vector < string > labels; 
+    vector < string > labels;
     LevelColorMap levelColorMap;
 
     behavior->GetInfo().GetAttributes().GetLabels(labels);
@@ -519,7 +527,7 @@ avtBoundaryPlot::SetColors()
     {
         levelsLegend->SetColorBarVisibility(0);
         levelsLegend->SetMessage("No boundaries present");
-    }  
+    }
     else
     {
         levelsLegend->SetColorBarVisibility(1);
@@ -535,9 +543,9 @@ avtBoundaryPlot::SetColors()
 
         avtLUT->SetLUTColorsWithOpacity(ca.GetColor(), 1);
         levelsMapper->SetColors(cal, needsRecalculation);
-        // 
+        //
         //  Send an empty color map, rather than one where all
-        //  entries map to same value. 
+        //  entries map to same value.
         //
         levelsLegend->SetLabelColorMap(levelColorMap);
         levelsLegend->SetLevels(labels);
@@ -548,7 +556,7 @@ avtBoundaryPlot::SetColors()
         int numColors = cal.GetNumColors();
 
         //
-        //  Create colors from original color table. 
+        //  Create colors from original color table.
         //
         unsigned char *colors = new unsigned char[numColors * 4];
         unsigned char *cptr = colors;
@@ -562,7 +570,7 @@ avtBoundaryPlot::SetColors()
             *cptr++ = (unsigned char)cal[i].Alpha();
 
             //
-            //  Create a label-to-color-index mapping 
+            //  Create a label-to-color-index mapping
             //
             levelColorMap.insert(LevelColorMap::value_type(allLabels[i], i));
         }
@@ -675,12 +683,12 @@ avtBoundaryPlot::SetColors()
 //    This plot inherits from avtSurfaceDataPlot instead of avtVolumeDataPlot.
 //
 // ****************************************************************************
- 
+
 void
 avtBoundaryPlot::ReleaseData(void)
 {
     avtSurfaceDataPlot::ReleaseData();
- 
+
     if (wf != NULL)
     {
         wf->ReleaseData();
@@ -722,7 +730,7 @@ avtBoundaryPlot::ReleaseData(void)
 //    practice, but a different bug was causing a crash here.
 //
 // ****************************************************************************
- 
+
 void
 avtBoundaryPlot::SortLabels()
 {
@@ -739,7 +747,7 @@ avtBoundaryPlot::SortLabels()
         originalLabelPairs.push_back(pair<string, int>(originalLabels[i], (int)i));
     }
     sort(originalLabelPairs.begin(), originalLabelPairs.end());
-    
+
     vector < string > usedLabels;
     behavior->GetInfo().GetAttributes().GetLabels(usedLabels);
     sort(usedLabels.begin(), usedLabels.end());
@@ -757,7 +765,7 @@ avtBoundaryPlot::SortLabels()
             break;
 
         sortedUsedLabels.push_back(
-         pair<int, string>(originalLabelPairs[origLabelIndex].second, 
+         pair<int, string>(originalLabelPairs[origLabelIndex].second,
                            usedLabels[i]));
     }
 

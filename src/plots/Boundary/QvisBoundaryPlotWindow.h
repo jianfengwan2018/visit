@@ -20,7 +20,7 @@ class QvisOpacitySlider;
 // ****************************************************************************
 // Class: QvisBoundaryPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   This class is an observer window that watches boundary plot attributes
 //   and always represents their current state.
 //
@@ -44,6 +44,9 @@ class QvisOpacitySlider;
 //
 //   Kathleen Biagas, Tue Dec 20 14:11:42 PST 2016
 //   Remove point control and related slots, GetCurrentValues.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -71,6 +74,8 @@ protected:
 private slots:
     void lineWidthChanged(int newWidth);
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
     void wireframeToggled(bool val);
     void singleColorChanged(const QColor &color);
     void singleColorOpacityChanged(int opacity);
@@ -90,6 +95,8 @@ private:
     QvisLineWidthWidget    *lineWidth;
     QButtonGroup           *colorModeButtons;
     QCheckBox              *legendToggle;
+    QCheckBox              *customLegendTitleToggle;
+    QLineEdit              *customLegendTitle;
     QGroupBox              *boundaryColorGroup;
     QvisColorButton        *singleColor;
     QvisOpacitySlider      *singleColorOpacity;

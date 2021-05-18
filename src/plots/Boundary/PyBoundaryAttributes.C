@@ -74,6 +74,13 @@ PyBoundaryAttributes_ToString(const BoundaryAttributes *atts, const char *prefix
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     snprintf(tmpStr, 1000, "%slineWidth = %d\n", prefix, atts->GetLineWidth());
     str += tmpStr;
     const unsigned char *singleColor = atts->GetSingleColor().GetColor();
@@ -228,6 +235,54 @@ BoundaryAttributes_GetLegendFlag(PyObject *self, PyObject *args)
 {
     BoundaryAttributesObject *obj = (BoundaryAttributesObject *)self;
     PyObject *retval = PyInt_FromLong(obj->data->GetLegendFlag()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+BoundaryAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    BoundaryAttributesObject *obj = (BoundaryAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+BoundaryAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    BoundaryAttributesObject *obj = (BoundaryAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+BoundaryAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    BoundaryAttributesObject *obj = (BoundaryAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+BoundaryAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    BoundaryAttributesObject *obj = (BoundaryAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
     return retval;
 }
 
@@ -683,6 +738,10 @@ PyMethodDef PyBoundaryAttributes_methods[BOUNDARYATTRIBUTES_NMETH] = {
     {"GetInvertColorTable", BoundaryAttributes_GetInvertColorTable, METH_VARARGS},
     {"SetLegendFlag", BoundaryAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", BoundaryAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", BoundaryAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", BoundaryAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", BoundaryAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", BoundaryAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetLineWidth", BoundaryAttributes_SetLineWidth, METH_VARARGS},
     {"GetLineWidth", BoundaryAttributes_GetLineWidth, METH_VARARGS},
     {"SetSingleColor", BoundaryAttributes_SetSingleColor, METH_VARARGS},
@@ -733,6 +792,10 @@ PyBoundaryAttributes_getattr(PyObject *self, char *name)
         return BoundaryAttributes_GetInvertColorTable(self, NULL);
     if(strcmp(name, "legendFlag") == 0)
         return BoundaryAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return BoundaryAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return BoundaryAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "lineWidth") == 0)
         return BoundaryAttributes_GetLineWidth(self, NULL);
     if(strcmp(name, "singleColor") == 0)
@@ -899,6 +962,10 @@ PyBoundaryAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = BoundaryAttributes_SetInvertColorTable(self, tuple);
     else if(strcmp(name, "legendFlag") == 0)
         obj = BoundaryAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = BoundaryAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = BoundaryAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "lineWidth") == 0)
         obj = BoundaryAttributes_SetLineWidth(self, tuple);
     else if(strcmp(name, "singleColor") == 0)
