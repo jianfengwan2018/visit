@@ -160,6 +160,11 @@
       <Field name="legendFlag" label="Legend" type="bool">
         true
       </Field>
+      <Field name="customLegendTitleEnabled" label="customLegendTitleEnabled" type="bool" enabler="legendFlag:true">
+        false
+      </Field>
+      <Field name="customLegendTitle" label="customLegendTitle" type="string" enabler="customLegendTitleEnabled:true">
+      </Field>
       <Function name="ChangesRequireRecalculation" user="true" member="true">
       </Function>
       <Function name="ScatterGUIPluginInfo::CreatePluginWizard" user="false" member="true">

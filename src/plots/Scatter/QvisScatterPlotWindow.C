@@ -35,7 +35,7 @@ const char *QvisScatterPlotWindow::roleNames[5] = {
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::QvisScatterPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor
 //
 // Programmer: Brad Whitlock
@@ -62,7 +62,7 @@ QvisScatterPlotWindow::QvisScatterPlotWindow(const int type,
     var3Scaling = 0;
     var4Scaling = 0;
 
-    haveColorRole = (atts->GetVar1Role() == 3 || atts->GetVar2Role() == 3 || 
+    haveColorRole = (atts->GetVar1Role() == 3 || atts->GetVar2Role() == 3 ||
                      atts->GetVar3Role() == 3 || atts->GetVar4Role() == 3);
 }
 
@@ -70,7 +70,7 @@ QvisScatterPlotWindow::QvisScatterPlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::~QvisScatterPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor
 //
 // Programmer: Brad Whitlock
@@ -94,7 +94,7 @@ QvisScatterPlotWindow::~QvisScatterPlotWindow()
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   Creates the widgets for the window.
 //
 // Programmer: Brad Whitlock
@@ -128,6 +128,9 @@ QvisScatterPlotWindow::~QvisScatterPlotWindow()
 //   Kathleen Biagas, Tue Sep 20 16:32:25 PDT 2016
 //   Use QvisPointControl for point type/size controls.
 //
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
+//
 // ****************************************************************************
 
 void
@@ -137,7 +140,7 @@ QvisScatterPlotWindow::CreateWindowContents()
 
     //
     // Create a tab widget so we can split up inputs and appearance.
-    // 
+    //
     QTabWidget *topTab = new QTabWidget(central);
     topLayout->addWidget(topTab);
 
@@ -203,7 +206,7 @@ QvisScatterPlotWindow::CreateWindowContents()
     // Create the scale radio buttons
     //
     dataLayout->addWidget( new QLabel(tr("Scale"), central), 0, 0);
-    
+
     // Create the radio buttons
     var1Scaling = new QButtonGroup(central);
 
@@ -222,7 +225,7 @@ QvisScatterPlotWindow::CreateWindowContents()
     connect(var1Scaling, SIGNAL(buttonClicked(int)),
             this, SLOT(var1ScalingChanged(int)));
 
-    // Create the skew factor line edit    
+    // Create the skew factor line edit
     var1SkewFactor = new QLineEdit(central);
     dataLayout->addWidget(var1SkewFactor, 0, 4);
     connect(var1SkewFactor, SIGNAL(returnPressed()),
@@ -244,7 +247,7 @@ QvisScatterPlotWindow::CreateWindowContents()
 //     limitsSelect->addItem(tr("Use Original Data"));
 //     limitsSelect->addItem(tr("Use Current Plot"));
 //     connect(limitsSelect, SIGNAL(activated(int)),
-//             this, SLOT(limitsSelectChanged(int))); 
+//             this, SLOT(limitsSelectChanged(int)));
 //     limitsLayout->addWidget(limitsSelect, 0, 1, 1, 2, Qt::AlignLeft);
 
     // Create the min toggle and line edit
@@ -254,7 +257,7 @@ QvisScatterPlotWindow::CreateWindowContents()
             this, SLOT(var1MinFlagChanged(bool)));
     var1Min = new QLineEdit(central);
     connect(var1Min, SIGNAL(returnPressed()),
-            this, SLOT(var1MinProcessText())); 
+            this, SLOT(var1MinProcessText()));
     limitsLayout->addWidget(var1Min, 1, 1);
 
     // Create the max toggle and line edit
@@ -264,7 +267,7 @@ QvisScatterPlotWindow::CreateWindowContents()
             this, SLOT(var1MaxFlagChanged(bool)));
     var1Max = new QLineEdit(central);
     connect(var1Max, SIGNAL(returnPressed()),
-            this, SLOT(var1MaxProcessText())); 
+            this, SLOT(var1MaxProcessText()));
     limitsLayout->addWidget(var1Max, 1, 3);
 
 
@@ -319,7 +322,7 @@ QvisScatterPlotWindow::CreateWindowContents()
     // Create the scale radio buttons
     //
     dataLayout->addWidget( new QLabel(tr("Scale"), central), 0, 0);
-    
+
     // Create the radio buttons
     var2Scaling = new QButtonGroup(central);
 
@@ -338,7 +341,7 @@ QvisScatterPlotWindow::CreateWindowContents()
     connect(var2Scaling, SIGNAL(buttonClicked(int)),
             this, SLOT(var2ScalingChanged(int)));
 
-    // Create the skew factor line edit    
+    // Create the skew factor line edit
     var2SkewFactor = new QLineEdit(central);
     dataLayout->addWidget(var2SkewFactor, 0, 4);
     connect(var2SkewFactor, SIGNAL(returnPressed()),
@@ -360,7 +363,7 @@ QvisScatterPlotWindow::CreateWindowContents()
 //     limitsSelect->addItem(tr("Use Original Data"));
 //     limitsSelect->addItem(tr("Use Current Plot"));
 //     connect(limitsSelect, SIGNAL(activated(int)),
-//             this, SLOT(limitsSelectChanged(int))); 
+//             this, SLOT(limitsSelectChanged(int)));
 //     limitsLayout->addWidget(limitsSelect, 0, 1, 1, 2, Qt::AlignLeft);
 
     // Create the min toggle and line edit
@@ -370,7 +373,7 @@ QvisScatterPlotWindow::CreateWindowContents()
             this, SLOT(var2MinFlagChanged(bool)));
     var2Min = new QLineEdit(central);
     connect(var2Min, SIGNAL(returnPressed()),
-            this, SLOT(var2MinProcessText())); 
+            this, SLOT(var2MinProcessText()));
     limitsLayout->addWidget(var2Min, 1, 1);
 
     // Create the max toggle and line edit
@@ -380,7 +383,7 @@ QvisScatterPlotWindow::CreateWindowContents()
             this, SLOT(var2MaxFlagChanged(bool)));
     var2Max = new QLineEdit(central);
     connect(var2Max, SIGNAL(returnPressed()),
-            this, SLOT(var2MaxProcessText())); 
+            this, SLOT(var2MaxProcessText()));
     limitsLayout->addWidget(var2Max, 1, 3);
 
 
@@ -436,7 +439,7 @@ QvisScatterPlotWindow::CreateWindowContents()
     // Create the scale radio buttons
     //
     dataLayout->addWidget( new QLabel(tr("Scale"), central), 0, 0);
-    
+
     // Create the radio buttons
     var3Scaling = new QButtonGroup(central);
 
@@ -455,7 +458,7 @@ QvisScatterPlotWindow::CreateWindowContents()
     connect(var3Scaling, SIGNAL(buttonClicked(int)),
             this, SLOT(var3ScalingChanged(int)));
 
-    // Create the skew factor line edit    
+    // Create the skew factor line edit
     var3SkewFactor = new QLineEdit(central);
     dataLayout->addWidget(var3SkewFactor, 0, 4);
     connect(var3SkewFactor, SIGNAL(returnPressed()),
@@ -477,7 +480,7 @@ QvisScatterPlotWindow::CreateWindowContents()
 //     limitsSelect->addItem(tr("Use Original Data"));
 //     limitsSelect->addItem(tr("Use Current Plot"));
 //     connect(limitsSelect, SIGNAL(activated(int)),
-//             this, SLOT(limitsSelectChanged(int))); 
+//             this, SLOT(limitsSelectChanged(int)));
 //     limitsLayout->addWidget(limitsSelect, 0, 1, 1, 2, Qt::AlignLeft);
 
     // Create the min toggle and line edit
@@ -487,7 +490,7 @@ QvisScatterPlotWindow::CreateWindowContents()
             this, SLOT(var3MinFlagChanged(bool)));
     var3Min = new QLineEdit(central);
     connect(var3Min, SIGNAL(returnPressed()),
-            this, SLOT(var3MinProcessText())); 
+            this, SLOT(var3MinProcessText()));
     limitsLayout->addWidget(var3Min, 1, 1);
 
     // Create the max toggle and line edit
@@ -497,7 +500,7 @@ QvisScatterPlotWindow::CreateWindowContents()
             this, SLOT(var3MaxFlagChanged(bool)));
     var3Max = new QLineEdit(central);
     connect(var3Max, SIGNAL(returnPressed()),
-            this, SLOT(var3MaxProcessText())); 
+            this, SLOT(var3MaxProcessText()));
     limitsLayout->addWidget(var3Max, 1, 3);
 
 
@@ -554,7 +557,7 @@ QvisScatterPlotWindow::CreateWindowContents()
     // Create the scale radio buttons
     //
     dataLayout->addWidget( new QLabel(tr("Scale"), central), 0, 0);
-    
+
     // Create the radio buttons
     var4Scaling = new QButtonGroup(central);
 
@@ -573,7 +576,7 @@ QvisScatterPlotWindow::CreateWindowContents()
     connect(var4Scaling, SIGNAL(buttonClicked(int)),
             this, SLOT(var4ScalingChanged(int)));
 
-    // Create the skew factor line edit    
+    // Create the skew factor line edit
     var4SkewFactor = new QLineEdit(central);
     dataLayout->addWidget(var4SkewFactor, 0, 4);
     connect(var4SkewFactor, SIGNAL(returnPressed()),
@@ -595,7 +598,7 @@ QvisScatterPlotWindow::CreateWindowContents()
 //     limitsSelect->addItem(tr("Use Original Data"));
 //     limitsSelect->addItem(tr("Use Current Plot"));
 //     connect(limitsSelect, SIGNAL(activated(int)),
-//             this, SLOT(limitsSelectChanged(int))); 
+//             this, SLOT(limitsSelectChanged(int)));
 //     limitsLayout->addWidget(limitsSelect, 0, 1, 1, 2, Qt::AlignLeft);
 
     // Create the min toggle and line edit
@@ -605,7 +608,7 @@ QvisScatterPlotWindow::CreateWindowContents()
             this, SLOT(var4MinFlagChanged(bool)));
     var4Min = new QLineEdit(central);
     connect(var4Min, SIGNAL(returnPressed()),
-            this, SLOT(var4MinProcessText())); 
+            this, SLOT(var4MinProcessText()));
     limitsLayout->addWidget(var4Min, 1, 1);
 
     // Create the max toggle and line edit
@@ -615,7 +618,7 @@ QvisScatterPlotWindow::CreateWindowContents()
             this, SLOT(var4MaxFlagChanged(bool)));
     var4Max = new QLineEdit(central);
     connect(var4Max, SIGNAL(returnPressed()),
-            this, SLOT(var4MaxProcessText())); 
+            this, SLOT(var4MaxProcessText()));
     limitsLayout->addWidget(var4Max, 1, 3);
 
 
@@ -641,7 +644,7 @@ QvisScatterPlotWindow::CreateWindowContents()
     QGridLayout *scalingLayout = new QGridLayout(scalingGroup);
     scalingLayout->setMargin(5);
     scalingLayout->setSpacing(10);
- 
+
     scaleCube = new QCheckBox(tr("Normalize the axes to a cube"), appearanceGroup);
     connect(scaleCube, SIGNAL(toggled(bool)),
             this, SLOT(scaleCubeChanged(bool)));
@@ -739,19 +742,31 @@ QvisScatterPlotWindow::CreateWindowContents()
     QGridLayout *miscLayout = new QGridLayout(miscGroup);
     miscLayout->setMargin(5);
     miscLayout->setSpacing(10);
- 
+
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Legend"), miscGroup);
     connect(legendToggle, SIGNAL(toggled(bool)),
             this, SLOT(legendToggled(bool)));
     miscLayout->addWidget(legendToggle, 0, 0);
+
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   Updates the widgets in the window when the subject changes.
 //
 // Programmer: Brad Whitlock
@@ -778,6 +793,9 @@ QvisScatterPlotWindow::CreateWindowContents()
 //
 //   Kathleen Biagas, Tue Sep 20 16:32:25 PDT 2016
 //   Use QvisPointControl for point type/size controls.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -988,13 +1006,13 @@ QvisScatterPlotWindow::UpdateWindow(bool doAll)
             break;
         case ScatterAttributes::ID_colorType:
           if( atts->GetColorType() ==
-              ScatterAttributes::ColorByForegroundColor) 
+              ScatterAttributes::ColorByForegroundColor)
             colorModeButtons->button(0)->setChecked(true);
           else if( atts->GetColorType() ==
-                  ScatterAttributes::ColorBySingleColor) 
+                  ScatterAttributes::ColorBySingleColor)
             colorModeButtons->button(1)->setChecked(true);
           else if( atts->GetColorType() ==
-                  ScatterAttributes::ColorByColorTable) 
+                  ScatterAttributes::ColorByColorTable)
             colorModeButtons->button(2)->setChecked(true);
 
           singleColor->setEnabled(atts->GetColorType() ==
@@ -1018,7 +1036,22 @@ QvisScatterPlotWindow::UpdateWindow(bool doAll)
         case ScatterAttributes::ID_legendFlag:
             legendToggle->blockSignals(true);
             legendToggle->setChecked(atts->GetLegendFlag());
+            customLegendTitleToggle->setEnabled(atts->GetLegendFlag());
+            customLegendTitle->setEnabled(atts->GetLegendFlag() &&
+                                    atts->GetCustomLegendTitleEnabled());
             legendToggle->blockSignals(false);
+            break;
+        case ScatterAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(atts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(atts->GetLegendFlag() &&
+                                    atts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+        case ScatterAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(atts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
             break;
         }
     }
@@ -1029,7 +1062,7 @@ QvisScatterPlotWindow::UpdateWindow(bool doAll)
     //
     if(rolesChanged || varsChanged)
     {
-        QLabel *roleLabels[] = { xCoordRoleLabel, yCoordRoleLabel, 
+        QLabel *roleLabels[] = { xCoordRoleLabel, yCoordRoleLabel,
                                  zCoordRoleLabel, colorRoleLabel, 0 };
 
         for(int role = 0; role < 4; ++role)
@@ -1053,7 +1086,7 @@ QvisScatterPlotWindow::UpdateWindow(bool doAll)
             {
                 QString var(roleVar);
 
-                // If there's a slash, take the variable name to the 
+                // If there's a slash, take the variable name to the
                 // right of the slash.
                 int index = var.lastIndexOf("/");
                 bool tip = false;
@@ -1085,11 +1118,11 @@ QvisScatterPlotWindow::UpdateWindow(bool doAll)
 
         // Look for a state change
         if( haveColorRole !=
-            (atts->GetVar1Role() == 3 || atts->GetVar2Role() == 3 || 
+            (atts->GetVar1Role() == 3 || atts->GetVar2Role() == 3 ||
              atts->GetVar3Role() == 3 || atts->GetVar4Role() == 3) )
         {
           haveColorRole = (atts->GetVar1Role() == 3 ||
-                           atts->GetVar2Role() == 3 || 
+                           atts->GetVar2Role() == 3 ||
                            atts->GetVar3Role() == 3 ||
                            atts->GetVar4Role() == 3);
 
@@ -1102,7 +1135,7 @@ QvisScatterPlotWindow::UpdateWindow(bool doAll)
             colorModeButtons->blockSignals(false);
             colorModeChanged(2);
           }
-        
+
           // If no color role turn off the color by table
           else if( !haveColorRole &&
                    atts->GetColorType() == ScatterAttributes::ColorByColorTable )
@@ -1120,7 +1153,7 @@ QvisScatterPlotWindow::UpdateWindow(bool doAll)
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets values from certain widgets and stores them in the subject.
 //
 // Programmer: Brad Whitlock
@@ -1326,14 +1359,14 @@ QvisScatterPlotWindow::GetCurrentValues(int which_widget)
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::Apply
 //
-// Purpose: 
+// Purpose:
 //   Called to apply changes in the subject.
 //
 // Programmer: Brad Whitlock
 // Creation:   Fri Nov 19 14:32:22 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1353,7 +1386,7 @@ QvisScatterPlotWindow::Apply(bool ignore)
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::EnsureUniqueRole
 //
-// Purpose: 
+// Purpose:
 //   Ensures that only a single input has a given variable role.
 //
 // Programmer: Brad Whitlock
@@ -1416,14 +1449,14 @@ QvisScatterPlotWindow::EnsureUniqueRole(int mask, int val, const char *var)
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::apply
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when apply button is clicked.
 //
 // Programmer: Brad Whitlock
 // Creation:   Fri Nov 19 14:32:22 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1436,14 +1469,14 @@ QvisScatterPlotWindow::apply()
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::makeDefault
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when "Make default" button is clicked.
 //
 // Programmer: Brad Whitlock
 // Creation:   Fri Nov 19 14:32:22 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1458,14 +1491,14 @@ QvisScatterPlotWindow::makeDefault()
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::reset
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when reset button is clicked.
 //
 // Programmer: Brad Whitlock
 // Creation:   Fri Nov 19 14:32:22 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1769,7 +1802,7 @@ QvisScatterPlotWindow::pointSizePixelsChanged(int size)
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::pointTypeChanged
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that is called when the point type widget
 //   is clicked.
 //
@@ -1831,7 +1864,7 @@ QvisScatterPlotWindow::colorTableNameChanged(bool useDefault, const QString &ctN
 // ****************************************************************************
 // Method: QvisScatterPlotWindow::invertColorTableToggled
 //
-// Purpose: 
+// Purpose:
 //   This is a Qt slot function that sets the invert color table flag into the
 //   scatter plot attributes.
 //
@@ -1842,7 +1875,7 @@ QvisScatterPlotWindow::colorTableNameChanged(bool useDefault, const QString &ctN
 // Creation:   January  17, 2011
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -1868,4 +1901,22 @@ QvisScatterPlotWindow::legendToggled(bool val)
     atts->SetLegendFlag(val);
     SetUpdate(false);
     Apply();
+}
+
+void
+QvisScatterPlotWindow::customLegendTitleToggled(bool val)
+{
+    atts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+void
+QvisScatterPlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != atts->GetCustomLegendTitle())
+    {
+        atts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
 }

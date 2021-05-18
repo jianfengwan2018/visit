@@ -26,7 +26,7 @@ import llnl.visit.ColorAttribute;
 
 public class ScatterAttributes extends AttributeSubject implements Plugin
 {
-    private static int ScatterAttributes_numAdditionalAtts = 41;
+    private static int ScatterAttributes_numAdditionalAtts = 43;
 
     // Enum values
     public final static int SCALING_LINEAR = 0;
@@ -89,6 +89,8 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
         colorTableName = new String("Default");
         invertColorTable = false;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
     }
 
     public ScatterAttributes(int nMoreFields)
@@ -136,6 +138,8 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
         colorTableName = new String("Default");
         invertColorTable = false;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
     }
 
     public ScatterAttributes(ScatterAttributes obj)
@@ -183,6 +187,8 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
         colorTableName = new String(obj.colorTableName);
         invertColorTable = obj.invertColorTable;
         legendFlag = obj.legendFlag;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
 
         SelectAll();
     }
@@ -240,7 +246,9 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
                 (singleColor == obj.singleColor) &&
                 (colorTableName.equals(obj.colorTableName)) &&
                 (invertColorTable == obj.invertColorTable) &&
-                (legendFlag == obj.legendFlag));
+                (legendFlag == obj.legendFlag) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)));
     }
 
     public String GetName() { return "Scatter"; }
@@ -493,6 +501,18 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
         Select(40);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(41);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(42);
+    }
+
     // Property getting methods
     public String         GetVar1() { return var1; }
     public int            GetVar1Role() { return var1Role; }
@@ -535,6 +555,8 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
     public String         GetColorTableName() { return colorTableName; }
     public boolean        GetInvertColorTable() { return invertColorTable; }
     public boolean        GetLegendFlag() { return legendFlag; }
+    public boolean        GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String         GetCustomLegendTitle() { return customLegendTitle; }
 
     // Write and read methods.
     public void WriteAtts(CommunicationBuffer buf)
@@ -621,6 +643,10 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
             buf.WriteBool(invertColorTable);
         if(WriteSelect(40, buf))
             buf.WriteBool(legendFlag);
+        if(WriteSelect(41, buf))
+            buf.WriteBool(customLegendTitleEnabled);
+        if(WriteSelect(42, buf))
+            buf.WriteString(customLegendTitle);
     }
 
     public void ReadAtts(int index, CommunicationBuffer buf)
@@ -751,6 +777,12 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
         case 40:
             SetLegendFlag(buf.ReadBool());
             break;
+        case 41:
+            SetCustomLegendTitleEnabled(buf.ReadBool());
+            break;
+        case 42:
+            SetCustomLegendTitle(buf.ReadString());
+            break;
         }
     }
 
@@ -877,6 +909,8 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
         str = str + stringToString("colorTableName", colorTableName, indent) + "\n";
         str = str + boolToString("invertColorTable", invertColorTable, indent) + "\n";
         str = str + boolToString("legendFlag", legendFlag, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         return str;
     }
 
@@ -923,5 +957,7 @@ public class ScatterAttributes extends AttributeSubject implements Plugin
     private String         colorTableName;
     private boolean        invertColorTable;
     private boolean        legendFlag;
+    private boolean        customLegendTitleEnabled;
+    private String         customLegendTitle;
 }
 

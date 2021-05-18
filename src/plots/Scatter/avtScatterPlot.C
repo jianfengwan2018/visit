@@ -365,6 +365,9 @@ avtScatterPlot::GetColorInformation(std::string &colorString,
 //    Brad Whitlock, Mon Jan  7 17:00:39 PST 2013
 //    I added some new glyph types.
 //
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
+//
 // ****************************************************************************
 
 void
@@ -428,6 +431,11 @@ avtScatterPlot::SetAtts(const AttributeGroup *a)
     SetScaling(mode, skew);
     SetLimitsMode();
     SetPointGlyphSize();
+
+    if(atts.GetCustomLegendTitleEnabled())
+        varLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        varLegend->SetTitle("Scatter");
 }
 
 
@@ -1031,7 +1039,7 @@ avtScatterPlot::GetExtraInfoForPick()
 //    Returns whether or not this plot has had point glyphs applied.
 //
 //  Programmer: Kathleen Biagas
-//  Creation:   October 31, 2019 
+//  Creation:   October 31, 2019
 //
 // ****************************************************************************
 

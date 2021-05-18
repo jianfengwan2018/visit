@@ -382,6 +382,13 @@ PyScatterAttributes_ToString(const ScatterAttributes *atts, const char *prefix)
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     return str;
 }
 
@@ -1527,6 +1534,54 @@ ScatterAttributes_GetLegendFlag(PyObject *self, PyObject *args)
     return retval;
 }
 
+/*static*/ PyObject *
+ScatterAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    ScatterAttributesObject *obj = (ScatterAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+ScatterAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    ScatterAttributesObject *obj = (ScatterAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+ScatterAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    ScatterAttributesObject *obj = (ScatterAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+ScatterAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    ScatterAttributesObject *obj = (ScatterAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
+    return retval;
+}
+
 
 
 PyMethodDef PyScatterAttributes_methods[SCATTERATTRIBUTES_NMETH] = {
@@ -1613,6 +1668,10 @@ PyMethodDef PyScatterAttributes_methods[SCATTERATTRIBUTES_NMETH] = {
     {"GetInvertColorTable", ScatterAttributes_GetInvertColorTable, METH_VARARGS},
     {"SetLegendFlag", ScatterAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", ScatterAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", ScatterAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", ScatterAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", ScatterAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", ScatterAttributes_GetCustomLegendTitle, METH_VARARGS},
     {NULL, NULL}
 };
 
@@ -1820,6 +1879,10 @@ PyScatterAttributes_getattr(PyObject *self, char *name)
         return ScatterAttributes_GetInvertColorTable(self, NULL);
     if(strcmp(name, "legendFlag") == 0)
         return ScatterAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return ScatterAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return ScatterAttributes_GetCustomLegendTitle(self, NULL);
 
     // try to handle old attributes
     if(strcmp(name, "foregroundFlag") == 0)
@@ -1930,6 +1993,10 @@ PyScatterAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = ScatterAttributes_SetInvertColorTable(self, tuple);
     else if(strcmp(name, "legendFlag") == 0)
         obj = ScatterAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = ScatterAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = ScatterAttributes_SetCustomLegendTitle(self, tuple);
 
 
     // try to handle old attributes

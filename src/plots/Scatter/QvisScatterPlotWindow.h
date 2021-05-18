@@ -47,6 +47,9 @@ class QvisVariableButton;
 //   Kathleen Biagas, Tue Sep 20 16:30:47 PDT 2016
 //   Use QvisPointControl, for consistency.
 //
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
+//
 // ****************************************************************************
 
 class QvisScatterPlotWindow : public QvisPostableWindowObserver
@@ -113,6 +116,8 @@ private slots:
     void invertColorTableToggled(bool val);
     void singleColorChanged(const QColor &color);
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
 private:
     int plotType;
     bool haveColorRole;
@@ -166,6 +171,8 @@ private:
     QvisColorButton *singleColor;
     QvisColorTableWidget *colorTableWidget;
     QCheckBox *legendToggle;
+    QCheckBox *customLegendTitleToggle;
+    QLineEdit *customLegendTitle;
 
     QLabel *var1ScalingLabel;
 

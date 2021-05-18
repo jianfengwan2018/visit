@@ -80,6 +80,7 @@ public:
     void SelectVar4();
     void SelectSingleColor();
     void SelectColorTableName();
+    void SelectCustomLegendTitle();
 
     // Property setting methods
     void SetVar1(const std::string &var1_);
@@ -123,6 +124,8 @@ public:
     void SetColorTableName(const std::string &colorTableName_);
     void SetInvertColorTable(bool invertColorTable_);
     void SetLegendFlag(bool legendFlag_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
 
     // Property getting methods
     const std::string    &GetVar1() const;
@@ -172,6 +175,9 @@ public:
           std::string    &GetColorTableName();
     bool                 GetInvertColorTable() const;
     bool                 GetLegendFlag() const;
+    bool                 GetCustomLegendTitleEnabled() const;
+    const std::string    &GetCustomLegendTitle() const;
+          std::string    &GetCustomLegendTitle();
 
     // Persistence methods
     virtual bool CreateNode(DataNode *node, bool completeSave, bool forceAdd);
@@ -246,6 +252,8 @@ public:
         ID_colorTableName,
         ID_invertColorTable,
         ID_legendFlag,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID__LAST
     };
 
@@ -291,11 +299,13 @@ private:
     std::string    colorTableName;
     bool           invertColorTable;
     bool           legendFlag;
+    bool           customLegendTitleEnabled;
+    std::string    customLegendTitle;
 
     // Static class format string for type map.
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define SCATTERATTRIBUTES_TMFS "sibbddidisbbddidisbbddidisbbddiddiibiasbb"
+#define SCATTERATTRIBUTES_TMFS "sibbddidisbbddidisbbddidisbbddiddiibiasbbbs"
 
 #endif
