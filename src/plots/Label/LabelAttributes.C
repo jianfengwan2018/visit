@@ -254,6 +254,7 @@ void LabelAttributes::Init()
 {
     varType = LABEL_VT_UNKNOWN_TYPE;
     legendFlag = true;
+    customLegendTitleEnabled = false;
     showNodes = false;
     showCells = true;
     restrictNumberOfLabels = true;
@@ -291,6 +292,8 @@ void LabelAttributes::Copy(const LabelAttributes &obj)
 {
     varType = obj.varType;
     legendFlag = obj.legendFlag;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     showNodes = obj.showNodes;
     showCells = obj.showCells;
     restrictNumberOfLabels = obj.restrictNumberOfLabels;
@@ -462,6 +465,8 @@ LabelAttributes::operator == (const LabelAttributes &obj) const
     // Create the return value
     return (true /* can ignore varType */ &&
             (legendFlag == obj.legendFlag) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (showNodes == obj.showNodes) &&
             (showCells == obj.showCells) &&
             (restrictNumberOfLabels == obj.restrictNumberOfLabels) &&
@@ -617,20 +622,22 @@ LabelAttributes::NewInstance(bool copy) const
 void
 LabelAttributes::SelectAll()
 {
-    Select(ID_varType,                 (void *)&varType);
-    Select(ID_legendFlag,              (void *)&legendFlag);
-    Select(ID_showNodes,               (void *)&showNodes);
-    Select(ID_showCells,               (void *)&showCells);
-    Select(ID_restrictNumberOfLabels,  (void *)&restrictNumberOfLabels);
-    Select(ID_drawLabelsFacing,        (void *)&drawLabelsFacing);
-    Select(ID_labelDisplayFormat,      (void *)&labelDisplayFormat);
-    Select(ID_numberOfLabels,          (void *)&numberOfLabels);
-    Select(ID_textFont1,               (void *)&textFont1);
-    Select(ID_textFont2,               (void *)&textFont2);
-    Select(ID_horizontalJustification, (void *)&horizontalJustification);
-    Select(ID_verticalJustification,   (void *)&verticalJustification);
-    Select(ID_depthTestMode,           (void *)&depthTestMode);
-    Select(ID_formatTemplate,          (void *)&formatTemplate);
+    Select(ID_varType,                  (void *)&varType);
+    Select(ID_legendFlag,               (void *)&legendFlag);
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,        (void *)&customLegendTitle);
+    Select(ID_showNodes,                (void *)&showNodes);
+    Select(ID_showCells,                (void *)&showCells);
+    Select(ID_restrictNumberOfLabels,   (void *)&restrictNumberOfLabels);
+    Select(ID_drawLabelsFacing,         (void *)&drawLabelsFacing);
+    Select(ID_labelDisplayFormat,       (void *)&labelDisplayFormat);
+    Select(ID_numberOfLabels,           (void *)&numberOfLabels);
+    Select(ID_textFont1,                (void *)&textFont1);
+    Select(ID_textFont2,                (void *)&textFont2);
+    Select(ID_horizontalJustification,  (void *)&horizontalJustification);
+    Select(ID_verticalJustification,    (void *)&verticalJustification);
+    Select(ID_depthTestMode,            (void *)&depthTestMode);
+    Select(ID_formatTemplate,           (void *)&formatTemplate);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -673,6 +680,18 @@ LabelAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool forceA
     {
         addToParent = true;
         node->AddNode(new DataNode("legendFlag", legendFlag));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
     }
 
     if(completeSave || !FieldsEqual(ID_showNodes, &defaultObject))
@@ -813,6 +832,10 @@ LabelAttributes::SetFromNode(DataNode *parentNode)
     }
     if((node = searchNode->GetNode("legendFlag")) != 0)
         SetLegendFlag(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("showNodes")) != 0)
         SetShowNodes(node->AsBool());
     if((node = searchNode->GetNode("showCells")) != 0)
@@ -928,6 +951,20 @@ LabelAttributes::SetLegendFlag(bool legendFlag_)
 }
 
 void
+LabelAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+LabelAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 LabelAttributes::SetShowNodes(bool showNodes_)
 {
     showNodes = showNodes_;
@@ -1028,6 +1065,24 @@ LabelAttributes::GetLegendFlag() const
 }
 
 bool
+LabelAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+LabelAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+LabelAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
+bool
 LabelAttributes::GetShowNodes() const
 {
     return showNodes;
@@ -1122,6 +1177,12 @@ LabelAttributes::GetFormatTemplate()
 ///////////////////////////////////////////////////////////////////////////////
 
 void
+LabelAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 LabelAttributes::SelectTextFont1()
 {
     Select(ID_textFont1, (void *)&textFont1);
@@ -1163,20 +1224,22 @@ LabelAttributes::GetFieldName(int index) const
 {
     switch (index)
     {
-    case ID_varType:                 return "varType";
-    case ID_legendFlag:              return "legendFlag";
-    case ID_showNodes:               return "showNodes";
-    case ID_showCells:               return "showCells";
-    case ID_restrictNumberOfLabels:  return "restrictNumberOfLabels";
-    case ID_drawLabelsFacing:        return "drawLabelsFacing";
-    case ID_labelDisplayFormat:      return "labelDisplayFormat";
-    case ID_numberOfLabels:          return "numberOfLabels";
-    case ID_textFont1:               return "textFont1";
-    case ID_textFont2:               return "textFont2";
-    case ID_horizontalJustification: return "horizontalJustification";
-    case ID_verticalJustification:   return "verticalJustification";
-    case ID_depthTestMode:           return "depthTestMode";
-    case ID_formatTemplate:          return "formatTemplate";
+    case ID_varType:                  return "varType";
+    case ID_legendFlag:               return "legendFlag";
+    case ID_customLegendTitleEnabled: return "customLegendTitleEnabled";
+    case ID_customLegendTitle:        return "customLegendTitle";
+    case ID_showNodes:                return "showNodes";
+    case ID_showCells:                return "showCells";
+    case ID_restrictNumberOfLabels:   return "restrictNumberOfLabels";
+    case ID_drawLabelsFacing:         return "drawLabelsFacing";
+    case ID_labelDisplayFormat:       return "labelDisplayFormat";
+    case ID_numberOfLabels:           return "numberOfLabels";
+    case ID_textFont1:                return "textFont1";
+    case ID_textFont2:                return "textFont2";
+    case ID_horizontalJustification:  return "horizontalJustification";
+    case ID_verticalJustification:    return "verticalJustification";
+    case ID_depthTestMode:            return "depthTestMode";
+    case ID_formatTemplate:           return "formatTemplate";
     default:  return "invalid index";
     }
 }
@@ -1201,20 +1264,22 @@ LabelAttributes::GetFieldType(int index) const
 {
     switch (index)
     {
-    case ID_varType:                 return FieldType_enum;
-    case ID_legendFlag:              return FieldType_bool;
-    case ID_showNodes:               return FieldType_bool;
-    case ID_showCells:               return FieldType_bool;
-    case ID_restrictNumberOfLabels:  return FieldType_bool;
-    case ID_drawLabelsFacing:        return FieldType_enum;
-    case ID_labelDisplayFormat:      return FieldType_enum;
-    case ID_numberOfLabels:          return FieldType_int;
-    case ID_textFont1:               return FieldType_att;
-    case ID_textFont2:               return FieldType_att;
-    case ID_horizontalJustification: return FieldType_enum;
-    case ID_verticalJustification:   return FieldType_enum;
-    case ID_depthTestMode:           return FieldType_enum;
-    case ID_formatTemplate:          return FieldType_string;
+    case ID_varType:                  return FieldType_enum;
+    case ID_legendFlag:               return FieldType_bool;
+    case ID_customLegendTitleEnabled: return FieldType_bool;
+    case ID_customLegendTitle:        return FieldType_string;
+    case ID_showNodes:                return FieldType_bool;
+    case ID_showCells:                return FieldType_bool;
+    case ID_restrictNumberOfLabels:   return FieldType_bool;
+    case ID_drawLabelsFacing:         return FieldType_enum;
+    case ID_labelDisplayFormat:       return FieldType_enum;
+    case ID_numberOfLabels:           return FieldType_int;
+    case ID_textFont1:                return FieldType_att;
+    case ID_textFont2:                return FieldType_att;
+    case ID_horizontalJustification:  return FieldType_enum;
+    case ID_verticalJustification:    return FieldType_enum;
+    case ID_depthTestMode:            return FieldType_enum;
+    case ID_formatTemplate:           return FieldType_string;
     default:  return FieldType_unknown;
     }
 }
@@ -1239,20 +1304,22 @@ LabelAttributes::GetFieldTypeName(int index) const
 {
     switch (index)
     {
-    case ID_varType:                 return "enum";
-    case ID_legendFlag:              return "bool";
-    case ID_showNodes:               return "bool";
-    case ID_showCells:               return "bool";
-    case ID_restrictNumberOfLabels:  return "bool";
-    case ID_drawLabelsFacing:        return "enum";
-    case ID_labelDisplayFormat:      return "enum";
-    case ID_numberOfLabels:          return "int";
-    case ID_textFont1:               return "att";
-    case ID_textFont2:               return "att";
-    case ID_horizontalJustification: return "enum";
-    case ID_verticalJustification:   return "enum";
-    case ID_depthTestMode:           return "enum";
-    case ID_formatTemplate:          return "string";
+    case ID_varType:                  return "enum";
+    case ID_legendFlag:               return "bool";
+    case ID_customLegendTitleEnabled: return "bool";
+    case ID_customLegendTitle:        return "string";
+    case ID_showNodes:                return "bool";
+    case ID_showCells:                return "bool";
+    case ID_restrictNumberOfLabels:   return "bool";
+    case ID_drawLabelsFacing:         return "enum";
+    case ID_labelDisplayFormat:       return "enum";
+    case ID_numberOfLabels:           return "int";
+    case ID_textFont1:                return "att";
+    case ID_textFont2:                return "att";
+    case ID_horizontalJustification:  return "enum";
+    case ID_verticalJustification:    return "enum";
+    case ID_depthTestMode:            return "enum";
+    case ID_formatTemplate:           return "string";
     default:  return "invalid index";
     }
 }
@@ -1287,6 +1354,16 @@ LabelAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_legendFlag:
         {  // new scope
         retval = (legendFlag == obj.legendFlag);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_showNodes:

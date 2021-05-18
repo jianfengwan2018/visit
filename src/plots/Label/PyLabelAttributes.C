@@ -49,6 +49,13 @@ PyLabelAttributes_ToString(const LabelAttributes *atts, const char *prefix)
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     if(atts->GetShowNodes())
         snprintf(tmpStr, 1000, "%sshowNodes = 1\n", prefix);
     else
@@ -206,6 +213,54 @@ LabelAttributes_GetLegendFlag(PyObject *self, PyObject *args)
 {
     LabelAttributesObject *obj = (LabelAttributesObject *)self;
     PyObject *retval = PyInt_FromLong(obj->data->GetLegendFlag()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+LabelAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    LabelAttributesObject *obj = (LabelAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+LabelAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    LabelAttributesObject *obj = (LabelAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+LabelAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    LabelAttributesObject *obj = (LabelAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+LabelAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    LabelAttributesObject *obj = (LabelAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
     return retval;
 }
 
@@ -572,6 +627,10 @@ PyMethodDef PyLabelAttributes_methods[LABELATTRIBUTES_NMETH] = {
     {"Notify", LabelAttributes_Notify, METH_VARARGS},
     {"SetLegendFlag", LabelAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", LabelAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", LabelAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", LabelAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", LabelAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", LabelAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetShowNodes", LabelAttributes_SetShowNodes, METH_VARARGS},
     {"GetShowNodes", LabelAttributes_GetShowNodes, METH_VARARGS},
     {"SetShowCells", LabelAttributes_SetShowCells, METH_VARARGS},
@@ -619,6 +678,10 @@ PyLabelAttributes_getattr(PyObject *self, char *name)
 {
     if(strcmp(name, "legendFlag") == 0)
         return LabelAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return LabelAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return LabelAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "showNodes") == 0)
         return LabelAttributes_GetShowNodes(self, NULL);
     if(strcmp(name, "showCells") == 0)
@@ -694,6 +757,10 @@ PyLabelAttributes_setattr(PyObject *self, char *name, PyObject *args)
 
     if(strcmp(name, "legendFlag") == 0)
         obj = LabelAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = LabelAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = LabelAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "showNodes") == 0)
         obj = LabelAttributes_SetShowNodes(self, tuple);
     else if(strcmp(name, "showCells") == 0)

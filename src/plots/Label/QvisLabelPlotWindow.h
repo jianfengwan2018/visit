@@ -24,7 +24,7 @@ class QvisFontAttributesWidget;
 // ****************************************************************************
 // Class: QvisLabelPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Defines QvisLabelPlotWindow class.
 //
 // Programmer: Brad Whitlock
@@ -41,6 +41,9 @@ class QvisFontAttributesWidget;
 //
 //   Hank Childs, Wed Oct 20 10:45:46 PDT 2010
 //   Change "Label height" to be a QDoubleSpinBox.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -80,6 +83,9 @@ private slots:
     void formatTemplateChanged();
 
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
+
 private:
     int              plotType;
     LabelAttributes *labelAtts;
@@ -108,6 +114,8 @@ private:
     QLineEdit       *formatTemplate;
 
     QCheckBox       *legendToggle;
+    QCheckBox       *customLegendTitleToggle;
+    QLineEdit       *customLegendTitle;
 };
 
 #endif

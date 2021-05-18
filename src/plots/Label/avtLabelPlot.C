@@ -566,6 +566,9 @@ avtLabelPlot::EnhanceSpecification(avtContract_p spec)
 //   I fixed a bug where I forgot to set the new attributes into the current
 //   attributes.
 //
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
+//
 // ****************************************************************************
 
 void
@@ -583,6 +586,11 @@ avtLabelPlot::SetAtts(const AttributeGroup *a)
 
     // Set whether the legend is on or off.
     SetLegend(atts.GetLegendFlag());
+
+    if(atts.GetCustomLegendTitleEnabled())
+        varLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        varLegend->SetTitle("Label");
 }
 
 // ****************************************************************************

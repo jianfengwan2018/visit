@@ -26,7 +26,7 @@ import llnl.visit.FontAttributes;
 
 public class LabelAttributes extends AttributeSubject implements Plugin
 {
-    private static int LabelAttributes_numAdditionalAtts = 14;
+    private static int LabelAttributes_numAdditionalAtts = 16;
 
     // Enum values
     public final static int LABELINDEXDISPLAY_NATURAL = 0;
@@ -67,6 +67,8 @@ public class LabelAttributes extends AttributeSubject implements Plugin
 
         varType = VARIABLETYPE_LABEL_VT_UNKNOWN_TYPE;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         showNodes = false;
         showCells = true;
         restrictNumberOfLabels = true;
@@ -87,6 +89,8 @@ public class LabelAttributes extends AttributeSubject implements Plugin
 
         varType = VARIABLETYPE_LABEL_VT_UNKNOWN_TYPE;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         showNodes = false;
         showCells = true;
         restrictNumberOfLabels = true;
@@ -107,6 +111,8 @@ public class LabelAttributes extends AttributeSubject implements Plugin
 
         varType = obj.varType;
         legendFlag = obj.legendFlag;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         showNodes = obj.showNodes;
         showCells = obj.showCells;
         restrictNumberOfLabels = obj.restrictNumberOfLabels;
@@ -138,6 +144,8 @@ public class LabelAttributes extends AttributeSubject implements Plugin
         // Create the return value
         return (true /* can ignore varType */ &&
                 (legendFlag == obj.legendFlag) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (showNodes == obj.showNodes) &&
                 (showCells == obj.showCells) &&
                 (restrictNumberOfLabels == obj.restrictNumberOfLabels) &&
@@ -168,81 +176,95 @@ public class LabelAttributes extends AttributeSubject implements Plugin
         Select(1);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(2);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(3);
+    }
+
     public void SetShowNodes(boolean showNodes_)
     {
         showNodes = showNodes_;
-        Select(2);
+        Select(4);
     }
 
     public void SetShowCells(boolean showCells_)
     {
         showCells = showCells_;
-        Select(3);
+        Select(5);
     }
 
     public void SetRestrictNumberOfLabels(boolean restrictNumberOfLabels_)
     {
         restrictNumberOfLabels = restrictNumberOfLabels_;
-        Select(4);
+        Select(6);
     }
 
     public void SetDrawLabelsFacing(int drawLabelsFacing_)
     {
         drawLabelsFacing = drawLabelsFacing_;
-        Select(5);
+        Select(7);
     }
 
     public void SetLabelDisplayFormat(int labelDisplayFormat_)
     {
         labelDisplayFormat = labelDisplayFormat_;
-        Select(6);
+        Select(8);
     }
 
     public void SetNumberOfLabels(int numberOfLabels_)
     {
         numberOfLabels = numberOfLabels_;
-        Select(7);
+        Select(9);
     }
 
     public void SetTextFont1(FontAttributes textFont1_)
     {
         textFont1 = textFont1_;
-        Select(8);
+        Select(10);
     }
 
     public void SetTextFont2(FontAttributes textFont2_)
     {
         textFont2 = textFont2_;
-        Select(9);
+        Select(11);
     }
 
     public void SetHorizontalJustification(int horizontalJustification_)
     {
         horizontalJustification = horizontalJustification_;
-        Select(10);
+        Select(12);
     }
 
     public void SetVerticalJustification(int verticalJustification_)
     {
         verticalJustification = verticalJustification_;
-        Select(11);
+        Select(13);
     }
 
     public void SetDepthTestMode(int depthTestMode_)
     {
         depthTestMode = depthTestMode_;
-        Select(12);
+        Select(14);
     }
 
     public void SetFormatTemplate(String formatTemplate_)
     {
         formatTemplate = formatTemplate_;
-        Select(13);
+        Select(15);
     }
 
     // Property getting methods
     public int            GetVarType() { return varType; }
     public boolean        GetLegendFlag() { return legendFlag; }
+    public boolean        GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String         GetCustomLegendTitle() { return customLegendTitle; }
     public boolean        GetShowNodes() { return showNodes; }
     public boolean        GetShowCells() { return showCells; }
     public boolean        GetRestrictNumberOfLabels() { return restrictNumberOfLabels; }
@@ -264,28 +286,32 @@ public class LabelAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(1, buf))
             buf.WriteBool(legendFlag);
         if(WriteSelect(2, buf))
-            buf.WriteBool(showNodes);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(3, buf))
-            buf.WriteBool(showCells);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(4, buf))
-            buf.WriteBool(restrictNumberOfLabels);
+            buf.WriteBool(showNodes);
         if(WriteSelect(5, buf))
-            buf.WriteInt(drawLabelsFacing);
+            buf.WriteBool(showCells);
         if(WriteSelect(6, buf))
-            buf.WriteInt(labelDisplayFormat);
+            buf.WriteBool(restrictNumberOfLabels);
         if(WriteSelect(7, buf))
-            buf.WriteInt(numberOfLabels);
+            buf.WriteInt(drawLabelsFacing);
         if(WriteSelect(8, buf))
-            textFont1.Write(buf);
+            buf.WriteInt(labelDisplayFormat);
         if(WriteSelect(9, buf))
-            textFont2.Write(buf);
+            buf.WriteInt(numberOfLabels);
         if(WriteSelect(10, buf))
-            buf.WriteInt(horizontalJustification);
+            textFont1.Write(buf);
         if(WriteSelect(11, buf))
-            buf.WriteInt(verticalJustification);
+            textFont2.Write(buf);
         if(WriteSelect(12, buf))
-            buf.WriteInt(depthTestMode);
+            buf.WriteInt(horizontalJustification);
         if(WriteSelect(13, buf))
+            buf.WriteInt(verticalJustification);
+        if(WriteSelect(14, buf))
+            buf.WriteInt(depthTestMode);
+        if(WriteSelect(15, buf))
             buf.WriteString(formatTemplate);
     }
 
@@ -300,41 +326,47 @@ public class LabelAttributes extends AttributeSubject implements Plugin
             SetLegendFlag(buf.ReadBool());
             break;
         case 2:
-            SetShowNodes(buf.ReadBool());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 3:
-            SetShowCells(buf.ReadBool());
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 4:
-            SetRestrictNumberOfLabels(buf.ReadBool());
+            SetShowNodes(buf.ReadBool());
             break;
         case 5:
-            SetDrawLabelsFacing(buf.ReadInt());
+            SetShowCells(buf.ReadBool());
             break;
         case 6:
-            SetLabelDisplayFormat(buf.ReadInt());
+            SetRestrictNumberOfLabels(buf.ReadBool());
             break;
         case 7:
-            SetNumberOfLabels(buf.ReadInt());
+            SetDrawLabelsFacing(buf.ReadInt());
             break;
         case 8:
-            textFont1.Read(buf);
-            Select(8);
+            SetLabelDisplayFormat(buf.ReadInt());
             break;
         case 9:
-            textFont2.Read(buf);
-            Select(9);
+            SetNumberOfLabels(buf.ReadInt());
             break;
         case 10:
-            SetHorizontalJustification(buf.ReadInt());
+            textFont1.Read(buf);
+            Select(10);
             break;
         case 11:
-            SetVerticalJustification(buf.ReadInt());
+            textFont2.Read(buf);
+            Select(11);
             break;
         case 12:
-            SetDepthTestMode(buf.ReadInt());
+            SetHorizontalJustification(buf.ReadInt());
             break;
         case 13:
+            SetVerticalJustification(buf.ReadInt());
+            break;
+        case 14:
+            SetDepthTestMode(buf.ReadInt());
+            break;
+        case 15:
             SetFormatTemplate(buf.ReadString());
             break;
         }
@@ -366,6 +398,8 @@ public class LabelAttributes extends AttributeSubject implements Plugin
             str = str + "VARIABLETYPE_LABEL_VT_UNKNOWN_TYPE";
         str = str + "\n";
         str = str + boolToString("legendFlag", legendFlag, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + boolToString("showNodes", showNodes, indent) + "\n";
         str = str + boolToString("showCells", showCells, indent) + "\n";
         str = str + boolToString("restrictNumberOfLabels", restrictNumberOfLabels, indent) + "\n";
@@ -420,6 +454,8 @@ public class LabelAttributes extends AttributeSubject implements Plugin
     // Attributes
     private int            varType;
     private boolean        legendFlag;
+    private boolean        customLegendTitleEnabled;
+    private String         customLegendTitle;
     private boolean        showNodes;
     private boolean        showCells;
     private boolean        restrictNumberOfLabels;

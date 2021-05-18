@@ -96,6 +96,7 @@ public:
 
     // Property selection methods
     virtual void SelectAll();
+    void SelectCustomLegendTitle();
     void SelectTextFont1();
     void SelectTextFont2();
     void SelectFormatTemplate();
@@ -103,6 +104,8 @@ public:
     // Property setting methods
     void SetVarType(VariableType varType_);
     void SetLegendFlag(bool legendFlag_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
     void SetShowNodes(bool showNodes_);
     void SetShowCells(bool showCells_);
     void SetRestrictNumberOfLabels(bool restrictNumberOfLabels_);
@@ -119,6 +122,9 @@ public:
     // Property getting methods
     VariableType         GetVarType() const;
     bool                 GetLegendFlag() const;
+    bool                 GetCustomLegendTitleEnabled() const;
+    const std::string    &GetCustomLegendTitle() const;
+          std::string    &GetCustomLegendTitle();
     bool                 GetShowNodes() const;
     bool                 GetShowCells() const;
     bool                 GetRestrictNumberOfLabels() const;
@@ -186,6 +192,8 @@ public:
     enum {
         ID_varType = 0,
         ID_legendFlag,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID_showNodes,
         ID_showCells,
         ID_restrictNumberOfLabels,
@@ -204,6 +212,8 @@ public:
 private:
     int            varType;
     bool           legendFlag;
+    bool           customLegendTitleEnabled;
+    std::string    customLegendTitle;
     bool           showNodes;
     bool           showCells;
     bool           restrictNumberOfLabels;
@@ -221,6 +231,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define LABELATTRIBUTES_TMFS "ibbbbiiiaaiiis"
+#define LABELATTRIBUTES_TMFS "ibbsbbbiiiaaiiis"
 
 #endif

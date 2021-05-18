@@ -25,7 +25,7 @@
 // ****************************************************************************
 // Method: QvisLabelPlotWindow::QvisLabelPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Constructor for the QvisLabelPlotWindow class.
 //
 // Arguments:
@@ -58,7 +58,7 @@ QvisLabelPlotWindow::QvisLabelPlotWindow(const int type,
 // ****************************************************************************
 // Method: QvisLabelPlotWindow::~QvisLabelPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   Destructor
 //
 // Programmer: Brad Whitlock
@@ -69,7 +69,7 @@ QvisLabelPlotWindow::QvisLabelPlotWindow(const int type,
 //   Added depthTestButtonGroup.
 //
 //   Cyrus Harrison, Wed Aug 27 08:54:49 PDT 2008
-//   Set parent for depthTestButtonGroup, we can avoid explicit delete. 
+//   Set parent for depthTestButtonGroup, we can avoid explicit delete.
 //
 // ****************************************************************************
 
@@ -80,7 +80,7 @@ QvisLabelPlotWindow::~QvisLabelPlotWindow()
 // ****************************************************************************
 // Method: QvisLabelPlotWindow::CreateWindowContents
 //
-// Purpose: 
+// Purpose:
 //   Creates the widgets for the window.
 //
 // Programmer: Brad Whitlock
@@ -99,7 +99,7 @@ QvisLabelPlotWindow::~QvisLabelPlotWindow()
 //   Added tr()'s
 //
 //   Cyrus Harrison, Fri Jul 18 14:44:51 PDT 2008
-//   Initial Qt4 Port. 
+//   Initial Qt4 Port.
 //
 //   Allen Sanderson, Sun Mar  7 12:49:56 PST 2010
 //   Change layout of window for 2.0 interface changes.
@@ -110,6 +110,9 @@ QvisLabelPlotWindow::~QvisLabelPlotWindow()
 //   Kathleen Biagas, Wed Jun  8 17:10:30 PDT 2016
 //   Set keyboard tracking to false for spin boxes so that 'valueChanged'
 //   signal will only emit when 'enter' is pressed or spinbox loses focus.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add custom legend title controls.
 //
 // ****************************************************************************
 
@@ -161,21 +164,21 @@ QvisLabelPlotWindow::CreateWindowContents()
                          , 2, 0, 1, 2);
 
     depthTestButtonGroup = new QButtonGroup(selectionGroupBox);
-    
+
     QHBoxLayout *dtLayout = new QHBoxLayout();
-    
+
     QRadioButton *rb = new QRadioButton(tr("Auto"), selectionGroupBox);
     depthTestButtonGroup->addButton(rb, 0);
     dtLayout->addWidget(rb);
-    
+
     rb = new QRadioButton(tr("Always"), selectionGroupBox);
     depthTestButtonGroup->addButton(rb, 1);
     dtLayout->addWidget(rb);
-    
+
     rb = new QRadioButton(tr("Never"), selectionGroupBox);
     depthTestButtonGroup->addButton(rb, 2);
     dtLayout->addWidget(rb);
-    
+
     connect(depthTestButtonGroup, SIGNAL(buttonClicked(int)),
             this, SLOT(depthTestButtonGroupChanged(int)));
     selLayout->addWidget(new QLabel(tr("Depth test mode"), selectionGroupBox), 3, 0);
@@ -198,7 +201,7 @@ QvisLabelPlotWindow::CreateWindowContents()
     connect(labelDisplayFormatComboBox, SIGNAL(activated(int)),
             this, SLOT(labelDisplayFormatChanged(int)));
     fmtLayout->addWidget(labelDisplayFormatComboBox, 0, 1);
-    fmtLayout->addWidget(new QLabel(tr("Label display format"), 
+    fmtLayout->addWidget(new QLabel(tr("Label display format"),
                                     formattingGroupBox), 0, 0);
 
 
@@ -238,7 +241,7 @@ QvisLabelPlotWindow::CreateWindowContents()
     connect(horizontalJustificationComboBox, SIGNAL(activated(int)),
             this, SLOT(horizontalJustificationChanged(int)));
     fmtLayout->addWidget(horizontalJustificationComboBox, 8, 1);
-    fmtLayout->addWidget(new QLabel(tr("Horizontal justification"), 
+    fmtLayout->addWidget(new QLabel(tr("Horizontal justification"),
                                     formattingGroupBox), 8, 0);
 
     verticalJustificationComboBox = new QComboBox(formattingGroupBox);
@@ -248,13 +251,13 @@ QvisLabelPlotWindow::CreateWindowContents()
     connect(verticalJustificationComboBox, SIGNAL(activated(int)),
             this, SLOT(verticalJustificationChanged(int)));
     fmtLayout->addWidget(verticalJustificationComboBox, 9, 1);
-    fmtLayout->addWidget(new QLabel(tr("Vertical justification"), 
+    fmtLayout->addWidget(new QLabel(tr("Vertical justification"),
                                     formattingGroupBox), 9, 0);
 
-    
-    formatTemplate = new QLineEdit(QString(labelAtts->GetFormatTemplate().c_str()), 
+
+    formatTemplate = new QLineEdit(QString(labelAtts->GetFormatTemplate().c_str()),
                                    formattingGroupBox);
-    connect(formatTemplate, SIGNAL(returnPressed()), 
+    connect(formatTemplate, SIGNAL(returnPressed()),
             this, SLOT(formatTemplateChanged()));
 
     fmtLayout->addWidget(formatTemplate, 10, 1);
@@ -270,19 +273,31 @@ QvisLabelPlotWindow::CreateWindowContents()
     QGridLayout *miscLayout = new QGridLayout(miscGroup);
     miscLayout->setMargin(5);
     miscLayout->setSpacing(10);
- 
+
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Legend"), central);
     connect(legendToggle, SIGNAL(toggled(bool)),
             this, SLOT(legendToggled(bool)));
     miscLayout->addWidget(legendToggle, 0, 0);
+
+    // Create the legend title toggle
+    customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
+    connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
+            this, SLOT(customLegendTitleToggled(bool)));
+    miscLayout->addWidget(customLegendTitleToggle, 1, 0);
+
+    // Create the legend title line edit
+    customLegendTitle = new QLineEdit(central);
+    connect(customLegendTitle, SIGNAL(editingFinished()),
+            this, SLOT(customLegendTitleProcessText()));
+    miscLayout->addWidget(customLegendTitle, 1, 1);
 }
 
 
 // ****************************************************************************
 // Method: QvisLabelPlotWindow::UpdateWindow
 //
-// Purpose: 
+// Purpose:
 //   Updates the widgets in the window when the subject changes.
 //
 // Programmer: Brad Whitlock
@@ -300,10 +315,13 @@ QvisLabelPlotWindow::CreateWindowContents()
 //   Added tr()'s
 //
 //   Cyrus Harrison, Fri Jul 18 14:44:51 PDT 2008
-//   Initial Qt4 Port. 
+//   Initial Qt4 Port.
 //
 //   Hank Childs, Wed Oct 20 11:04:12 PDT 2010
 //   Change text heights from spin box to "double spin box".
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add custom legend title controls.
 //
 // ****************************************************************************
 
@@ -356,9 +374,23 @@ QvisLabelPlotWindow::UpdateWindow(bool doAll)
         case LabelAttributes::ID_legendFlag:
             legendToggle->blockSignals(true);
             legendToggle->setChecked(labelAtts->GetLegendFlag());
+            customLegendTitleToggle->setEnabled(labelAtts->GetLegendFlag());
+            customLegendTitle->setEnabled(labelAtts->GetLegendFlag() &&
+                                    labelAtts->GetCustomLegendTitleEnabled());
             legendToggle->blockSignals(false);
             break;
-        case LabelAttributes::ID_showNodes:
+        case LabelAttributes::ID_customLegendTitleEnabled:
+            customLegendTitleToggle->blockSignals(true);
+            customLegendTitleToggle->setChecked(labelAtts->GetCustomLegendTitleEnabled());
+            customLegendTitle->setEnabled(labelAtts->GetLegendFlag() &&
+                                    labelAtts->GetCustomLegendTitleEnabled());
+            customLegendTitleToggle->blockSignals(false);
+            break;
+        case LabelAttributes::ID_customLegendTitle:
+            customLegendTitle->blockSignals(true);
+            customLegendTitle->setText(labelAtts->GetCustomLegendTitle().c_str());
+            customLegendTitle->blockSignals(false);
+            break;
             showNodesToggle->blockSignals(true);
             showNodesToggle->setChecked(labelAtts->GetShowNodes());
             showNodesToggle->blockSignals(false);
@@ -429,7 +461,7 @@ QvisLabelPlotWindow::UpdateWindow(bool doAll)
 // ****************************************************************************
 // Method: QvisLabelPlotWindow::GetCurrentValues
 //
-// Purpose: 
+// Purpose:
 //   Gets values from certain widgets and stores them in the subject.
 //
 // Programmer: Brad Whitlock
@@ -447,10 +479,10 @@ QvisLabelPlotWindow::UpdateWindow(bool doAll)
 //   Support for internationalization.
 //
 //   Cyrus Harrison, Fri Jul 18 14:44:51 PDT 2008
-//   Initial Qt4 Port. 
+//   Initial Qt4 Port.
 //
 //   Eric Brugger, Tue Aug 24 10:42:22 PDT 2010
-//   I added code for formatTemplate. 
+//   I added code for formatTemplate.
 //
 //   Hank Childs, Wed Oct 20 11:04:12 PDT 2010
 //   Change text heights from spin box to "double spin box".
@@ -536,14 +568,14 @@ QvisLabelPlotWindow::GetCurrentValues(int which_widget)
 // ****************************************************************************
 // Method: QvisLabelPlotWindow::Apply
 //
-// Purpose: 
+// Purpose:
 //   Called to apply changes in the subject.
 //
 // Programmer: Brad Whitlock
 // Creation:   Thu Oct 21 18:18:16 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -569,14 +601,14 @@ QvisLabelPlotWindow::Apply(bool ignore)
 // ****************************************************************************
 // Method: QvisLabelPlotWindow::apply
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when apply button is clicked.
 //
 // Programmer: Brad Whitlock
 // Creation:   Thu Oct 21 18:18:16 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -589,14 +621,14 @@ QvisLabelPlotWindow::apply()
 // ****************************************************************************
 // Method: QvisLabelPlotWindow::makeDefault
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when "Make default" button is clicked.
 //
 // Programmer: Brad Whitlock
 // Creation:   Thu Oct 21 18:18:16 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -611,14 +643,14 @@ QvisLabelPlotWindow::makeDefault()
 // ****************************************************************************
 // Method: QvisLabelPlotWindow::reset
 //
-// Purpose: 
+// Purpose:
 //   Qt slot function called when reset button is clicked.
 //
 // Programmer: Brad Whitlock
 // Creation:   Thu Oct 21 18:18:16 PST 2004
 //
 // Modifications:
-//   
+//
 // ****************************************************************************
 
 void
@@ -681,6 +713,24 @@ QvisLabelPlotWindow::legendToggled(bool val)
 }
 
 void
+QvisLabelPlotWindow::customLegendTitleToggled(bool val)
+{
+    labelAtts->SetCustomLegendTitleEnabled(val);
+    Apply();
+}
+
+void
+QvisLabelPlotWindow::customLegendTitleProcessText()
+{
+    // Only do it if it changed.
+    if(customLegendTitle->text().toStdString() != labelAtts->GetCustomLegendTitle())
+    {
+        labelAtts->SetCustomLegendTitle(customLegendTitle->text().toStdString());
+        Apply();
+    }
+}
+
+void
 QvisLabelPlotWindow::labelDisplayFormatChanged(int val)
 {
     if(val != labelAtts->GetLabelDisplayFormat())
@@ -738,7 +788,7 @@ QvisLabelPlotWindow::depthTestButtonGroupChanged(int val)
 }
 
 
-void 
+void
 QvisLabelPlotWindow::formatTemplateChanged()
 {
     bool okay = true;
@@ -753,7 +803,7 @@ QvisLabelPlotWindow::formatTemplateChanged()
         Message(tr("Must enter a printf-style template that would be valid for a single floating point number."));
         okay = false;
     }
-    
+
     if (okay)
     {
         char test[36];
@@ -779,6 +829,4 @@ QvisLabelPlotWindow::formatTemplateChanged()
         labelAtts->Notify();
     }
 }
-
-
 
