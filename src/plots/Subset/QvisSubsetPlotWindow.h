@@ -11,6 +11,7 @@ class QButtonGroup;
 class QCheckBox;
 class QGroupBox;
 class QLabel;
+class QLineEdit;
 class QvisColorButton;
 class QvisColorSwatchListWidget;
 class QvisColorTableWidget;
@@ -21,14 +22,14 @@ class QvisPointControl;
 // ****************************************************************************
 // Class: QvisSubsetPlotWindow
 //
-// Purpose: 
+// Purpose:
 //   This class is an observer window that watches subset plot attributes
 //   and always represents their current state.
 //
 // Notes:  Copied from QvisMaterialPlotWindow with minor changes.
 //
-// Programmer: Kathleen Bonnell 
-// Creation:   October 16, 2001 
+// Programmer: Kathleen Bonnell
+// Creation:   October 16, 2001
 //
 // Modifications:
 //   Brad Whitlock, Thu Jul 17 15:44:03 PDT 2008
@@ -39,6 +40,9 @@ class QvisPointControl;
 //
 //   Kathleen Bonnell, Mon Jan 17 18:14:12 MST 2011
 //   Change colorTableButton to colorTableWidget to gain invert toggle.
+//
+//   Kathleen Biagas, Tue May 18, 2021
+//   Add controls for custom legend title.
 //
 // ****************************************************************************
 
@@ -67,6 +71,8 @@ protected:
 private slots:
     void lineWidthChanged(int newWidth);
     void legendToggled(bool val);
+    void customLegendTitleToggled(bool on);
+    void customLegendTitleProcessText();
     void wireframeToggled(bool val);
     void singleColorChanged(const QColor &color);
     void singleColorOpacityChanged(int opacity);
@@ -94,6 +100,8 @@ private:
     QvisLineWidthWidget    *lineWidth;
     QButtonGroup           *colorModeButtons;
     QCheckBox              *legendToggle;
+    QCheckBox              *customLegendTitleToggle;
+    QLineEdit              *customLegendTitle;
     QGroupBox              *subsetColorGroup;
     QvisColorButton        *singleColor;
     QvisOpacitySlider      *singleColorOpacity;

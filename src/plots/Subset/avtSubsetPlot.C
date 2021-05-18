@@ -274,6 +274,9 @@ avtSubsetPlot::Create()
 //    Kathleen Biagas, Fri Jun  5 08:18:16 PDT 2020
 //    Add avtSurfaceMapper in place of levels and point glyph subsetMapper.
 //
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
+//
 // ****************************************************************************
 
 void
@@ -312,6 +315,11 @@ avtSubsetPlot::SetAtts(const AttributeGroup *a)
     }
     subsetMapper->SetGlyphType(atts.GetPointType());
     SetPointGlyphSize();
+
+    if(atts.GetCustomLegendTitleEnabled())
+        levelsLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        levelsLegend->SetTitle("Subset");
 }
 
 // ****************************************************************************

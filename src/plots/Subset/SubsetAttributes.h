@@ -70,6 +70,7 @@ public:
     // Property selection methods
     virtual void SelectAll();
     void SelectColorTableName();
+    void SelectCustomLegendTitle();
     void SelectSingleColor();
     void SelectMultiColor();
     void SelectSubsetNames();
@@ -80,6 +81,8 @@ public:
     void SetColorTableName(const std::string &colorTableName_);
     void SetInvertColorTable(bool invertColorTable_);
     void SetLegendFlag(bool legendFlag_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
     void SetLineWidth(int lineWidth_);
     void SetSingleColor(const ColorAttribute &singleColor_);
     void SetMultiColor(const ColorAttributeList &multiColor_);
@@ -101,6 +104,9 @@ public:
           std::string        &GetColorTableName();
     bool                     GetInvertColorTable() const;
     bool                     GetLegendFlag() const;
+    bool                     GetCustomLegendTitleEnabled() const;
+    const std::string        &GetCustomLegendTitle() const;
+          std::string        &GetCustomLegendTitle();
     int                      GetLineWidth() const;
     const ColorAttribute     &GetSingleColor() const;
           ColorAttribute     &GetSingleColor();
@@ -153,6 +159,8 @@ public:
         ID_colorTableName,
         ID_invertColorTable,
         ID_legendFlag,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID_lineWidth,
         ID_singleColor,
         ID_multiColor,
@@ -175,6 +183,8 @@ private:
     std::string        colorTableName;
     bool               invertColorTable;
     bool               legendFlag;
+    bool               customLegendTitleEnabled;
+    std::string        customLegendTitle;
     int                lineWidth;
     ColorAttribute     singleColor;
     ColorAttributeList multiColor;
@@ -194,6 +204,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define SUBSETATTRIBUTES_TMFS "isbbiaas*idbbidibsi"
+#define SUBSETATTRIBUTES_TMFS "isbbbsiaas*idbbidibsi"
 
 #endif

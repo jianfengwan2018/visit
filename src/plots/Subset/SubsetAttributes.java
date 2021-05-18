@@ -28,7 +28,7 @@ import java.util.Vector;
 
 public class SubsetAttributes extends AttributeSubject implements Plugin
 {
-    private static int SubsetAttributes_numAdditionalAtts = 18;
+    private static int SubsetAttributes_numAdditionalAtts = 20;
 
     // Enum values
     public final static int SUBSET_TYPE_DOMAIN = 0;
@@ -50,6 +50,8 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         colorTableName = new String("Default");
         invertColorTable = false;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         lineWidth = 0;
         singleColor = new ColorAttribute();
         multiColor = new ColorAttributeList();
@@ -74,6 +76,8 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         colorTableName = new String("Default");
         invertColorTable = false;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         lineWidth = 0;
         singleColor = new ColorAttribute();
         multiColor = new ColorAttributeList();
@@ -100,6 +104,8 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         colorTableName = new String(obj.colorTableName);
         invertColorTable = obj.invertColorTable;
         legendFlag = obj.legendFlag;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         lineWidth = obj.lineWidth;
         singleColor = new ColorAttribute(obj.singleColor);
         multiColor = new ColorAttributeList(obj.multiColor);
@@ -149,6 +155,8 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
                 (colorTableName.equals(obj.colorTableName)) &&
                 (invertColorTable == obj.invertColorTable) &&
                 (legendFlag == obj.legendFlag) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (lineWidth == obj.lineWidth) &&
                 (singleColor == obj.singleColor) &&
                 (multiColor.equals(obj.multiColor)) &&
@@ -193,88 +201,100 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         Select(3);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(4);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(5);
+    }
+
     public void SetLineWidth(int lineWidth_)
     {
         lineWidth = lineWidth_;
-        Select(4);
+        Select(6);
     }
 
     public void SetSingleColor(ColorAttribute singleColor_)
     {
         singleColor = singleColor_;
-        Select(5);
+        Select(7);
     }
 
     public void SetMultiColor(ColorAttributeList multiColor_)
     {
         multiColor = multiColor_;
-        Select(6);
+        Select(8);
     }
 
     public void SetSubsetNames(Vector subsetNames_)
     {
         subsetNames = subsetNames_;
-        Select(7);
+        Select(9);
     }
 
     public void SetSubsetType(int subsetType_)
     {
         subsetType = subsetType_;
-        Select(8);
+        Select(10);
     }
 
     public void SetOpacity(double opacity_)
     {
         opacity = opacity_;
-        Select(9);
+        Select(11);
     }
 
     public void SetWireframe(boolean wireframe_)
     {
         wireframe = wireframe_;
-        Select(10);
+        Select(12);
     }
 
     public void SetDrawInternal(boolean drawInternal_)
     {
         drawInternal = drawInternal_;
-        Select(11);
+        Select(13);
     }
 
     public void SetSmoothingLevel(int smoothingLevel_)
     {
         smoothingLevel = smoothingLevel_;
-        Select(12);
+        Select(14);
     }
 
     public void SetPointSize(double pointSize_)
     {
         pointSize = pointSize_;
-        Select(13);
+        Select(15);
     }
 
     public void SetPointType(int pointType_)
     {
         pointType = pointType_;
-        Select(14);
+        Select(16);
     }
 
     public void SetPointSizeVarEnabled(boolean pointSizeVarEnabled_)
     {
         pointSizeVarEnabled = pointSizeVarEnabled_;
-        Select(15);
+        Select(17);
     }
 
     public void SetPointSizeVar(String pointSizeVar_)
     {
         pointSizeVar = pointSizeVar_;
-        Select(16);
+        Select(18);
     }
 
     public void SetPointSizePixels(int pointSizePixels_)
     {
         pointSizePixels = pointSizePixels_;
-        Select(17);
+        Select(19);
     }
 
     // Property getting methods
@@ -282,6 +302,8 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
     public String             GetColorTableName() { return colorTableName; }
     public boolean            GetInvertColorTable() { return invertColorTable; }
     public boolean            GetLegendFlag() { return legendFlag; }
+    public boolean            GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String             GetCustomLegendTitle() { return customLegendTitle; }
     public int                GetLineWidth() { return lineWidth; }
     public ColorAttribute     GetSingleColor() { return singleColor; }
     public ColorAttributeList GetMultiColor() { return multiColor; }
@@ -309,32 +331,36 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(3, buf))
             buf.WriteBool(legendFlag);
         if(WriteSelect(4, buf))
-            buf.WriteInt(lineWidth);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(5, buf))
-            singleColor.Write(buf);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(6, buf))
-            multiColor.Write(buf);
+            buf.WriteInt(lineWidth);
         if(WriteSelect(7, buf))
-            buf.WriteStringVector(subsetNames);
+            singleColor.Write(buf);
         if(WriteSelect(8, buf))
-            buf.WriteInt(subsetType);
+            multiColor.Write(buf);
         if(WriteSelect(9, buf))
-            buf.WriteDouble(opacity);
+            buf.WriteStringVector(subsetNames);
         if(WriteSelect(10, buf))
-            buf.WriteBool(wireframe);
+            buf.WriteInt(subsetType);
         if(WriteSelect(11, buf))
-            buf.WriteBool(drawInternal);
+            buf.WriteDouble(opacity);
         if(WriteSelect(12, buf))
-            buf.WriteInt(smoothingLevel);
+            buf.WriteBool(wireframe);
         if(WriteSelect(13, buf))
-            buf.WriteDouble(pointSize);
+            buf.WriteBool(drawInternal);
         if(WriteSelect(14, buf))
-            buf.WriteInt(pointType);
+            buf.WriteInt(smoothingLevel);
         if(WriteSelect(15, buf))
-            buf.WriteBool(pointSizeVarEnabled);
+            buf.WriteDouble(pointSize);
         if(WriteSelect(16, buf))
-            buf.WriteString(pointSizeVar);
+            buf.WriteInt(pointType);
         if(WriteSelect(17, buf))
+            buf.WriteBool(pointSizeVarEnabled);
+        if(WriteSelect(18, buf))
+            buf.WriteString(pointSizeVar);
+        if(WriteSelect(19, buf))
             buf.WriteInt(pointSizePixels);
     }
 
@@ -355,47 +381,53 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
             SetLegendFlag(buf.ReadBool());
             break;
         case 4:
-            SetLineWidth(buf.ReadInt());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 5:
-            singleColor.Read(buf);
-            Select(5);
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 6:
-            multiColor.Read(buf);
-            Select(6);
+            SetLineWidth(buf.ReadInt());
             break;
         case 7:
-            SetSubsetNames(buf.ReadStringVector());
+            singleColor.Read(buf);
+            Select(7);
             break;
         case 8:
-            SetSubsetType(buf.ReadInt());
+            multiColor.Read(buf);
+            Select(8);
             break;
         case 9:
-            SetOpacity(buf.ReadDouble());
+            SetSubsetNames(buf.ReadStringVector());
             break;
         case 10:
-            SetWireframe(buf.ReadBool());
+            SetSubsetType(buf.ReadInt());
             break;
         case 11:
-            SetDrawInternal(buf.ReadBool());
+            SetOpacity(buf.ReadDouble());
             break;
         case 12:
-            SetSmoothingLevel(buf.ReadInt());
+            SetWireframe(buf.ReadBool());
             break;
         case 13:
-            SetPointSize(buf.ReadDouble());
+            SetDrawInternal(buf.ReadBool());
             break;
         case 14:
-            SetPointType(buf.ReadInt());
+            SetSmoothingLevel(buf.ReadInt());
             break;
         case 15:
-            SetPointSizeVarEnabled(buf.ReadBool());
+            SetPointSize(buf.ReadDouble());
             break;
         case 16:
-            SetPointSizeVar(buf.ReadString());
+            SetPointType(buf.ReadInt());
             break;
         case 17:
+            SetPointSizeVarEnabled(buf.ReadBool());
+            break;
+        case 18:
+            SetPointSizeVar(buf.ReadString());
+            break;
+        case 19:
             SetPointSizePixels(buf.ReadInt());
             break;
         }
@@ -415,6 +447,8 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
         str = str + stringToString("colorTableName", colorTableName, indent) + "\n";
         str = str + boolToString("invertColorTable", invertColorTable, indent) + "\n";
         str = str + boolToString("legendFlag", legendFlag, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + intToString("lineWidth", lineWidth, indent) + "\n";
         str = str + indent + "singleColor = {" + singleColor.Red() + ", " + singleColor.Green() + ", " + singleColor.Blue() + ", " + singleColor.Alpha() + "}\n";
         str = str + indent + "multiColor = {\n" + multiColor.toString(indent + "    ") + indent + "}\n";
@@ -449,6 +483,8 @@ public class SubsetAttributes extends AttributeSubject implements Plugin
     private String             colorTableName;
     private boolean            invertColorTable;
     private boolean            legendFlag;
+    private boolean            customLegendTitleEnabled;
+    private String             customLegendTitle;
     private int                lineWidth;
     private ColorAttribute     singleColor;
     private ColorAttributeList multiColor;
