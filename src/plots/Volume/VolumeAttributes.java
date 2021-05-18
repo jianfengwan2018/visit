@@ -27,7 +27,7 @@ import llnl.visit.GaussianControlPointList;
 
 public class VolumeAttributes extends AttributeSubject implements Plugin
 {
-    private static int VolumeAttributes_numAdditionalAtts = 42;
+    private static int VolumeAttributes_numAdditionalAtts = 44;
 
     // Enum values
     public final static int RENDERER_DEFAULT = 0;
@@ -79,6 +79,8 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
         osprayAoDistance = 100000;
         osprayMinContribution = 0.001;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         lightingFlag = true;
         colorControlPoints = new ColorControlPointList();
         opacityAttenuation = 1f;
@@ -133,6 +135,8 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
         osprayAoDistance = 100000;
         osprayMinContribution = 0.001;
         legendFlag = true;
+        customLegendTitleEnabled = false;
+        customLegendTitle = new String("");
         lightingFlag = true;
         colorControlPoints = new ColorControlPointList();
         opacityAttenuation = 1f;
@@ -189,6 +193,8 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
         osprayAoDistance = obj.osprayAoDistance;
         osprayMinContribution = obj.osprayMinContribution;
         legendFlag = obj.legendFlag;
+        customLegendTitleEnabled = obj.customLegendTitleEnabled;
+        customLegendTitle = new String(obj.customLegendTitle);
         lightingFlag = obj.lightingFlag;
         colorControlPoints = new ColorControlPointList(obj.colorControlPoints);
         opacityAttenuation = obj.opacityAttenuation;
@@ -266,6 +272,8 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
                 (osprayAoDistance == obj.osprayAoDistance) &&
                 (osprayMinContribution == obj.osprayMinContribution) &&
                 (legendFlag == obj.legendFlag) &&
+                (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+                (customLegendTitle.equals(obj.customLegendTitle)) &&
                 (lightingFlag == obj.lightingFlag) &&
                 (colorControlPoints.equals(obj.colorControlPoints)) &&
                 (opacityAttenuation == obj.opacityAttenuation) &&
@@ -369,185 +377,197 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
         Select(10);
     }
 
+    public void SetCustomLegendTitleEnabled(boolean customLegendTitleEnabled_)
+    {
+        customLegendTitleEnabled = customLegendTitleEnabled_;
+        Select(11);
+    }
+
+    public void SetCustomLegendTitle(String customLegendTitle_)
+    {
+        customLegendTitle = customLegendTitle_;
+        Select(12);
+    }
+
     public void SetLightingFlag(boolean lightingFlag_)
     {
         lightingFlag = lightingFlag_;
-        Select(11);
+        Select(13);
     }
 
     public void SetColorControlPoints(ColorControlPointList colorControlPoints_)
     {
         colorControlPoints = colorControlPoints_;
-        Select(12);
+        Select(14);
     }
 
     public void SetOpacityAttenuation(float opacityAttenuation_)
     {
         opacityAttenuation = opacityAttenuation_;
-        Select(13);
+        Select(15);
     }
 
     public void SetOpacityMode(int opacityMode_)
     {
         opacityMode = opacityMode_;
-        Select(14);
+        Select(16);
     }
 
     public void SetOpacityControlPoints(GaussianControlPointList opacityControlPoints_)
     {
         opacityControlPoints = opacityControlPoints_;
-        Select(15);
+        Select(17);
     }
 
     public void SetResampleFlag(boolean resampleFlag_)
     {
         resampleFlag = resampleFlag_;
-        Select(16);
+        Select(18);
     }
 
     public void SetResampleTarget(int resampleTarget_)
     {
         resampleTarget = resampleTarget_;
-        Select(17);
+        Select(19);
     }
 
     public void SetOpacityVariable(String opacityVariable_)
     {
         opacityVariable = opacityVariable_;
-        Select(18);
+        Select(20);
     }
 
     public void SetCompactVariable(String compactVariable_)
     {
         compactVariable = compactVariable_;
-        Select(19);
+        Select(21);
     }
 
     public void SetFreeformOpacity(byte[] freeformOpacity_)
     {
         for(int i = 0; i < 256; ++i)
              freeformOpacity[i] = freeformOpacity_[i];
-        Select(20);
+        Select(22);
     }
 
     public void SetUseColorVarMin(boolean useColorVarMin_)
     {
         useColorVarMin = useColorVarMin_;
-        Select(21);
+        Select(23);
     }
 
     public void SetColorVarMin(float colorVarMin_)
     {
         colorVarMin = colorVarMin_;
-        Select(22);
+        Select(24);
     }
 
     public void SetUseColorVarMax(boolean useColorVarMax_)
     {
         useColorVarMax = useColorVarMax_;
-        Select(23);
+        Select(25);
     }
 
     public void SetColorVarMax(float colorVarMax_)
     {
         colorVarMax = colorVarMax_;
-        Select(24);
+        Select(26);
     }
 
     public void SetUseOpacityVarMin(boolean useOpacityVarMin_)
     {
         useOpacityVarMin = useOpacityVarMin_;
-        Select(25);
+        Select(27);
     }
 
     public void SetOpacityVarMin(float opacityVarMin_)
     {
         opacityVarMin = opacityVarMin_;
-        Select(26);
+        Select(28);
     }
 
     public void SetUseOpacityVarMax(boolean useOpacityVarMax_)
     {
         useOpacityVarMax = useOpacityVarMax_;
-        Select(27);
+        Select(29);
     }
 
     public void SetOpacityVarMax(float opacityVarMax_)
     {
         opacityVarMax = opacityVarMax_;
-        Select(28);
+        Select(30);
     }
 
     public void SetSmoothData(boolean smoothData_)
     {
         smoothData = smoothData_;
-        Select(29);
+        Select(31);
     }
 
     public void SetSamplesPerRay(int samplesPerRay_)
     {
         samplesPerRay = samplesPerRay_;
-        Select(30);
+        Select(32);
     }
 
     public void SetRendererType(int rendererType_)
     {
         rendererType = rendererType_;
-        Select(31);
+        Select(33);
     }
 
     public void SetGradientType(int gradientType_)
     {
         gradientType = gradientType_;
-        Select(32);
+        Select(34);
     }
 
     public void SetScaling(int scaling_)
     {
         scaling = scaling_;
-        Select(33);
+        Select(35);
     }
 
     public void SetSkewFactor(double skewFactor_)
     {
         skewFactor = skewFactor_;
-        Select(34);
+        Select(36);
     }
 
     public void SetLimitsMode(int limitsMode_)
     {
         limitsMode = limitsMode_;
-        Select(35);
+        Select(37);
     }
 
     public void SetSampling(int sampling_)
     {
         sampling = sampling_;
-        Select(36);
+        Select(38);
     }
 
     public void SetRendererSamples(float rendererSamples_)
     {
         rendererSamples = rendererSamples_;
-        Select(37);
+        Select(39);
     }
 
     public void SetLowGradientLightingReduction(int lowGradientLightingReduction_)
     {
         lowGradientLightingReduction = lowGradientLightingReduction_;
-        Select(38);
+        Select(40);
     }
 
     public void SetLowGradientLightingClampFlag(boolean lowGradientLightingClampFlag_)
     {
         lowGradientLightingClampFlag = lowGradientLightingClampFlag_;
-        Select(39);
+        Select(41);
     }
 
     public void SetLowGradientLightingClampValue(double lowGradientLightingClampValue_)
     {
         lowGradientLightingClampValue = lowGradientLightingClampValue_;
-        Select(40);
+        Select(42);
     }
 
     public void SetMaterialProperties(double[] materialProperties_)
@@ -556,7 +576,7 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
         materialProperties[1] = materialProperties_[1];
         materialProperties[2] = materialProperties_[2];
         materialProperties[3] = materialProperties_[3];
-        Select(41);
+        Select(43);
     }
 
     public void SetMaterialProperties(double e0, double e1, double e2, double e3)
@@ -565,7 +585,7 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
         materialProperties[1] = e1;
         materialProperties[2] = e2;
         materialProperties[3] = e3;
-        Select(41);
+        Select(43);
     }
 
     // Property getting methods
@@ -580,6 +600,8 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
     public double                   GetOsprayAoDistance() { return osprayAoDistance; }
     public double                   GetOsprayMinContribution() { return osprayMinContribution; }
     public boolean                  GetLegendFlag() { return legendFlag; }
+    public boolean                  GetCustomLegendTitleEnabled() { return customLegendTitleEnabled; }
+    public String                   GetCustomLegendTitle() { return customLegendTitle; }
     public boolean                  GetLightingFlag() { return lightingFlag; }
     public ColorControlPointList    GetColorControlPoints() { return colorControlPoints; }
     public float                    GetOpacityAttenuation() { return opacityAttenuation; }
@@ -638,66 +660,70 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
         if(WriteSelect(10, buf))
             buf.WriteBool(legendFlag);
         if(WriteSelect(11, buf))
-            buf.WriteBool(lightingFlag);
+            buf.WriteBool(customLegendTitleEnabled);
         if(WriteSelect(12, buf))
-            colorControlPoints.Write(buf);
+            buf.WriteString(customLegendTitle);
         if(WriteSelect(13, buf))
-            buf.WriteFloat(opacityAttenuation);
+            buf.WriteBool(lightingFlag);
         if(WriteSelect(14, buf))
-            buf.WriteInt(opacityMode);
+            colorControlPoints.Write(buf);
         if(WriteSelect(15, buf))
-            opacityControlPoints.Write(buf);
+            buf.WriteFloat(opacityAttenuation);
         if(WriteSelect(16, buf))
-            buf.WriteBool(resampleFlag);
+            buf.WriteInt(opacityMode);
         if(WriteSelect(17, buf))
-            buf.WriteInt(resampleTarget);
+            opacityControlPoints.Write(buf);
         if(WriteSelect(18, buf))
-            buf.WriteString(opacityVariable);
+            buf.WriteBool(resampleFlag);
         if(WriteSelect(19, buf))
-            buf.WriteString(compactVariable);
+            buf.WriteInt(resampleTarget);
         if(WriteSelect(20, buf))
-            buf.WriteByteArray(freeformOpacity, true);
+            buf.WriteString(opacityVariable);
         if(WriteSelect(21, buf))
-            buf.WriteBool(useColorVarMin);
+            buf.WriteString(compactVariable);
         if(WriteSelect(22, buf))
-            buf.WriteFloat(colorVarMin);
+            buf.WriteByteArray(freeformOpacity, true);
         if(WriteSelect(23, buf))
-            buf.WriteBool(useColorVarMax);
+            buf.WriteBool(useColorVarMin);
         if(WriteSelect(24, buf))
-            buf.WriteFloat(colorVarMax);
+            buf.WriteFloat(colorVarMin);
         if(WriteSelect(25, buf))
-            buf.WriteBool(useOpacityVarMin);
+            buf.WriteBool(useColorVarMax);
         if(WriteSelect(26, buf))
-            buf.WriteFloat(opacityVarMin);
+            buf.WriteFloat(colorVarMax);
         if(WriteSelect(27, buf))
-            buf.WriteBool(useOpacityVarMax);
+            buf.WriteBool(useOpacityVarMin);
         if(WriteSelect(28, buf))
-            buf.WriteFloat(opacityVarMax);
+            buf.WriteFloat(opacityVarMin);
         if(WriteSelect(29, buf))
-            buf.WriteBool(smoothData);
+            buf.WriteBool(useOpacityVarMax);
         if(WriteSelect(30, buf))
-            buf.WriteInt(samplesPerRay);
+            buf.WriteFloat(opacityVarMax);
         if(WriteSelect(31, buf))
-            buf.WriteInt(rendererType);
+            buf.WriteBool(smoothData);
         if(WriteSelect(32, buf))
-            buf.WriteInt(gradientType);
+            buf.WriteInt(samplesPerRay);
         if(WriteSelect(33, buf))
-            buf.WriteInt(scaling);
+            buf.WriteInt(rendererType);
         if(WriteSelect(34, buf))
-            buf.WriteDouble(skewFactor);
+            buf.WriteInt(gradientType);
         if(WriteSelect(35, buf))
-            buf.WriteInt(limitsMode);
+            buf.WriteInt(scaling);
         if(WriteSelect(36, buf))
-            buf.WriteInt(sampling);
+            buf.WriteDouble(skewFactor);
         if(WriteSelect(37, buf))
-            buf.WriteFloat(rendererSamples);
+            buf.WriteInt(limitsMode);
         if(WriteSelect(38, buf))
-            buf.WriteInt(lowGradientLightingReduction);
+            buf.WriteInt(sampling);
         if(WriteSelect(39, buf))
-            buf.WriteBool(lowGradientLightingClampFlag);
+            buf.WriteFloat(rendererSamples);
         if(WriteSelect(40, buf))
-            buf.WriteDouble(lowGradientLightingClampValue);
+            buf.WriteInt(lowGradientLightingReduction);
         if(WriteSelect(41, buf))
+            buf.WriteBool(lowGradientLightingClampFlag);
+        if(WriteSelect(42, buf))
+            buf.WriteDouble(lowGradientLightingClampValue);
+        if(WriteSelect(43, buf))
             buf.WriteDoubleArray(materialProperties);
     }
 
@@ -739,98 +765,104 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
             SetLegendFlag(buf.ReadBool());
             break;
         case 11:
-            SetLightingFlag(buf.ReadBool());
+            SetCustomLegendTitleEnabled(buf.ReadBool());
             break;
         case 12:
-            colorControlPoints.Read(buf);
-            Select(12);
+            SetCustomLegendTitle(buf.ReadString());
             break;
         case 13:
-            SetOpacityAttenuation(buf.ReadFloat());
+            SetLightingFlag(buf.ReadBool());
             break;
         case 14:
-            SetOpacityMode(buf.ReadInt());
+            colorControlPoints.Read(buf);
+            Select(14);
             break;
         case 15:
-            opacityControlPoints.Read(buf);
-            Select(15);
+            SetOpacityAttenuation(buf.ReadFloat());
             break;
         case 16:
-            SetResampleFlag(buf.ReadBool());
+            SetOpacityMode(buf.ReadInt());
             break;
         case 17:
-            SetResampleTarget(buf.ReadInt());
+            opacityControlPoints.Read(buf);
+            Select(17);
             break;
         case 18:
-            SetOpacityVariable(buf.ReadString());
+            SetResampleFlag(buf.ReadBool());
             break;
         case 19:
-            SetCompactVariable(buf.ReadString());
+            SetResampleTarget(buf.ReadInt());
             break;
         case 20:
-            SetFreeformOpacity(buf.ReadByteArray());
+            SetOpacityVariable(buf.ReadString());
             break;
         case 21:
-            SetUseColorVarMin(buf.ReadBool());
+            SetCompactVariable(buf.ReadString());
             break;
         case 22:
-            SetColorVarMin(buf.ReadFloat());
+            SetFreeformOpacity(buf.ReadByteArray());
             break;
         case 23:
-            SetUseColorVarMax(buf.ReadBool());
+            SetUseColorVarMin(buf.ReadBool());
             break;
         case 24:
-            SetColorVarMax(buf.ReadFloat());
+            SetColorVarMin(buf.ReadFloat());
             break;
         case 25:
-            SetUseOpacityVarMin(buf.ReadBool());
+            SetUseColorVarMax(buf.ReadBool());
             break;
         case 26:
-            SetOpacityVarMin(buf.ReadFloat());
+            SetColorVarMax(buf.ReadFloat());
             break;
         case 27:
-            SetUseOpacityVarMax(buf.ReadBool());
+            SetUseOpacityVarMin(buf.ReadBool());
             break;
         case 28:
-            SetOpacityVarMax(buf.ReadFloat());
+            SetOpacityVarMin(buf.ReadFloat());
             break;
         case 29:
-            SetSmoothData(buf.ReadBool());
+            SetUseOpacityVarMax(buf.ReadBool());
             break;
         case 30:
-            SetSamplesPerRay(buf.ReadInt());
+            SetOpacityVarMax(buf.ReadFloat());
             break;
         case 31:
-            SetRendererType(buf.ReadInt());
+            SetSmoothData(buf.ReadBool());
             break;
         case 32:
-            SetGradientType(buf.ReadInt());
+            SetSamplesPerRay(buf.ReadInt());
             break;
         case 33:
-            SetScaling(buf.ReadInt());
+            SetRendererType(buf.ReadInt());
             break;
         case 34:
-            SetSkewFactor(buf.ReadDouble());
+            SetGradientType(buf.ReadInt());
             break;
         case 35:
-            SetLimitsMode(buf.ReadInt());
+            SetScaling(buf.ReadInt());
             break;
         case 36:
-            SetSampling(buf.ReadInt());
+            SetSkewFactor(buf.ReadDouble());
             break;
         case 37:
-            SetRendererSamples(buf.ReadFloat());
+            SetLimitsMode(buf.ReadInt());
             break;
         case 38:
-            SetLowGradientLightingReduction(buf.ReadInt());
+            SetSampling(buf.ReadInt());
             break;
         case 39:
-            SetLowGradientLightingClampFlag(buf.ReadBool());
+            SetRendererSamples(buf.ReadFloat());
             break;
         case 40:
-            SetLowGradientLightingClampValue(buf.ReadDouble());
+            SetLowGradientLightingReduction(buf.ReadInt());
             break;
         case 41:
+            SetLowGradientLightingClampFlag(buf.ReadBool());
+            break;
+        case 42:
+            SetLowGradientLightingClampValue(buf.ReadDouble());
+            break;
+        case 43:
             SetMaterialProperties(buf.ReadDoubleArray());
             break;
         }
@@ -850,6 +882,8 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
         str = str + doubleToString("osprayAoDistance", osprayAoDistance, indent) + "\n";
         str = str + doubleToString("osprayMinContribution", osprayMinContribution, indent) + "\n";
         str = str + boolToString("legendFlag", legendFlag, indent) + "\n";
+        str = str + boolToString("customLegendTitleEnabled", customLegendTitleEnabled, indent) + "\n";
+        str = str + stringToString("customLegendTitle", customLegendTitle, indent) + "\n";
         str = str + boolToString("lightingFlag", lightingFlag, indent) + "\n";
         str = str + indent + "colorControlPoints = {\n" + colorControlPoints.toString(indent + "    ") + indent + "}\n";
         str = str + floatToString("opacityAttenuation", opacityAttenuation, indent) + "\n";
@@ -956,6 +990,8 @@ public class VolumeAttributes extends AttributeSubject implements Plugin
     private double                   osprayAoDistance;
     private double                   osprayMinContribution;
     private boolean                  legendFlag;
+    private boolean                  customLegendTitleEnabled;
+    private String                   customLegendTitle;
     private boolean                  lightingFlag;
     private ColorControlPointList    colorControlPoints;
     private float                    opacityAttenuation;

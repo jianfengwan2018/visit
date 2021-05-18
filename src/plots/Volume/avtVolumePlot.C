@@ -251,6 +251,9 @@ avtVolumePlot::Create()
 //    Have the legend reflect the scaling (log, linear, skew).  Also make sure
 //    that accurate numbers are put the legends range.
 //
+//    Kathleen Biagas, Tue May 18, 2021
+//    Set customLegendTitle, if enabled.
+//
 // ****************************************************************************
 
 void
@@ -283,6 +286,11 @@ avtVolumePlot::SetAtts(const AttributeGroup *a)
         varLegend->SetScaling(2, atts.GetSkewFactor());
 
     SetLegend(atts.GetLegendFlag());
+
+    if(atts.GetCustomLegendTitleEnabled())
+        varLegend->SetTitle(atts.GetCustomLegendTitle().c_str());
+    else
+        varLegend->SetTitle("Volume");
 }
 
 // ****************************************************************************
@@ -551,16 +559,16 @@ bool GetLogicalBounds(avtDataObject_p input,int &width,int &height, int &depth)
 //
 //    Alister Maguire, Tue Dec 11 10:18:31 PST 2018
 //    With the new default renderer, the only time we don't resample
-//    is when we have a single domain rectilinear mesh. 
+//    is when we have a single domain rectilinear mesh.
 //
 // ****************************************************************************
 
 bool DataMustBeResampled(avtDataObject_p input)
 {
-    // 
-    // Unless we have a single domain rectilinear mesh, 
-    // we must resample. 
-    // 
+    //
+    // Unless we have a single domain rectilinear mesh,
+    // we must resample.
+    //
     avtMeshType mt = input->GetInfo().GetAttributes().GetMeshType();
     if (mt != AVT_RECTILINEAR_MESH)
     {
@@ -577,7 +585,7 @@ bool DataMustBeResampled(avtDataObject_p input)
     {
          //
          // If we have multiple domains, we still need to resample
-         // onto a single domain. 
+         // onto a single domain.
          //
          if (md->GetNDomains(datts.GetVariableName()) > 1)
              return true;
@@ -587,7 +595,7 @@ bool DataMustBeResampled(avtDataObject_p input)
     {
         //
         // We don't know how many domains we have... resample to
-        // be safe. 
+        // be safe.
         //
         return true;
     }
@@ -646,8 +654,8 @@ bool DataMustBeResampled(avtDataObject_p input)
 //    Replaced the Texture3D renderer with the Default renderer.
 //
 //    Alister Maguire, Tue Dec 11 10:18:31 PST 2018
-//    The new default renderer requires a single domain rectilinear dataset. 
-//    I've updated the logic to address this. 
+//    The new default renderer requires a single domain rectilinear dataset.
+//    I've updated the logic to address this.
 //
 // ****************************************************************************
 

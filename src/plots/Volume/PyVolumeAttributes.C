@@ -86,6 +86,13 @@ PyVolumeAttributes_ToString(const VolumeAttributes *atts, const char *prefix)
     else
         snprintf(tmpStr, 1000, "%slegendFlag = 0\n", prefix);
     str += tmpStr;
+    if(atts->GetCustomLegendTitleEnabled())
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 1\n", prefix);
+    else
+        snprintf(tmpStr, 1000, "%scustomLegendTitleEnabled = 0\n", prefix);
+    str += tmpStr;
+    snprintf(tmpStr, 1000, "%scustomLegendTitle = \"%s\"\n", prefix, atts->GetCustomLegendTitle().c_str());
+    str += tmpStr;
     if(atts->GetLightingFlag())
         snprintf(tmpStr, 1000, "%slightingFlag = 1\n", prefix);
     else
@@ -619,6 +626,54 @@ VolumeAttributes_GetLegendFlag(PyObject *self, PyObject *args)
 {
     VolumeAttributesObject *obj = (VolumeAttributesObject *)self;
     PyObject *retval = PyInt_FromLong(obj->data->GetLegendFlag()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+VolumeAttributes_SetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    VolumeAttributesObject *obj = (VolumeAttributesObject *)self;
+
+    int ival;
+    if(!PyArg_ParseTuple(args, "i", &ival))
+        return NULL;
+
+    // Set the customLegendTitleEnabled in the object.
+    obj->data->SetCustomLegendTitleEnabled(ival != 0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+VolumeAttributes_GetCustomLegendTitleEnabled(PyObject *self, PyObject *args)
+{
+    VolumeAttributesObject *obj = (VolumeAttributesObject *)self;
+    PyObject *retval = PyInt_FromLong(obj->data->GetCustomLegendTitleEnabled()?1L:0L);
+    return retval;
+}
+
+/*static*/ PyObject *
+VolumeAttributes_SetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    VolumeAttributesObject *obj = (VolumeAttributesObject *)self;
+
+    char *str;
+    if(!PyArg_ParseTuple(args, "s", &str))
+        return NULL;
+
+    // Set the customLegendTitle in the object.
+    obj->data->SetCustomLegendTitle(std::string(str));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/*static*/ PyObject *
+VolumeAttributes_GetCustomLegendTitle(PyObject *self, PyObject *args)
+{
+    VolumeAttributesObject *obj = (VolumeAttributesObject *)self;
+    PyObject *retval = PyString_FromString(obj->data->GetCustomLegendTitle().c_str());
     return retval;
 }
 
@@ -1571,6 +1626,10 @@ PyMethodDef PyVolumeAttributes_methods[VOLUMEATTRIBUTES_NMETH] = {
     {"GetOsprayMinContribution", VolumeAttributes_GetOsprayMinContribution, METH_VARARGS},
     {"SetLegendFlag", VolumeAttributes_SetLegendFlag, METH_VARARGS},
     {"GetLegendFlag", VolumeAttributes_GetLegendFlag, METH_VARARGS},
+    {"SetCustomLegendTitleEnabled", VolumeAttributes_SetCustomLegendTitleEnabled, METH_VARARGS},
+    {"GetCustomLegendTitleEnabled", VolumeAttributes_GetCustomLegendTitleEnabled, METH_VARARGS},
+    {"SetCustomLegendTitle", VolumeAttributes_SetCustomLegendTitle, METH_VARARGS},
+    {"GetCustomLegendTitle", VolumeAttributes_GetCustomLegendTitle, METH_VARARGS},
     {"SetLightingFlag", VolumeAttributes_SetLightingFlag, METH_VARARGS},
     {"GetLightingFlag", VolumeAttributes_GetLightingFlag, METH_VARARGS},
     {"SetColorControlPoints", VolumeAttributes_SetColorControlPoints, METH_VARARGS},
@@ -1676,6 +1735,10 @@ PyVolumeAttributes_getattr(PyObject *self, char *name)
         return VolumeAttributes_GetOsprayMinContribution(self, NULL);
     if(strcmp(name, "legendFlag") == 0)
         return VolumeAttributes_GetLegendFlag(self, NULL);
+    if(strcmp(name, "customLegendTitleEnabled") == 0)
+        return VolumeAttributes_GetCustomLegendTitleEnabled(self, NULL);
+    if(strcmp(name, "customLegendTitle") == 0)
+        return VolumeAttributes_GetCustomLegendTitle(self, NULL);
     if(strcmp(name, "lightingFlag") == 0)
         return VolumeAttributes_GetLightingFlag(self, NULL);
     if(strcmp(name, "colorControlPoints") == 0)
@@ -1833,6 +1896,10 @@ PyVolumeAttributes_setattr(PyObject *self, char *name, PyObject *args)
         obj = VolumeAttributes_SetOsprayMinContribution(self, tuple);
     else if(strcmp(name, "legendFlag") == 0)
         obj = VolumeAttributes_SetLegendFlag(self, tuple);
+    else if(strcmp(name, "customLegendTitleEnabled") == 0)
+        obj = VolumeAttributes_SetCustomLegendTitleEnabled(self, tuple);
+    else if(strcmp(name, "customLegendTitle") == 0)
+        obj = VolumeAttributes_SetCustomLegendTitle(self, tuple);
     else if(strcmp(name, "lightingFlag") == 0)
         obj = VolumeAttributes_SetLightingFlag(self, tuple);
     else if(strcmp(name, "colorControlPoints") == 0)

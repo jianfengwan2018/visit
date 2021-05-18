@@ -101,6 +101,7 @@ public:
 
     // Property selection methods
     virtual void SelectAll();
+    void SelectCustomLegendTitle();
     void SelectColorControlPoints();
     void SelectOpacityControlPoints();
     void SelectOpacityVariable();
@@ -120,6 +121,8 @@ public:
     void SetOsprayAoDistance(double osprayAoDistance_);
     void SetOsprayMinContribution(double osprayMinContribution_);
     void SetLegendFlag(bool legendFlag_);
+    void SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_);
+    void SetCustomLegendTitle(const std::string &customLegendTitle_);
     void SetLightingFlag(bool lightingFlag_);
     void SetColorControlPoints(const ColorControlPointList &colorControlPoints_);
     void SetOpacityAttenuation(float opacityAttenuation_);
@@ -164,6 +167,9 @@ public:
     double                         GetOsprayAoDistance() const;
     double                         GetOsprayMinContribution() const;
     bool                           GetLegendFlag() const;
+    bool                           GetCustomLegendTitleEnabled() const;
+    const std::string              &GetCustomLegendTitle() const;
+          std::string              &GetCustomLegendTitle();
     bool                           GetLightingFlag() const;
     const ColorControlPointList    &GetColorControlPoints() const;
           ColorControlPointList    &GetColorControlPoints();
@@ -274,6 +280,8 @@ public:
         ID_osprayAoDistance,
         ID_osprayMinContribution,
         ID_legendFlag,
+        ID_customLegendTitleEnabled,
+        ID_customLegendTitle,
         ID_lightingFlag,
         ID_colorControlPoints,
         ID_opacityAttenuation,
@@ -320,6 +328,8 @@ private:
     double                   osprayAoDistance;
     double                   osprayMinContribution;
     bool                     legendFlag;
+    bool                     customLegendTitleEnabled;
+    std::string              customLegendTitle;
     bool                     lightingFlag;
     ColorControlPointList    colorControlPoints;
     float                    opacityAttenuation;
@@ -356,6 +366,6 @@ private:
     static const char *TypeMapFormatString;
     static const private_tmfs_t TmfsStruct;
 };
-#define VOLUMEATTRIBUTES_TMFS "bbbbbbiiddbbafiabissUbfbfbfbfbiiiidiifibdD"
+#define VOLUMEATTRIBUTES_TMFS "bbbbbbiiddbbsbafiabissUbfbfbfbfbiiiidiifibdD"
 
 #endif

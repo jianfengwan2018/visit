@@ -300,6 +300,7 @@ void VolumeAttributes::Init()
     osprayAoDistance = 100000;
     osprayMinContribution = 0.001;
     legendFlag = true;
+    customLegendTitleEnabled = false;
     lightingFlag = true;
     SetDefaultColorControlPoints();
     opacityAttenuation = 1;
@@ -365,6 +366,8 @@ void VolumeAttributes::Copy(const VolumeAttributes &obj)
     osprayAoDistance = obj.osprayAoDistance;
     osprayMinContribution = obj.osprayMinContribution;
     legendFlag = obj.legendFlag;
+    customLegendTitleEnabled = obj.customLegendTitleEnabled;
+    customLegendTitle = obj.customLegendTitle;
     lightingFlag = obj.lightingFlag;
     colorControlPoints = obj.colorControlPoints;
     opacityAttenuation = obj.opacityAttenuation;
@@ -580,6 +583,8 @@ VolumeAttributes::operator == (const VolumeAttributes &obj) const
             (osprayAoDistance == obj.osprayAoDistance) &&
             (osprayMinContribution == obj.osprayMinContribution) &&
             (legendFlag == obj.legendFlag) &&
+            (customLegendTitleEnabled == obj.customLegendTitleEnabled) &&
+            (customLegendTitle == obj.customLegendTitle) &&
             (lightingFlag == obj.lightingFlag) &&
             (colorControlPoints == obj.colorControlPoints) &&
             (opacityAttenuation == obj.opacityAttenuation) &&
@@ -765,6 +770,8 @@ VolumeAttributes::SelectAll()
     Select(ID_osprayAoDistance,                (void *)&osprayAoDistance);
     Select(ID_osprayMinContribution,           (void *)&osprayMinContribution);
     Select(ID_legendFlag,                      (void *)&legendFlag);
+    Select(ID_customLegendTitleEnabled,        (void *)&customLegendTitleEnabled);
+    Select(ID_customLegendTitle,               (void *)&customLegendTitle);
     Select(ID_lightingFlag,                    (void *)&lightingFlag);
     Select(ID_colorControlPoints,              (void *)&colorControlPoints);
     Select(ID_opacityAttenuation,              (void *)&opacityAttenuation);
@@ -892,6 +899,18 @@ VolumeAttributes::CreateNode(DataNode *parentNode, bool completeSave, bool force
     {
         addToParent = true;
         node->AddNode(new DataNode("legendFlag", legendFlag));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitleEnabled, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitleEnabled", customLegendTitleEnabled));
+    }
+
+    if(completeSave || !FieldsEqual(ID_customLegendTitle, &defaultObject))
+    {
+        addToParent = true;
+        node->AddNode(new DataNode("customLegendTitle", customLegendTitle));
     }
 
     if(completeSave || !FieldsEqual(ID_lightingFlag, &defaultObject))
@@ -1150,6 +1169,10 @@ VolumeAttributes::SetFromNode(DataNode *parentNode)
         SetOsprayMinContribution(node->AsDouble());
     if((node = searchNode->GetNode("legendFlag")) != 0)
         SetLegendFlag(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitleEnabled")) != 0)
+        SetCustomLegendTitleEnabled(node->AsBool());
+    if((node = searchNode->GetNode("customLegendTitle")) != 0)
+        SetCustomLegendTitle(node->AsString());
     if((node = searchNode->GetNode("lightingFlag")) != 0)
         SetLightingFlag(node->AsBool());
     if((node = searchNode->GetNode("colorControlPoints")) != 0)
@@ -1394,6 +1417,20 @@ VolumeAttributes::SetLegendFlag(bool legendFlag_)
 {
     legendFlag = legendFlag_;
     Select(ID_legendFlag, (void *)&legendFlag);
+}
+
+void
+VolumeAttributes::SetCustomLegendTitleEnabled(bool customLegendTitleEnabled_)
+{
+    customLegendTitleEnabled = customLegendTitleEnabled_;
+    Select(ID_customLegendTitleEnabled, (void *)&customLegendTitleEnabled);
+}
+
+void
+VolumeAttributes::SetCustomLegendTitle(const std::string &customLegendTitle_)
+{
+    customLegendTitle = customLegendTitle_;
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
 }
 
 void
@@ -1688,6 +1725,24 @@ VolumeAttributes::GetLegendFlag() const
 }
 
 bool
+VolumeAttributes::GetCustomLegendTitleEnabled() const
+{
+    return customLegendTitleEnabled;
+}
+
+const std::string &
+VolumeAttributes::GetCustomLegendTitle() const
+{
+    return customLegendTitle;
+}
+
+std::string &
+VolumeAttributes::GetCustomLegendTitle()
+{
+    return customLegendTitle;
+}
+
+bool
 VolumeAttributes::GetLightingFlag() const
 {
     return lightingFlag;
@@ -1914,6 +1969,12 @@ VolumeAttributes::GetMaterialProperties()
 ///////////////////////////////////////////////////////////////////////////////
 
 void
+VolumeAttributes::SelectCustomLegendTitle()
+{
+    Select(ID_customLegendTitle, (void *)&customLegendTitle);
+}
+
+void
 VolumeAttributes::SelectColorControlPoints()
 {
     Select(ID_colorControlPoints, (void *)&colorControlPoints);
@@ -1984,6 +2045,8 @@ VolumeAttributes::GetFieldName(int index) const
     case ID_osprayAoDistance:                return "osprayAoDistance";
     case ID_osprayMinContribution:           return "osprayMinContribution";
     case ID_legendFlag:                      return "legendFlag";
+    case ID_customLegendTitleEnabled:        return "customLegendTitleEnabled";
+    case ID_customLegendTitle:               return "customLegendTitle";
     case ID_lightingFlag:                    return "lightingFlag";
     case ID_colorControlPoints:              return "colorControlPoints";
     case ID_opacityAttenuation:              return "opacityAttenuation";
@@ -2050,6 +2113,8 @@ VolumeAttributes::GetFieldType(int index) const
     case ID_osprayAoDistance:                return FieldType_double;
     case ID_osprayMinContribution:           return FieldType_double;
     case ID_legendFlag:                      return FieldType_bool;
+    case ID_customLegendTitleEnabled:        return FieldType_bool;
+    case ID_customLegendTitle:               return FieldType_string;
     case ID_lightingFlag:                    return FieldType_bool;
     case ID_colorControlPoints:              return FieldType_att;
     case ID_opacityAttenuation:              return FieldType_float;
@@ -2116,6 +2181,8 @@ VolumeAttributes::GetFieldTypeName(int index) const
     case ID_osprayAoDistance:                return "double";
     case ID_osprayMinContribution:           return "double";
     case ID_legendFlag:                      return "bool";
+    case ID_customLegendTitleEnabled:        return "bool";
+    case ID_customLegendTitle:               return "string";
     case ID_lightingFlag:                    return "bool";
     case ID_colorControlPoints:              return "att";
     case ID_opacityAttenuation:              return "float";
@@ -2226,6 +2293,16 @@ VolumeAttributes::FieldsEqual(int index_, const AttributeGroup *rhs) const
     case ID_legendFlag:
         {  // new scope
         retval = (legendFlag == obj.legendFlag);
+        }
+        break;
+    case ID_customLegendTitleEnabled:
+        {  // new scope
+        retval = (customLegendTitleEnabled == obj.customLegendTitleEnabled);
+        }
+        break;
+    case ID_customLegendTitle:
+        {  // new scope
+        retval = (customLegendTitle == obj.customLegendTitle);
         }
         break;
     case ID_lightingFlag:
