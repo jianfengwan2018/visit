@@ -5,17 +5,17 @@
 #include <visit-config.h>
 #include <QvisVolumePlotWindow.h>
 #include <QApplication>
+#include <QButtonGroup>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDesktopWidget>
-#include <QLayout>
-#include <QPushButton>
-#include <QCheckBox>
-#include <QButtonGroup>
-#include <QRadioButton>
-#include <QLabel>
-#include <QGroupBox>
-#include <QLineEdit>
 #include <QDoubleSpinBox>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QRadioButton>
 #include <QSpinBox>
 #include <QTabWidget>
 
@@ -1268,33 +1268,34 @@ QvisVolumePlotWindow::CreateRendererOptionsGroup(int maxWidth)
     miscGroup->setTitle(tr("Misc"));
     rendererOptionsLayout->addWidget(miscGroup);
 
-    QGridLayout *miscLayout = new QGridLayout(miscGroup);
-    miscLayout->setMargin(5);
-    miscLayout->setSpacing(10);
+    QHBoxLayout *miscLayout = new QHBoxLayout(miscGroup);
+    //miscLayout->setMargin(5);
+    //miscLayout->setSpacing(10);
 
     // Create the smooth data toggle.
     smoothDataToggle = new QCheckBox(tr("Smooth Data"), miscGroup);
     connect(smoothDataToggle, SIGNAL(toggled(bool)),
             this, SLOT(smoothDataToggled(bool)));
-    miscLayout->addWidget(smoothDataToggle, 0, 0);
+    miscLayout->addWidget(smoothDataToggle);
 
     // Create the legend toggle
     legendToggle = new QCheckBox(tr("Show Legend"), miscGroup);
     connect(legendToggle, SIGNAL(toggled(bool)),
             this, SLOT(legendToggled(bool)));
-    miscLayout->addWidget(legendToggle,1 , 0);
+    miscLayout->addWidget(legendToggle);
 
     // Create the legend title toggle
     customLegendTitleToggle = new QCheckBox(tr("Custom legend title"), central);
     connect(customLegendTitleToggle, SIGNAL(toggled(bool)),
             this, SLOT(customLegendTitleToggled(bool)));
-    miscLayout->addWidget(customLegendTitleToggle, 2, 0);
+    miscLayout->addWidget(customLegendTitleToggle);
 
     // Create the legend title line edit
     customLegendTitle = new QLineEdit(central);
     connect(customLegendTitle, SIGNAL(editingFinished()),
             this, SLOT(customLegendTitleProcessText()));
-    miscLayout->addWidget(customLegendTitle, 2, 1);
+    miscLayout->addWidget(customLegendTitle);
+    customLegendTitle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
     return parent;
 }
@@ -3018,7 +3019,6 @@ void
 QvisVolumePlotWindow::legendToggled(bool)
 {
     volumeAtts->SetLegendFlag(!volumeAtts->GetLegendFlag());
-    SetUpdate(false);
     Apply();
 }
 
