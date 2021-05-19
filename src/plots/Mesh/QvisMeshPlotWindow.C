@@ -826,7 +826,6 @@ void
 QvisMeshPlotWindow::legendToggled(bool val)
 {
     meshAtts->SetLegendFlag(val);
-    SetUpdate(false);
     Apply();
 }
 

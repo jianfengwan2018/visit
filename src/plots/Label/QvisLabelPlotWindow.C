@@ -391,6 +391,7 @@ QvisLabelPlotWindow::UpdateWindow(bool doAll)
             customLegendTitle->setText(labelAtts->GetCustomLegendTitle().c_str());
             customLegendTitle->blockSignals(false);
             break;
+        case LabelAttributes::ID_showNodes:
             showNodesToggle->blockSignals(true);
             showNodesToggle->setChecked(labelAtts->GetShowNodes());
             showNodesToggle->blockSignals(false);
@@ -708,7 +709,6 @@ void
 QvisLabelPlotWindow::legendToggled(bool val)
 {
     labelAtts->SetLegendFlag(val);
-    SetUpdate(false);
     Apply();
 }
 

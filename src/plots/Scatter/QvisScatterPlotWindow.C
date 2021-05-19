@@ -1899,7 +1899,6 @@ void
 QvisScatterPlotWindow::legendToggled(bool val)
 {
     atts->SetLegendFlag(val);
-    SetUpdate(false);
     Apply();
 }
 
